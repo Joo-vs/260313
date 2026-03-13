@@ -1,0 +1,2667 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>콘텐츠 저작툴 AI</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap');
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --blue:#4B6EF5;--blue-lt:#EEF1FF;--blue-dk:#3351D4;
+  --ai:#7C4DFF;--ai-lt:#F3EEFF;
+  --green:#22C98B;--red:#FF4F6A;--orange:#FF8C42;
+  --bg:#F0F2F7;
+  --g1:#F8F9FB;--g2:#EAECF0;--g3:#C8CDD8;--g4:#8A93A8;--g5:#555E75;
+  --text:#1E2340;--bar:#2B3250;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;font-size:12px;}
+
+/* ── LANDING SCREEN ── */
+.landing-screen{position:fixed;inset:0;z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#F8F7FF 0%,#EEF0FF 50%,#F3EEFF 100%);transition:opacity .4s ease, transform .4s ease;}
+.landing-screen.out{opacity:0;transform:scale(1.02);pointer-events:none;}
+.landing-logo{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.landing-logo-icon{width:40px;height:40px;border-radius:10px;background:#4B6EF5;display:flex;align-items:center;justify-content:center;}
+.landing-title{font-size:28px;font-weight:900;color:var(--text);letter-spacing:-.5px;}
+.landing-title span{color:var(--ai);}
+.landing-sub{font-size:13px;color:var(--g4);margin-bottom:40px;text-align:center;line-height:1.7;}
+.landing-input-wrap{width:660px;background:white;border-radius:20px;box-shadow:0 8px 40px rgba(124,77,255,.12),0 2px 12px rgba(0,0,0,.08);border:1.5px solid rgba(124,77,255,.15);transition:box-shadow .2s,border-color .2s;}
+.landing-input-wrap:focus-within{box-shadow:0 8px 48px rgba(124,77,255,.22),0 2px 12px rgba(0,0,0,.08);border-color:rgba(124,77,255,.4);}
+.landing-textarea{width:100%;min-height:100px;padding:22px 24px 10px;font-size:15px;color:var(--text);border:none;outline:none;resize:none;font-family:'Noto Sans KR',sans-serif;background:transparent;line-height:1.7;}
+.landing-textarea::placeholder{color:var(--g3);}
+.landing-input-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 14px;gap:8px;}
+.landing-input-actions{display:flex;align-items:center;gap:6px;}
+.landing-chip{height:30px;padding:0 12px;border-radius:20px;border:1.5px solid var(--g2);background:white;font-size:11px;font-weight:600;color:var(--g5);cursor:pointer;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;}
+.landing-chip:hover{border-color:var(--ai);color:var(--ai);background:var(--ai-lt);}
+.landing-chip.active{border-color:var(--ai);color:var(--ai);background:var(--ai-lt);}
+.landing-drop{position:absolute;bottom:calc(100% + 6px);left:0;background:white;border:1.5px solid var(--g2);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:5px;min-width:130px;z-index:3000;display:none;animation:fadeUp .15s ease;}
+.landing-drop.open{display:block;}
+.landing-drop-item{padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;color:var(--g5);cursor:pointer;transition:all .1s;white-space:nowrap;}
+.landing-drop-item:hover{background:var(--ai-lt);color:var(--ai);}
+.landing-drop-item.on{background:var(--ai-lt);color:var(--ai);}
+.landing-send{width:38px;height:38px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--ai),#A87DFF);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.landing-send:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(124,77,255,.4);}
+.landing-send:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.landing-divider{display:flex;align-items:center;gap:14px;width:660px;margin:24px 0;}
+.landing-divider::before,.landing-divider::after{content:'';flex:1;height:1px;background:var(--g2);}
+.landing-divider span{font-size:11px;color:var(--g4);white-space:nowrap;}
+.landing-bottom{display:flex;align-items:center;gap:10px;}
+.landing-btn-add{height:42px;padding:0 28px;border-radius:12px;background:white;border:1.5px solid var(--g2);font-size:13px;font-weight:700;color:var(--text);cursor:pointer;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;gap:7px;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.landing-btn-add:hover{border-color:var(--blue);color:var(--blue);box-shadow:0 4px 14px rgba(75,110,245,.15);}
+.landing-quickbtns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:20px;max-width:660px;}
+.landing-quick{height:32px;padding:0 14px;border-radius:20px;border:1px solid var(--g2);background:white;font-size:11px;color:var(--g5);cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;white-space:nowrap;}
+.landing-quick:hover{border-color:var(--ai);color:var(--ai);background:var(--ai-lt);}
+
+/* ── TITLE BAR ── */
+.title-bar{height:38px;background:var(--bar);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;}
+.logo{color:white;font-weight:800;font-size:13px;display:flex;align-items:center;gap:6px;}
+.logo-pill{background:var(--blue);color:white;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;}
+.doc-name{color:rgba(255,255,255,.38);font-size:11px;padding-left:12px;border-left:1px solid rgba(255,255,255,.1);}
+.sp{flex:1;}
+.tbtn{height:26px;padding:0 12px;border-radius:4px;border:none;font-size:11px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;}
+.tbtn.ghost{background:rgba(255,255,255,.1);color:rgba(255,255,255,.75);}
+.tbtn.ghost:hover{background:rgba(255,255,255,.2);}
+.tbtn.prim{background:var(--blue);color:white;}
+.tbtn.save{background:var(--green);color:white;}
+
+/* ── TOOLBAR ── */
+.toolbar{background:white;border-bottom:2px solid var(--g2);flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.06);}
+
+/* Row1: 고정 툴 그룹 */
+.tb-row1{display:flex;align-items:center;height:44px;padding:0 14px;gap:0;border-bottom:1px solid var(--g2);}
+
+/* 툴 그룹 래퍼 — 레이블 + 아이콘 묶음 */
+.tool-group{
+  display:flex;flex-direction:column;align-items:center;
+  padding:0 6px;border-right:1px solid var(--g2);height:100%;justify-content:center;gap:2px;
+}
+.tool-group:last-child{border-right:none;}
+.tool-group:first-child{padding-left:0;}
+.tg-label{font-size:9px;color:var(--g4);letter-spacing:.03em;white-space:nowrap;}
+.tg-icons{display:flex;align-items:center;gap:1px;}
+
+.tico{
+  width:30px;height:30px;border-radius:5px;background:none;border:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  color:var(--g5);transition:all .15s;flex-shrink:0;gap:2px;
+  position:relative;
+}
+.tico:hover{background:var(--g1);color:var(--text);}
+.tico.on{background:var(--blue-lt);color:var(--blue);}
+.tico svg{pointer-events:none;flex-shrink:0;}
+.tico .ico-lbl{font-size:8px;color:inherit;white-space:nowrap;line-height:1;pointer-events:none;}
+
+/* 삽입 그룹: 아이콘 + 레이블 세로 배치 */
+.insert-group{display:flex;align-items:center;gap:2px;padding:0 8px;border-right:1px solid var(--g2);height:100%;}
+.ins-btn{
+  width:48px;height:38px;border-radius:6px;background:none;border:none;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  color:var(--g5);transition:all .15s;font-size:9px;font-family:'Noto Sans KR',sans-serif;
+}
+.ins-btn:hover{background:var(--g1);color:var(--blue);}
+.ins-btn.on{background:var(--blue-lt);color:var(--blue);}
+.ins-btn svg{pointer-events:none;}
+
+/* OCR 버튼 */
+.ocr-ins-btn{
+  width:auto !important;padding:0 10px;
+  color:var(--orange) !important;
+  border:1.5px solid var(--orange) !important;
+  background:#FFF6EF !important;
+  border-radius:7px;position:relative;
+  white-space:nowrap;
+}
+.ocr-ins-btn:hover{background:var(--orange) !important;color:white !important;transform:translateY(-1px);box-shadow:0 3px 10px rgba(255,140,66,.35);}
+.ocr-ins-btn:hover .ocr-new-tag{background:white;color:var(--orange);}
+.ocr-new-tag{
+  font-size:8px;font-weight:800;
+  padding:1px 5px;border-radius:8px;
+  background:var(--orange);color:white;
+  margin-left:3px;pointer-events:none;
+  vertical-align:middle;
+}
+
+/* 핵심 CTA 버튼들 */
+.cta-group{display:flex;align-items:center;gap:8px;padding-left:10px;margin-left:auto;}
+.btn-add-c{
+  display:flex;align-items:center;gap:6px;height:32px;padding:0 14px;
+  border-radius:6px;border:1.5px solid var(--blue);background:var(--blue-lt);
+  color:var(--blue);font-size:12px;font-weight:700;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;transition:all .15s;
+}
+.btn-add-c:hover{background:#dce5ff;}
+.btn-ai-c{
+  display:flex;align-items:center;gap:6px;height:32px;padding:0 14px;
+  border-radius:6px;border:none;
+  background:linear-gradient(135deg,var(--ai),#A87DFF);
+  color:white;font-size:12px;font-weight:700;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  box-shadow:0 2px 8px rgba(124,77,255,.3);transition:all .2s;
+}
+.btn-ai-c:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(124,77,255,.4);}
+
+/* Row2: 동적 컨텍스트 툴바 */
+.tb-row2{
+  display:flex;align-items:center;min-height:34px;padding:0 14px;gap:6px;
+  overflow-x:auto;overflow-y:hidden;transition:background .2s;
+}
+.tb-row2::-webkit-scrollbar{height:0;}
+.tb-row2.s-none{background:var(--g1);}
+.tb-row2.s-text{background:#F8FAFF;animation:ctxIn .2s ease;}
+.tb-row2.s-image{background:#F5FFFB;animation:ctxIn .2s ease;}
+.tb-row2.s-shape{background:#FFFAF4;animation:ctxIn .2s ease;}
+.tb-row2.s-table{background:#F0FFF8;animation:ctxIn .2s ease;}
+.tb-row2.s-video{background:#FFF5F0;animation:ctxIn .2s ease;}
+.tb-row2.s-formula{background:#F0F8FF;animation:ctxIn .2s ease;}
+@keyframes ctxIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+.ctx-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:10px;font-size:10px;font-weight:700;
+  white-space:nowrap;flex-shrink:0;
+}
+.cb-text{background:#E8EDFF;color:var(--blue);}
+.cb-img{background:#E0F8EE;color:#1A9E6E;}
+.cb-shape{background:#FFF0E3;color:#C05E10;}
+.cb-table{background:#E0F8EE;color:#0E8A5E;}
+.cb-video{background:#FFE8E0;color:#C0380F;}
+.cb-formula{background:#E0EEFF;color:#1A5AC0;}
+
+.csep{width:1px;height:18px;background:var(--g2);flex-shrink:0;margin:0 2px;}
+.csel{height:26px;padding:0 7px;border-radius:4px;border:1px solid var(--g2);background:white;font-size:11px;color:var(--text);outline:none;cursor:pointer;flex-shrink:0;font-family:'Noto Sans KR',sans-serif;}
+.cnum{height:26px;width:46px;padding:0 6px;border-radius:4px;border:1px solid var(--g2);background:white;font-size:11px;color:var(--text);outline:none;text-align:center;flex-shrink:0;font-family:'Noto Sans KR',sans-serif;}
+.csel:focus,.cnum:focus{border-color:var(--blue);}
+.cbtn{height:26px;padding:0 9px;border-radius:4px;border:1px solid var(--g2);background:white;font-size:11px;font-weight:500;cursor:pointer;color:var(--text);white-space:nowrap;flex-shrink:0;font-family:'Noto Sans KR',sans-serif;transition:all .15s;}
+.cbtn:hover{border-color:var(--blue);color:var(--blue);}
+.cbtn.on{background:var(--blue-lt);border-color:var(--blue);color:var(--blue);font-weight:700;}
+.cdot{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--g3);cursor:pointer;flex-shrink:0;transition:transform .15s;}
+.cdot:hover{transform:scale(1.2);}
+.crange{width:72px;accent-color:var(--blue);cursor:pointer;flex-shrink:0;}
+.ctx-hint{font-size:11px;color:var(--g4);padding:2px 0;}
+.cai{display:flex;align-items:center;gap:4px;height:26px;padding:0 10px;border-radius:12px;border:none;font-size:10px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;white-space:nowrap;flex-shrink:0;}
+.cai.pur{background:linear-gradient(135deg,var(--ai),#A87DFF);color:white;}
+.cai.pur:hover{transform:translateY(-1px);}
+.cai.out{background:white;color:var(--ai);border:1px solid var(--ai);}
+.cai.out:hover{background:var(--ai-lt);}
+
+/* ── EDITOR BODY ── */
+.editor-body{display:flex;flex:1;overflow:hidden;}
+.resize-handle{width:6px;flex-shrink:0;cursor:col-resize;background:var(--g2);position:relative;z-index:10;transition:background .2s;}
+.resize-handle:hover,.resize-handle.dragging{background:var(--ai);}
+.resize-handle::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:40px;border-radius:2px;background:var(--g3);transition:background .2s;}
+.resize-handle:hover::after,.resize-handle.dragging::after{background:white;}
+
+/* 좌측 히스토리 패널 */
+.history-panel{width:200px;background:white;border-right:1px solid var(--g2);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;}
+.history-header{padding:12px 14px 8px;border-bottom:1px solid var(--g2);flex-shrink:0;}
+.history-title{font-size:11px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:5px;}
+.history-title svg{color:var(--ai);}
+.history-list{flex:1;overflow-y:auto;padding:8px 0;}
+.history-list::-webkit-scrollbar{width:3px;}
+.history-list::-webkit-scrollbar-thumb{background:var(--g3);border-radius:2px;}
+.history-empty{padding:24px 14px;text-align:center;color:var(--g3);font-size:11px;line-height:1.7;}
+.history-empty svg{display:block;margin:0 auto 8px;opacity:.4;}
+.history-item{padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--g2);transition:background .15s;position:relative;}
+.history-item:hover{background:var(--g1);}
+.history-item.active{background:var(--ai-lt);border-left:3px solid var(--ai);}
+.history-item-title{font-size:11px;font-weight:700;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.history-item-meta{font-size:9px;color:var(--g4);display:flex;align-items:center;gap:4px;}
+.history-item-badge{font-size:8px;font-weight:700;padding:1px 5px;border-radius:6px;background:var(--ai-lt);color:var(--ai);}
+.history-item-del{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:4px;background:none;border:none;cursor:pointer;color:var(--g3);font-size:10px;opacity:0;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.history-item:hover .history-item-del{opacity:1;}
+.history-item-del:hover{background:#FFF0F0;color:var(--red);}
+.history-new-btn{margin:8px 10px;height:30px;border-radius:6px;border:1.5px dashed var(--g2);background:none;cursor:pointer;font-size:11px;color:var(--g4);font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .15s;width:calc(100% - 20px);}
+.history-new-btn:hover{border-color:var(--ai);color:var(--ai);background:var(--ai-lt);}
+.history-item{padding:0;cursor:pointer;border-bottom:1px solid var(--g2);transition:background .15s;position:relative;}
+.history-item-head{padding:9px 36px 9px 14px;transition:background .15s;}
+.history-item:hover .history-item-head{background:var(--g1);}
+.history-item.active .history-item-head{background:var(--ai-lt);}
+.history-item.active{border-left:3px solid var(--ai);}
+.history-item-title{font-size:11px;font-weight:700;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:4px;}
+.history-item-meta{font-size:9px;color:var(--g4);display:flex;align-items:center;gap:4px;}
+.history-item-badge{font-size:8px;font-weight:700;padding:1px 5px;border-radius:6px;background:var(--ai-lt);color:var(--ai);}
+.history-item-del{position:absolute;right:8px;top:10px;width:18px;height:18px;border-radius:4px;background:none;border:none;cursor:pointer;color:var(--g3);font-size:10px;opacity:0;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.history-item:hover .history-item-del{opacity:1;}
+.history-item-del:hover{background:#FFF0F0;color:var(--red);}
+.history-action-panel{overflow:hidden;max-height:0;transition:max-height .28s cubic-bezier(0.4,0,0.2,1);background:#FAFAFF;}
+.history-action-panel.open{max-height:420px;}
+.hap-inner{padding:10px 12px 12px;border-top:1px solid #EAE8FF;}
+.hap-title{font-size:9px;font-weight:800;color:var(--ai);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:4px;}
+.hap-btn{width:100%;height:30px;border-radius:6px;border:1px solid var(--g2);background:white;cursor:pointer;font-size:10px;font-weight:700;color:var(--g5);font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;gap:6px;padding:0 10px;margin-bottom:5px;transition:all .15s;}
+.hap-btn:last-child{margin-bottom:0;}
+.hap-btn:hover{border-color:var(--ai);background:var(--ai-lt);color:var(--ai);}
+.hap-btn.danger:hover{border-color:var(--red);background:#FFF0F2;color:var(--red);}
+.hap-btn svg{flex-shrink:0;opacity:.55;}
+.hap-btn:hover svg{opacity:1;}
+.hap-sub{display:none;padding:6px 4px 4px;}
+.hap-sub.show{display:block;}
+.hap-input-row{display:flex;gap:5px;}
+.hap-input{flex:1;height:28px;border:1px solid var(--g2);border-radius:5px;padding:0 8px;font-size:10px;color:var(--text);outline:none;font-family:'Noto Sans KR',sans-serif;background:white;}
+.hap-input:focus{border-color:var(--ai);}
+.hap-apply{height:28px;padding:0 10px;border-radius:5px;border:none;background:var(--ai);color:white;font-size:10px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;transition:opacity .15s;}
+.hap-apply:hover{opacity:.85;}
+.hap-lv-row{display:flex;gap:4px;margin-top:6px;}
+.hap-lv-btn{flex:1;height:26px;border-radius:5px;border:1px solid var(--g2);background:white;font-size:10px;font-weight:700;color:var(--g5);cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;}
+.hap-lv-btn:hover,.hap-lv-btn.on{border-color:var(--ai);background:var(--ai-lt);color:var(--ai);}
+.hap-highlight{outline:3px solid var(--ai) !important;outline-offset:3px;transition:outline .2s;}
+.hap-chat-msgs{scrollbar-width:thin;scrollbar-color:var(--g2) transparent;}
+.hap-chat-msgs::-webkit-scrollbar{width:3px;}
+.hap-chat-msgs::-webkit-scrollbar-thumb{background:var(--g2);border-radius:2px;}
+.hap-cmsg-user{background:#EEF0FF;border-radius:6px 6px 2px 6px;padding:5px 8px;font-size:9px;color:var(--text);margin-bottom:4px;line-height:1.5;text-align:right;}
+.hap-cmsg-ai{background:#F4F2FF;border:1px solid #DDD8FF;border-radius:2px 6px 6px 6px;padding:5px 8px;font-size:9px;color:var(--text);margin-bottom:4px;line-height:1.5;}
+.hap-cmsg-lbl{font-size:8px;font-weight:700;color:var(--ai);margin-bottom:2px;}
+.hap-cmsg-lbl-user{font-size:8px;color:var(--g4);margin-bottom:2px;text-align:right;}
+.hap-highlight{outline:3px solid var(--ai) !important;outline-offset:3px;transition:outline .2s;}
+
+/* CANVAS */
+.canvas-wrap{
+  flex:1;overflow:auto;
+  background:var(--bg);
+  background-image:radial-gradient(circle,#C0C5D4 1px,transparent 1px);
+  background-size:22px 22px;
+  display:flex;flex-direction:column;align-items:center;
+  padding:24px 60px 80px;gap:0;
+}
+.canvas-wrap::-webkit-scrollbar{width:6px;height:6px;}
+.canvas-wrap::-webkit-scrollbar-thumb{background:var(--g3);border-radius:3px;}
+
+/* 콘텐츠 블록 */
+.cb{width:700px;background:white;box-shadow:0 1px 6px rgba(0,0,0,.1);position:relative;flex-shrink:0;border:2px solid transparent;transition:border-color .2s;animation:fadeUp .25s ease;}
+.cb:hover{border-color:var(--g2);}
+.cb.sel{border-color:var(--blue);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.bctrl{position:absolute;right:-40px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:4px;}
+.bctrl button{width:28px;height:28px;border-radius:5px;background:white;border:1px solid var(--g2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--g5);font-size:11px;transition:all .15s;}
+.bctrl button:hover{background:var(--blue-lt);border-color:var(--blue);color:var(--blue);}
+.bctrl .del:hover{background:#FFF0F0;border-color:var(--red);color:var(--red);}
+
+/* 문제 구조 */
+.q-head{display:flex;align-items:flex-start;gap:10px;padding:16px 20px 12px;border-bottom:1px solid var(--g2);}
+.q-num{min-width:26px;height:26px;border-radius:6px;background:var(--blue);color:white;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.q-txt{flex:1;font-size:14px;color:var(--text);line-height:1.7;outline:none;min-height:22px;}
+.q-txt:empty::before{content:attr(data-ph);color:var(--g4);}
+.q-choices{padding:8px 20px 12px;}
+.q-choice{display:flex;align-items:flex-start;gap:10px;padding:7px 12px;margin-bottom:2px;border-radius:6px;cursor:pointer;transition:all .15s;border:1.5px solid transparent;}
+.q-choice:hover{background:var(--g1);}
+.q-choice.correct{background:#EAFAF5;border-color:var(--green);}
+.q-cnum{width:22px;height:22px;border-radius:50%;background:var(--g2);color:var(--g5);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:all .15s;}
+.q-choice.correct .q-cnum{background:var(--green);color:white;}
+.q-ctxt{flex:1;font-size:13px;color:var(--text);outline:none;line-height:1.6;}
+.q-ctxt:empty::before{content:attr(data-ph);color:var(--g3);}
+.q-hint-area{background:#F5F3FF;border-top:1px solid #EDE9FF;}
+.q-sol-area{background:var(--g1);border-top:1px solid var(--g2);}
+.qlabel{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:700;margin:10px 20px 5px;}
+.qlabel.hint{background:var(--ai);color:white;}
+.qlabel.sol{background:var(--g5);color:white;}
+.qsub{padding:2px 20px 12px;font-size:12px;color:var(--g5);outline:none;line-height:1.7;min-height:20px;}
+.qsub:empty::before{content:attr(data-ph);color:var(--g3);}
+
+/* 이미지 블록 */
+.img-block{padding:16px 20px;display:flex;flex-direction:column;gap:8px;}
+.img-ph{border:2px dashed var(--g3);border-radius:8px;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--g4);font-size:12px;cursor:pointer;transition:all .2s;}
+.img-ph:hover{border-color:var(--blue);background:var(--blue-lt);color:var(--blue);}
+.img-cap{border:none;border-bottom:1px solid var(--g2);padding:4px 0;font-size:12px;color:var(--g5);outline:none;font-family:'Noto Sans KR',sans-serif;width:100%;}
+.img-cap::placeholder{color:var(--g3);}
+
+/* AI 인라인 바 */
+.ai-bar{display:none;align-items:center;gap:5px;padding:6px 14px;background:linear-gradient(90deg,#F5F0FF,#EEF1FF);border-top:1px solid #E5DEFF;}
+.cb.sel .ai-bar{display:flex;}
+.ai-bar-lbl{font-size:10px;color:var(--ai);font-weight:700;margin-right:2px;}
+
+/* 추가 버튼 */
+.add-area{width:700px;display:flex;justify-content:center;align-items:center;gap:8px;padding:20px 0;flex-shrink:0;}
+.btn-add-main{height:36px;padding:0 24px;border-radius:6px;background:var(--blue);color:white;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;box-shadow:0 2px 8px rgba(75,110,245,.3);}
+.btn-add-main:hover{background:var(--blue-dk);transform:translateY(-1px);}
+.btn-add-main:disabled,.btn-ai-main:disabled{opacity:.35;cursor:not-allowed;transform:none !important;box-shadow:none !important;pointer-events:none;}
+.generating-overlay{display:none;position:fixed;inset:0;z-index:1800;background:rgba(10,12,35,.55);backdrop-filter:blur(8px);align-items:center;justify-content:center;flex-direction:column;gap:28px;}
+.generating-overlay.show{display:flex;}
+.gen-card{background:white;border-radius:24px;padding:44px 52px;display:flex;flex-direction:column;align-items:center;gap:20px;box-shadow:0 24px 80px rgba(0,0,0,.25);max-width:360px;width:90%;animation:scaleIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes scaleIn{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+.gen-ring{width:64px;height:64px;border-radius:50%;border:4px solid var(--g2);border-top-color:var(--ai);animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.gen-title{font-size:17px;font-weight:800;color:var(--text);text-align:center;line-height:1.4;}
+.gen-sub{font-size:12px;color:var(--g4);text-align:center;line-height:1.6;}
+.gen-dots{display:flex;gap:8px;align-items:center;}
+.gen-dot{width:8px;height:8px;border-radius:50%;background:var(--ai);animation:pulse 1.2s ease-in-out infinite;}
+.gen-dot:nth-child(2){animation-delay:.2s;}
+.gen-dot:nth-child(3){animation-delay:.4s;}
+@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+.btn-ai-main{height:36px;padding:0 20px;border-radius:6px;border:none;background:linear-gradient(135deg,var(--ai),#A87DFF);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;box-shadow:0 2px 8px rgba(124,77,255,.3);transition:all .2s;display:flex;align-items:center;gap:6px;}
+.btn-ai-main:hover{transform:translateY(-1px);}
+
+/* ── RIGHT PANEL ── */
+.right-panel{width:245px;background:white;border-left:1px solid var(--g2);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;}
+.rp-tabs{display:flex;border-bottom:1px solid var(--g2);flex-shrink:0;}
+.rp-tab{flex:1;height:42px;font-size:12px;font-weight:700;color:var(--g4);background:none;border:none;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .15s;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;}
+.rp-tab.attr.on{color:var(--g5);border-bottom-color:var(--g5);}
+.rp-tab.aitab{background:none;}
+.rp-tab.aitab.on{color:var(--ai);border-bottom-color:var(--ai);}
+.rp-tab .ai-pill{font-size:8px;font-weight:800;padding:1px 5px;border-radius:8px;background:linear-gradient(135deg,var(--ai),#A87DFF);color:white;}
+.rp-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+.rp-body::-webkit-scrollbar{width:3px;}
+.rp-body::-webkit-scrollbar-thumb{background:var(--g3);}
+
+/* 속성 탭 */
+.attr-wrap{padding:0 14px 14px;}
+.rp-sec{margin-bottom:14px;margin-top:12px;}
+.rp-sec-t{font-size:9px;font-weight:700;color:var(--g4);letter-spacing:.07em;text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:4px;}
+.rp-sec-t::before{content:'';display:block;width:3px;height:10px;border-radius:2px;background:var(--g3);}
+.rp-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.rp-lbl{width:42px;font-size:10px;color:var(--g5);flex-shrink:0;}
+.rp-inp{flex:1;height:26px;padding:0 8px;border-radius:4px;border:1px solid var(--g2);font-size:11px;color:var(--text);outline:none;font-family:'Noto Sans KR',sans-serif;}
+.rp-inp:focus{border-color:var(--blue);}
+.rp-sel{flex:1;height:26px;padding:0 6px;border-radius:4px;border:1px solid var(--g2);font-size:11px;color:var(--text);outline:none;font-family:'Noto Sans KR',sans-serif;cursor:pointer;background:white;}
+.rp-sel:focus{border-color:var(--blue);}
+.rp-toggle-row{display:flex;gap:4px;}
+.rp-toggle{flex:1;height:26px;border-radius:4px;border:1px solid var(--g2);background:white;font-size:10px;font-weight:600;color:var(--g5);cursor:pointer;transition:all .15s;font-family:'Noto Sans KR',sans-serif;}
+.rp-toggle:hover{border-color:var(--blue);color:var(--blue);}
+.rp-toggle.on{background:var(--blue-lt);border-color:var(--blue);color:var(--blue);}
+.rp-divider{height:1px;background:var(--g2);margin:4px 0 10px;}
+
+/* AI 탭 */
+.ai-panel{display:flex;flex-direction:column;flex:1;overflow:hidden;background:#1E2540;}
+.ai-suggest-area{flex:1;overflow-y:auto;padding:12px 14px;}
+.ai-suggest-area::-webkit-scrollbar{width:3px;}
+.ai-suggest-area::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
+.ai-section-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;margin-top:4px;}
+.ai-card{border-radius:10px;padding:12px 13px;margin-bottom:8px;border:1px solid transparent;transition:all .2s;position:relative;overflow:hidden;cursor:pointer;}
+.ai-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.ai-card.c-gen{background:#2A1F42;border-color:#4A3066;}.ai-card.c-gen::before{background:var(--ai);}
+.ai-card.c-design{background:#1A3328;border-color:#2A5240;}.ai-card.c-design::before{background:var(--green);}
+.ai-card.c-block{background:#1A2240;border-color:#2A3560;}.ai-card.c-block::before{background:var(--blue);}
+.ai-card.c-link{background:#3A2410;border-color:#5A3C1A;}.ai-card.c-link::before{background:var(--orange);}
+.ai-card:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.3);}
+.ai-card-hd{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.ai-badge{font-size:8px;font-weight:800;padding:2px 6px;border-radius:8px;display:inline-flex;align-items:center;gap:3px;flex-shrink:0;}
+.ai-badge.gen{background:var(--ai);color:white;}
+.ai-badge.design{background:var(--green);color:white;}
+.ai-badge.block{background:var(--blue);color:white;}
+.ai-badge.link{background:var(--orange);color:white;}
+.ai-card-title{font-size:11px;font-weight:800;color:rgba(255,255,255,.9);}
+.ai-card-desc{font-size:10px;color:rgba(255,255,255,.5);line-height:1.5;margin-bottom:7px;}
+.ai-card-btn{height:24px;padding:0 10px;border-radius:6px;border:none;font-size:10px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;}
+.ai-card-btn.gen{background:var(--ai);color:white;}
+.ai-card-btn.design{background:var(--green);color:white;}
+.ai-card-btn.block{background:var(--blue);color:white;}
+.ai-card-btn.link{background:var(--orange);color:white;}
+.ai-card-btn:hover{opacity:.85;}
+
+/* AI 채팅 */
+.ai-chat-area{border-top:1px solid rgba(255,255,255,.1);padding:10px 12px;flex-shrink:0;background:#17203A;}
+.ai-chat-lbl{font-size:9px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.05em;margin-bottom:5px;}
+.ai-chat-msgs{max-height:100px;overflow-y:auto;margin-bottom:6px;}
+.ai-msg-wrap{margin-bottom:5px;}
+.ai-msg-lbl{font-size:9px;font-weight:700;color:#A87DFF;margin-bottom:2px;display:flex;align-items:center;gap:3px;}
+.ai-msg{background:rgba(124,77,255,.2);border:1px solid rgba(124,77,255,.3);border-radius:8px;padding:7px 9px;font-size:11px;color:rgba(255,255,255,.88);line-height:1.5;animation:fadeUp .2s ease;}
+.ai-chat-row{display:flex;gap:6px;}
+.ai-chat-input{flex:1;height:34px;padding:0 10px;border-radius:8px;border:1.5px solid rgba(255,255,255,.12);font-size:11px;color:white;outline:none;font-family:'Noto Sans KR',sans-serif;background:rgba(255,255,255,.07);transition:border-color .15s;}
+.ai-chat-input:focus{border-color:var(--ai);background:rgba(255,255,255,.1);}
+.ai-chat-input::placeholder{color:rgba(255,255,255,.25);}
+.ai-send{width:34px;height:34px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--ai),#A87DFF);color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.ai-send:hover{transform:translateY(-1px);box-shadow:0 3px 8px rgba(124,77,255,.4);}
+
+/* ── AI MODAL (단순화) ── */
+.overlay{position:fixed;inset:0;background:rgba(10,15,40,.5);backdrop-filter:blur(5px);z-index:900;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.ai-modal{
+  background:white;border-radius:20px;width:560px;
+  overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 24px 80px rgba(0,0,0,.28);
+  transform:translateY(14px) scale(.97);transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.overlay.open .ai-modal{transform:none;}
+
+/* 모달 헤더 */
+.mh{background:linear-gradient(135deg,var(--ai),#A87DFF);padding:20px 24px 18px;position:relative;overflow:hidden;flex-shrink:0;}
+.mh::after{content:'';position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.07);top:-50px;right:-30px;}
+.mh h2{font-size:18px;font-weight:800;color:white;display:flex;align-items:center;gap:8px;}
+.mh p{font-size:12px;color:rgba(255,255,255,.65);margin-top:4px;}
+.mx{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.18);border:none;color:white;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;z-index:10;}
+.mx:hover{background:rgba(255,255,255,.32);}
+
+/* AI 모달 탭 */
+.ai-modal-tabs{display:flex;border-bottom:2px solid var(--g2);flex-shrink:0;background:white;}
+.ai-modal-tab{flex:1;height:44px;font-size:13px;font-weight:700;color:var(--g4);background:none;border:none;border-bottom:2.5px solid transparent;margin-bottom:-2px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.ai-modal-tab.on{color:var(--ai);border-bottom-color:var(--ai);}
+.ai-modal-tab.ocr-tab.on{color:var(--orange);border-bottom-color:var(--orange);}
+
+/* OCR 탭 콘텐츠 */
+.ocr-tab-body{padding:32px 24px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;}
+.ocr-illust{width:80px;height:80px;border-radius:16px;background:#FFF0E3;display:flex;align-items:center;justify-content:center;}
+.ocr-tab-title{font-size:16px;font-weight:800;color:var(--text);}
+.ocr-tab-desc{font-size:13px;color:var(--g4);line-height:1.7;max-width:340px;}
+.ocr-tab-formats{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+.ocr-fmt-tag{font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:#FFF0E3;color:#C05E10;border:1px solid #FFD4B0;}
+
+/* 드래그앤드롭 존 */
+.drop-zone{border:2px dashed var(--g2);border-radius:10px;background:var(--g1);cursor:pointer;transition:all .2s;min-height:90px;display:flex;align-items:center;justify-content:center;}
+.drop-zone:hover,.drop-zone.over{border-color:var(--blue);background:var(--blue-lt);}
+.drop-zone.has-file{border-color:var(--green);background:#F0FBF6;border-style:solid;}
+.drop-inner{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px;}
+.drop-result{padding:12px 16px;width:100%;display:flex;align-items:center;gap:10px;}
+.drop-file-icon{width:36px;height:36px;border-radius:8px;background:var(--blue-lt);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.drop-file-name{font-size:12px;font-weight:700;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.drop-file-size{font-size:10px;color:var(--g4);}
+.drop-file-del{width:22px;height:22px;border-radius:50%;background:var(--g2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--g5);font-size:10px;flex-shrink:0;transition:all .15s;}
+.drop-file-del:hover{background:#FFE0E5;color:var(--red);}
+.ocr-tab-btn{width:100%;max-width:340px;height:48px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--orange),#e07030);color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;}
+.ocr-tab-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(255,140,66,.4);}
+.ocr-tab-note{font-size:11px;color:var(--g3);}
+
+/* 고정 셀렉트 (수정 불가) */
+.form-sel-fixed{
+  width:100%;height:42px;padding:0 12px;border-radius:8px;
+  border:1.5px solid var(--blue);background:#FAFBFF;
+  font-size:13px;color:var(--text);font-family:'Noto Sans KR',sans-serif;
+  font-weight:700;
+  display:flex;align-items:center;justify-content:space-between;
+  pointer-events:none;
+}
+.form-sel-fixed .lock-icon{color:var(--g3);font-size:12px;}
+
+/* 모달 본문 — 단일 화면 */
+.mb{padding:22px 24px 4px;overflow-y:auto;max-height:62vh;}
+.mb::-webkit-scrollbar{width:4px;}
+.mb::-webkit-scrollbar-thumb{background:var(--g3);border-radius:2px;}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.form-row.single{grid-template-columns:1fr;}
+.form-col label{display:block;font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.form-col label .opt{font-weight:400;font-size:10px;color:var(--g4);margin-left:4px;background:var(--g2);padding:1px 6px;border-radius:8px;}
+.form-sel{
+  width:100%;height:42px;padding:0 12px;border-radius:8px;border:1.5px solid var(--g2);
+  background:white;font-size:13px;color:var(--text);outline:none;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A93A8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  transition:border-color .15s;
+}
+.form-sel:focus{border-color:var(--blue);}
+.form-sel.selected{border-color:var(--blue);background-color:#FAFBFF;}
+.form-ta{
+  width:100%;min-height:100px;padding:12px;border-radius:8px;border:1.5px solid var(--g2);
+  background:#F8F9FB;font-size:13px;color:var(--text);outline:none;resize:vertical;
+  font-family:'Noto Sans KR',sans-serif;line-height:1.6;transition:border-color .15s;
+}
+.form-ta:focus{border-color:var(--blue);background:white;}
+.char-count{text-align:right;font-size:11px;color:var(--g4);margin-top:4px;}
+.privacy-note{font-size:11px;color:var(--blue);margin-bottom:4px;padding:0 24px;}
+
+/* 생성 중 / 완료 화면 */
+.gen-screen{display:none;flex-direction:column;align-items:center;padding:32px 24px;gap:14px;text-align:center;}
+.gen-screen.show{display:flex;}
+.spin{width:52px;height:52px;border-radius:50%;border:4px solid var(--g2);border-top-color:var(--ai);animation:sp 1s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg)}}
+.gen-t{font-size:15px;font-weight:700;color:var(--text);}
+.gen-s{font-size:12px;color:var(--g4);}
+.pw{width:240px;height:4px;background:var(--g2);border-radius:2px;overflow:hidden;}
+.pf{height:100%;background:linear-gradient(90deg,var(--ai),#A87DFF);border-radius:2px;width:0;animation:pg 2.8s ease-in-out forwards;}
+@keyframes pg{0%{width:0}75%{width:82%}100%{width:95%}}
+.done-screen{display:none;flex-direction:column;align-items:center;padding:24px;gap:10px;text-align:center;}
+.done-screen.show{display:flex;}
+.done-ico{font-size:42px;animation:pop .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.done-t{font-size:16px;font-weight:800;color:var(--text);}
+.done-s{font-size:12px;color:var(--g4);}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:6px;}
+.rc{border:1.5px solid var(--g2);border-radius:8px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.rc:hover{border-color:var(--ai);transform:translateY(-2px);box-shadow:0 4px 12px rgba(124,77,255,.15);}
+.rc-h{height:52px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.rc-b{padding:6px 10px;}
+.rc-t{font-size:11px;font-weight:700;color:var(--text);}
+.rc-s{font-size:10px;color:var(--g4);margin-top:1px;}
+
+/* 모달 푸터 */
+.mfoot{padding:14px 24px 16px;border-top:1px solid var(--g2);display:flex;gap:8px;flex-shrink:0;background:var(--g1);}
+.mfbtn{flex:1;height:46px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+.mfbtn.cc{background:var(--g2);color:var(--g5);}
+.mfbtn.cc:hover{background:var(--g3);}
+.mfbtn.nx{background:linear-gradient(135deg,var(--ai),#A87DFF);color:white;box-shadow:0 3px 12px rgba(124,77,255,.35);}
+.mfbtn.nx:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(124,77,255,.45);}
+.mfbtn.nx:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+/* STATUS BAR */
+.statusbar{height:22px;background:var(--bar);display:flex;align-items:center;padding:0 14px;gap:14px;flex-shrink:0;}
+.sbi{font-size:10px;color:rgba(255,255,255,.35);display:flex;align-items:center;gap:4px;}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--green);}
+
+/* ── 템플릿 선택 모달 ── */
+.tmpl-overlay{position:fixed;inset:0;background:rgba(10,15,40,.45);backdrop-filter:blur(4px);z-index:900;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+.tmpl-overlay.open{opacity:1;pointer-events:all;}
+.tmpl-modal{background:white;border-radius:16px;width:780px;max-height:86vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.28);transform:translateY(12px) scale(.97);transition:transform .3s cubic-bezier(.34,1.56,.64,1);overflow:hidden;}
+.tmpl-overlay.open .tmpl-modal{transform:none;}
+
+.tmpl-header{padding:22px 28px 18px;border-bottom:1px solid var(--g2);display:flex;align-items:baseline;gap:12px;flex-shrink:0;}
+.tmpl-header h3{font-size:16px;font-weight:800;color:var(--text);}
+.tmpl-header p{font-size:13px;color:var(--g4);}
+.tmpl-close{margin-left:auto;width:30px;height:30px;border-radius:50%;background:var(--g1);border:none;cursor:pointer;font-size:16px;color:var(--g4);display:flex;align-items:center;justify-content:center;}
+.tmpl-close:hover{background:var(--g2);color:var(--text);}
+
+.tmpl-body{display:flex;flex:1;overflow:hidden;}
+
+.tmpl-left{flex:1;padding:22px 24px;overflow-y:auto;border-right:1px solid var(--g2);}
+.tmpl-left::-webkit-scrollbar{width:3px;}
+.tmpl-left::-webkit-scrollbar-thumb{background:var(--g3);}
+
+.tmpl-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px;}
+.tmpl-section-lbl{font-size:10px;font-weight:700;color:var(--g4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:5px;}
+.tmpl-section-lbl::after{content:'';flex:1;height:1px;background:var(--g2);}
+
+.tmpl-item{
+  border:2px solid var(--g2);border-radius:10px;padding:0;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;
+  transition:all .18s;background:white;overflow:hidden;
+}
+.tmpl-item:hover{border-color:#b0bfff;background:var(--blue-lt);}
+.tmpl-item.sel{border-color:var(--blue);background:var(--blue-lt);box-shadow:0 0 0 3px rgba(75,110,245,.15);}
+.tmpl-item.ocr-item{border-color:#FFD4B0;}
+.tmpl-item.ocr-item:hover{border-color:var(--orange);background:#FFF6EF;}
+.tmpl-item.ocr-item.sel{border-color:var(--orange);background:#FFF6EF;box-shadow:0 0 0 3px rgba(255,140,66,.15);}
+
+.tmpl-ico{width:100%;height:66px;display:flex;align-items:center;justify-content:center;background:var(--g1);border-bottom:1px solid var(--g2);}
+.tmpl-item.sel .tmpl-ico{background:#dce5ff;border-color:#b0c4ff;}
+.tmpl-item.ocr-item .tmpl-ico{background:#FFF0E3;}
+.tmpl-item.ocr-item.sel .tmpl-ico{background:#FFD4B0;}
+
+.tmpl-lbl{font-size:11px;font-weight:600;color:var(--g5);padding:7px 4px 8px;text-align:center;line-height:1.3;}
+.tmpl-item.sel .tmpl-lbl{color:var(--blue);font-weight:700;}
+.tmpl-item.ocr-item .tmpl-lbl{color:#C05E10;}
+.tmpl-item.ocr-item.sel .tmpl-lbl{color:var(--orange);}
+.tmpl-new{font-size:8px;font-weight:800;background:var(--orange);color:white;padding:1px 5px;border-radius:6px;display:block;margin:-2px auto 4px;}
+/* ── 추천 콘텐츠 썸네일 그리드 ── */
+.rec-label{font-size:9px;font-weight:800;color:var(--g4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+.rec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;}
+.rec-thumb{background:white;border:1.5px solid var(--g2);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;}
+.rec-thumb:hover{border-color:var(--blue);box-shadow:0 4px 14px rgba(75,110,245,.15);transform:translateY(-2px);}
+.rec-thumb.selected{border-color:var(--blue);box-shadow:0 0 0 3px rgba(75,110,245,.2);}
+.rec-thumb-img{width:100%;background:#F8F9FC;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.rec-thumb-foot{padding:6px 8px;background:white;border-top:1px solid var(--g2);}
+.rec-thumb-title{font-size:9px;font-weight:700;color:var(--text);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rec-thumb-badge{display:inline-block;font-size:7px;font-weight:800;color:white;padding:1px 5px;border-radius:5px;margin-bottom:2px;}
+.rec-use-row{display:flex;gap:4px;margin-top:4px;}
+.rec-use-btn{flex:1;height:22px;border-radius:5px;border:none;background:var(--blue);color:white;font-size:9px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .12s;}
+.rec-use-btn:hover{background:var(--blue-dk);}
+
+
+.tmpl-right{width:300px;flex-shrink:0;padding:18px 16px;background:var(--g1);display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:calc(86vh - 80px);}
+.tmpl-preview-title{font-size:10px;font-weight:700;color:var(--g4);letter-spacing:.05em;text-transform:uppercase;margin-bottom:2px;}
+.tmpl-preview-box{background:white;border-radius:8px;border:1.5px solid var(--g2);min-height:80px;display:flex;align-items:flex-start;justify-content:flex-start;flex:1;flex-direction:column;gap:6px;color:var(--g4);font-size:12px;padding:14px;}
+.tmpl-preview-box.ocr-preview{border-color:#FFD4B0;background:#FFFAF6;}
+.tmpl-preview-name{font-size:13px;font-weight:800;color:var(--text);margin-bottom:2px;}
+.tmpl-preview-desc{font-size:11px;color:var(--g4);line-height:1.6;text-align:center;}
+
+.tmpl-footer{padding:14px 24px;border-top:1px solid var(--g2);display:flex;gap:8px;flex-shrink:0;}
+.tmpl-cancel{height:42px;padding:0 20px;border-radius:8px;border:1.5px solid var(--g2);background:white;color:var(--g5);font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.tmpl-cancel:hover{background:var(--g1);}
+.tmpl-confirm{flex:1;height:42px;border-radius:8px;border:none;background:var(--blue);color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;opacity:.4;pointer-events:none;}
+.tmpl-confirm.active{opacity:1;pointer-events:all;background:linear-gradient(135deg,var(--blue),var(--blue-dk));}
+.tmpl-confirm.ocr-active{opacity:1;pointer-events:all;background:linear-gradient(135deg,var(--orange),#e07030) !important;}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(50px);background:rgba(30,35,64,.95);color:white;padding:9px 20px;border-radius:18px;font-size:12px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:2000;transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- 생성 중 중앙 오버레이 -->
+<div class="generating-overlay" id="generatingOverlay">
+  <div class="gen-card">
+    <div class="gen-ring"></div>
+    <div class="gen-title" id="generatingText">AI가 콘텐츠를 생성하고 있어요...</div>
+    <div class="gen-sub">잠시만 기다려주세요<br>문제가 완성되면 자동으로 추가됩니다</div>
+    <div class="gen-dots"><div class="gen-dot"></div><div class="gen-dot"></div><div class="gen-dot"></div></div>
+  </div>
+</div>
+
+<!-- ★ LANDING SCREEN (2안) -->
+<div class="landing-screen" id="landingScreen">
+  <div class="landing-logo">
+    <div class="landing-logo-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 7h14M5 12h9M5 17h11" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+    </div>
+    <div class="landing-title">콘텐츠 <span>저작툴</span></div>
+  </div>
+  <div class="landing-sub">AI와 대화하며 교육 콘텐츠를 만들어보세요</div>
+
+  <div class="landing-input-wrap">
+    <textarea class="landing-textarea" id="landingInput" placeholder="예) 선택형 문제 3개 만들어줘" onkeydown="landingKeydown(event)" oninput="landingInputChange()"></textarea>
+    <div class="landing-input-bar">
+      <div class="landing-input-actions">
+
+        <!-- 유형 칩 -->
+        <div style="position:relative;">
+          <button class="landing-chip" id="lchip-tmpl" onclick="landingDropToggle('tmpl')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/></svg>
+            <span id="lchip-tmpl-lbl">유형 선택</span>
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </button>
+          <div class="landing-drop" id="ldrop-tmpl">
+            <div class="landing-drop-item" onclick="landingPickTmpl('')">전체</div>
+            <div class="landing-drop-item" onclick="landingPickTmpl('선택형')">선택형</div>
+            <div class="landing-drop-item" onclick="landingPickTmpl('단답형')">단답형</div>
+            <div class="landing-drop-item" onclick="landingPickTmpl('OX형')">OX형</div>
+            <div class="landing-drop-item" onclick="landingPickTmpl('TF형')">TF형</div>
+            <div class="landing-drop-item" onclick="landingPickTmpl('연결형')">연결형</div>
+            <div class="landing-drop-item" onclick="landingPickTmpl('서술형')">서술형</div>
+          </div>
+        </div>
+
+        <!-- 난이도 칩 -->
+        <div style="position:relative;">
+          <button class="landing-chip" id="lchip-lv" onclick="landingDropToggle('lv')">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M18 20V10M12 20V4M6 20v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <span id="lchip-lv-lbl">난이도</span>
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </button>
+          <div class="landing-drop" id="ldrop-lv">
+            <div class="landing-drop-item" onclick="landingPickLv('')">전체</div>
+            <div class="landing-drop-item" onclick="landingPickLv('상')">상 (어려움)</div>
+            <div class="landing-drop-item" onclick="landingPickLv('중')">중 (보통)</div>
+            <div class="landing-drop-item" onclick="landingPickLv('하')">하 (쉬움)</div>
+          </div>
+        </div>
+
+        <!-- 파일 첨부 칩 -->
+        <button class="landing-chip" id="lchip-file" onclick="document.getElementById('landingFileInput').click()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="lchip-file-lbl">파일 첨부</span>
+        </button>
+        <input type="file" id="landingFileInput" style="display:none;" accept=".pdf,.hwp,.docx,.pptx" onchange="landingFileSelect(this)">
+
+      </div>
+      <button class="landing-send" id="landingSend" disabled onclick="landingGenerate()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <!-- 첨부파일 표시 -->
+    <div id="landing-file-preview" style="display:none;padding:6px 16px 12px;display:none;align-items:center;gap:8px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="var(--ai)" stroke-width="2"/></svg>
+      <span id="landing-file-name" style="font-size:11px;color:var(--g5);flex:1;"></span>
+      <button onclick="landingFileClear()" style="border:none;background:none;cursor:pointer;color:var(--g4);font-size:12px;">✕</button>
+    </div>
+  </div>
+
+  <!-- 빠른 질문 -->
+  <div class="landing-quickbtns">
+    <button class="landing-quick" onclick="landingQuick('선택형 문제 3개 만들어줘')">📝 선택형 3개</button>
+    <button class="landing-quick" onclick="landingQuick('단답형 문제 2개 만들어줘')">✏️ 단답형 2개</button>
+    <button class="landing-quick" onclick="landingQuick('OX형 문제 5개 만들어줘')">⭕ OX형 5개</button>
+    <button class="landing-quick" onclick="landingQuick('어려운 서술형 문제 2개 만들어줘')">📖 서술형 상</button>
+    <button class="landing-quick" onclick="landingQuick('TF형 문제 3개 만들어줘')">🔤 TF형 3개</button>
+  </div>
+
+  <div class="landing-divider"><span>또는 직접 콘텐츠 구성하기</span></div>
+
+  <div class="landing-bottom">
+    <button class="landing-btn-add" onclick="landingGoAddContent()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/></svg>
+      콘텐츠 추가
+    </button>
+  </div>
+</div>
+
+<!-- TITLE BAR -->
+<div class="title-bar">
+  <div class="logo">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="5" fill="#4B6EF5"/><path d="M5 7h14M5 12h9M5 17h11" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+    콘텐츠 저작툴 <div class="logo-pill">AI</div>
+  </div>
+  <div class="doc-name">설정 · [2394] 초등3-1_본책_1.덧셈과 뺄셈_1차시_단원 도입</div>
+  <div class="sp"></div>
+  <div style="display:flex;gap:6px;">
+    
+    <button class="tbtn prim" onclick="T('👁 미리보기 실행')">미리보기</button>
+    <button class="tbtn save" onclick="T('✅ 저장 완료')">저장하기</button>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+
+  <!-- Row1: 기능 그룹별 아이콘 + 레이블 -->
+  <div class="tb-row1">
+
+    <!-- 실행취소/재실행 -->
+    <div class="tool-group">
+      <div class="tg-icons">
+        <button class="tico" title="실행취소 (Ctrl+Z)" onclick="T('실행취소')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 10h10c4 0 7 3 7 7M3 10l4-4M3 10l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="ico-lbl">취소</span>
+        </button>
+        <button class="tico" title="다시 실행 (Ctrl+Y)" onclick="T('재실행')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 10H11c-4 0-7 3-7 7M21 10l-4-4M21 10l-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="ico-lbl">재실행</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 삽입 그룹: 아이콘 + 텍스트 레이블 세로 배치 (교사 친화적) -->
+    <div class="insert-group">
+      <button class="ins-btn" onclick="insertBlock('image')" title="이미지 삽입 → 이미지 편집 도구 활성화">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><path d="m21 15-5-5L5 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        이미지
+      </button>
+      <button class="ins-btn" onclick="insertBlock('table')" title="표 삽입 → 표 편집 도구 활성화">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18M3 15h18M9 3v18" stroke="currentColor" stroke-width="1.4"/></svg>
+        표
+      </button>
+      <button class="ins-btn" onclick="insertBlock('shape')" title="도형 삽입 → 도형 편집 도구 활성화">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.8"/></svg>
+        도형
+      </button>
+      <button class="ins-btn" onclick="insertBlock('video')" title="동영상 삽입 → 동영상 편집 도구 활성화">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="m15 10 5-3v10l-5-3V10z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><rect x="3" y="7" width="12" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/></svg>
+        동영상
+      </button>
+      <button class="ins-btn" onclick="insertBlock('formula')" title="수식 삽입 → 수식 편집 도구 활성화">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h10M4 17h13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        수식
+      </button>
+    </div>
+
+    <!-- 화면 배율 -->
+    <div class="tool-group">
+      <div class="tg-icons">
+        <button class="tico" onclick="T('축소')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="ico-lbl">축소</span>
+        </button>
+        <span style="font-size:11px;color:var(--g4);padding:0 3px;line-height:1;">100%</span>
+        <button class="tico" onclick="T('확대')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="ico-lbl">확대</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- CTA 버튼 -->
+    <div class="cta-group">
+
+      <button class="btn-add-c" onclick="openTmplModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+        콘텐츠 추가
+      </button>
+      <button class="btn-ai-c" onclick="openModal()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="white"/></svg>
+        AI로 생성
+        <span style="font-size:8px;font-weight:800;background:white;color:var(--ai);padding:1px 5px;border-radius:8px;margin-left:2px;">NEW</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Row2: 동적 컨텍스트 툴바 -->
+  <div class="tb-row2 s-none" id="ctxBar">
+    <span class="ctx-hint">💡 오브젝트를 선택하면 관련 편집 도구가 여기에 나타납니다</span>
+  </div>
+</div>
+
+<!-- EDITOR BODY -->
+<div class="editor-body">
+
+  <!-- 좌측 히스토리 패널 -->
+  <div class="history-panel" id="historyPanel" style="width:200px;">
+    <div class="history-header">
+      <div class="history-title">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="currentColor" style="color:var(--ai)"/></svg>
+        AI 생성 히스토리
+      </div>
+    </div>
+    <div class="history-list" id="historyList">
+    </div>
+  </div>
+
+  <div class="resize-handle" id="handleLeft" onmousedown="startResize(event,'left')"></div>
+
+  <!-- 캔버스 -->
+  <div class="canvas-wrap" id="canvasWrap" onclick="bgClick(event)" style="position:relative;">
+    <!-- 생성 중 뱃지 -->
+    <!-- 중앙 생성 중 오버레이 (canvas 밖으로 옮겨도 되지만 fixed라 여기서도 OK) -->
+    <div id="slide1" style="display:flex;flex-direction:column;align-items:center;gap:0;">
+
+      <!-- 빈 슬라이드 안내 -->
+      <div id="emptySlate" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:60px 20px;text-align:center;">
+        <div>
+          <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:8px;">콘텐츠를 추가해보세요</div>
+          <div style="font-size:12px;color:var(--g4);line-height:1.7;">콘텐츠 추가 버튼으로 직접 콘텐츠를 만드시거나,<br>AI의 도움을 받아 생성해보세요.</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <button class="btn-add-main" id="emptyBtnAdd" onclick="openTmplModal()">콘텐츠 추가</button>
+          <button class="btn-ai-main" id="emptyBtnAi" onclick="openModal()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="white"/></svg>
+            AI로 생성
+            <span style="font-size:8px;font-weight:800;background:white;color:var(--ai);padding:1px 5px;border-radius:8px;">NEW</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 추가 버튼 -->
+      <div class="add-area" id="addArea" style="display:none;">
+        <button class="btn-add-main" onclick="openTmplModal()">콘텐츠 추가</button>
+        <button class="btn-ai-main" onclick="openModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="white"/></svg>
+          AI로 생성
+          <span style="font-size:8px;font-weight:800;background:white;color:var(--ai);padding:1px 5px;border-radius:8px;">NEW</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="resize-handle" id="handleRight" onmousedown="startResize(event,'right')"></div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel" id="rightPanel">
+    <div class="rp-tabs" id="rpTabs" style="display:none;">
+      <button class="rp-tab attr on" id="tab-attr" onclick="switchRp(0,this)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+        속성
+      </button>
+      <button class="rp-tab aitab" id="tab-ai" onclick="switchRp(1,this)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="currentColor"/></svg>
+        AI <span class="ai-pill">NEW</span>
+      </button>
+    </div>
+    <!-- 초기 빈 안내 -->
+    <div id="rpEmpty" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center;">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/></svg>
+      <div style="font-size:11px;color:var(--g3);line-height:1.7;">콘텐츠를 선택하면<br>속성과 AI 도구를<br>확인할 수 있어요</div>
+    </div>
+    <div class="rp-body" id="rpBody" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="statusbar">
+  <div class="sbi"><div class="sdot"></div>자동저장됨</div>
+  <div class="sbi" id="sbSel">문제 블록 선택됨</div>
+  <div class="sbi">초등 3-1 · 1차시 · 단원 도입</div>
+</div>
+
+<!-- ══ 템플릿 선택 모달 ══ -->
+<div class="tmpl-overlay" id="tmplOverlay" onclick="tmplOvClick(event)">
+  <div class="tmpl-modal">
+
+    <div class="tmpl-header">
+      <h3>템플릿 선택</h3>
+      <p>| 아래 원하는 템플릿을 선택해보세요.</p>
+      <button class="tmpl-close" onclick="closeTmplModal()">✕</button>
+    </div>
+
+    <div class="tmpl-body">
+      <!-- 왼쪽: 템플릿 그리드 -->
+      <div class="tmpl-left">
+
+        <!-- 기본 템플릿 -->
+        <div class="tmpl-section-lbl">기본</div>
+        <div class="tmpl-grid">
+
+          <div class="tmpl-item" onclick="selectTmpl(this,'빈 문서','새 빈 문서를 추가합니다.')">
+            <div class="tmpl-ico">
+              <svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="8" y="6" width="32" height="36" rx="3" stroke="#C8CDD8" stroke-width="2.5"/><path d="M16 16h16M16 22h10" stroke="#C8CDD8" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div class="tmpl-lbl">빈 문서</div>
+          </div>
+
+          <div class="tmpl-item" onclick="selectTmpl(this,'내 자료','저장된 자료를 불러옵니다.')">
+            <div class="tmpl-ico">
+              <svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="8" y="6" width="32" height="36" rx="3" stroke="#8A93A8" stroke-width="2.5"/><path d="M16 16h16M16 22h16M16 28h10" stroke="#8A93A8" stroke-width="2" stroke-linecap="round"/><circle cx="34" cy="36" r="7" fill="#4B6EF5"/><path d="M31 36h6M34 33v6" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <div class="tmpl-lbl">내 자료</div>
+          </div>
+
+          <div class="tmpl-item" onclick="selectTmpl(this,'서술형 활동','서술형 문제를 추가합니다.')">
+            <div class="tmpl-ico">
+              <svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="6" y="12" width="36" height="26" rx="3" stroke="#8A93A8" stroke-width="2.5"/><path d="M12 20h24M12 26h18M12 32h20" stroke="#8A93A8" stroke-width="2" stroke-linecap="round"/><path d="M8 18V10h6" stroke="#8A93A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="tmpl-lbl">서술형 활동</div>
+          </div>
+
+          <div class="tmpl-item" onclick="selectTmpl(this,'선택형','선택형(객관식) 문제를 추가합니다.')">
+            <div class="tmpl-ico">
+              <svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="18" r="3" stroke="#8A93A8" stroke-width="2"/><path d="M20 18h14" stroke="#8A93A8" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="27" r="3" fill="#4B6EF5"/><path d="M20 27h14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="36" r="3" stroke="#8A93A8" stroke-width="2"/><path d="M20 36h14" stroke="#8A93A8" stroke-width="2" stroke-linecap="round"/></svg>
+            </div>
+            <div class="tmpl-lbl">선택형</div>
+          </div>
+
+          <div class="tmpl-item" onclick="selectTmpl(this,'단답형','단답형 문제를 추가합니다.')">
+            <div class="tmpl-ico">
+              <svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="8" y="8" width="32" height="10" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="8" y="24" width="32" height="16" rx="2" stroke="#8A93A8" stroke-width="2" stroke-dasharray="3 2"/></svg>
+            </div>
+            <div class="tmpl-lbl">단답형</div>
+          </div>
+
+        </div>
+
+        <!-- 문제 유형 -->
+        <div class="tmpl-section-lbl">문제 유형</div>
+        <div class="tmpl-grid">
+
+          <div class="tmpl-item" onclick="selectTmpl(this,'OX형','OX 선택 문제를 추가합니다.')">
+            <div class="tmpl-ico">
+              <svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="16" cy="24" r="8" stroke="#8A93A8" stroke-width="2.5"/><path d="M27 18l10 10M37 18L27 28" stroke="#8A93A8" stroke-width="2.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="tmpl-lbl">OX형</div>
+          </div>
+
+          <div class="tmpl-item" onclick="selectTmpl(this,'T/F형','참/거짓 문제를 추가합니다.')">
+            <div class="tmpl-ico">
+              <svg width="36" height="36" viewBox="0 0 48 48" fill="none">
+                <text x="4" y="30" font-size="20" font-weight="800" fill="#8A93A8" font-family="'Noto Sans KR',sans-serif">T/F</text>
+              </svg>
+            </div>
+            <div class="tmpl-lbl">T/F형</div>
+          </div>
+
+          <div class="tmpl-item" onclick="selectTmpl(this,'순서입력형','순서 배열 문제를 추가합니다.')">
+            <div class="tmpl-ico">
+              <svg width="36" height="36" viewBox="0 0 48 48" fill="none"><path d="M12 14h4M12 24h4M12 34h4" stroke="#8A93A8" stroke-width="2" stroke-linecap="round"/><text x="20" y="18" font-family="monospace" font-size="10" fill="#8A93A8">1 —————</text><text x="20" y="28" font-family="monospace" font-size="10" fill="#8A93A8">2 —————</text><text x="20" y="38" font-family="monospace" font-size="10" fill="#8A93A8">3 —————</text></svg>
+            </div>
+            <div class="tmpl-lbl">순서입력형</div>
+          </div>
+
+          <div class="tmpl-item" onclick="selectTmpl(this,'순서조합형','조합 순서 문제를 추가합니다.')">
+            <div class="tmpl-ico">
+              <svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="8" y="10" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="8" y="22" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="8" y="34" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="30" y="10" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="30" y="22" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="30" y="34" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/><path d="M18 38l4-4 4 4M18 14l4 4 4-4" stroke="#8A93A8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="tmpl-lbl">순서조합형</div>
+          </div>
+
+          <div class="tmpl-item" onclick="selectTmpl(this,'연결형','항목 연결 문제를 추가합니다.')">
+            <div class="tmpl-ico">
+              <svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="16" r="4" stroke="#8A93A8" stroke-width="2"/><circle cx="14" cy="32" r="4" stroke="#8A93A8" stroke-width="2"/><circle cx="34" cy="16" r="4" stroke="#8A93A8" stroke-width="2"/><circle cx="34" cy="24" r="4" stroke="#8A93A8" stroke-width="2"/><circle cx="34" cy="32" r="4" stroke="#8A93A8" stroke-width="2"/><path d="M18 16 Q24 20 30 24M18 32 Q24 28 30 16" stroke="#8A93A8" stroke-width="1.5" stroke-dasharray="3 2"/></svg>
+            </div>
+            <div class="tmpl-lbl">연결형</div>
+          </div>
+
+        </div>
+
+        <!-- 문제 추출 -->
+        <div class="tmpl-section-lbl">문제 추출</div>
+        <div class="tmpl-grid">
+
+          <div class="tmpl-item ocr-item" onclick="selectTmpl(this,'문제추출 (OCR)','시험지 파일을 업로드하면 AI가 문제를 자동으로 인식하고 추출하여 슬라이드에 추가합니다.',true)">
+            <div class="tmpl-ico">
+              <svg width="36" height="36" viewBox="0 0 48 48" fill="none">
+                <rect x="6" y="6" width="36" height="36" rx="3" stroke="#FF8C42" stroke-width="2.5"/>
+                <path d="M6 13h5M6 35h5M37 13h5M37 35h5M13 6v5M35 6v5M13 37v5M35 37v5" stroke="#FF8C42" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="24" cy="24" r="7" stroke="#FF8C42" stroke-width="2.2"/>
+                <circle cx="24" cy="24" r="2.5" fill="#FF8C42"/>
+              </svg>
+            </div>
+            <span class="tmpl-new">NEW</span>
+            <div class="tmpl-lbl">문제추출</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 오른쪽: 미리보기 -->
+      <div class="tmpl-right">
+        <div class="tmpl-preview-title">미리보기</div>
+        <div class="tmpl-preview-box" id="tmplPreview">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#C8CDD8" stroke-width="1.5"/><path d="M8 12h8M8 8h8M8 16h5" stroke="#C8CDD8" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <div style="font-size:11px;color:var(--g3);margin-top:4px;">템플릿을 선택하세요</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tmpl-footer">
+      <button class="tmpl-cancel" onclick="closeTmplModal()">취소</button>
+      <button class="tmpl-confirm" id="tmplConfirm" onclick="confirmTmpl()">템플릿 선택</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ AI MODAL — 단일 화면 (4단계 → 1화면) ══ -->
+<div class="overlay" id="overlay" onclick="ovClick(event)">
+  <div class="ai-modal">
+    <div class="mh">
+      <h2>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="white"/></svg>
+        AI 콘텐츠 생성
+      </h2>
+      <p>콘텐츠 설정을 입력하고 AI 생성을 눌러주세요</p>
+      <button class="mx" onclick="closeModal()" style="z-index:10;">✕</button>
+    </div>
+
+    <!-- 탭 (탭1 문서첨부 제거 → 탭 없이 단일 콘텐츠 설정) -->
+
+    <!-- 단일 설정 화면 -->
+    <div id="formScreen">
+
+      <!-- 콘텐츠 설정 (탭 없음) -->
+      <div id="aiTabBody0">
+        <div class="mb">
+          <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:16px;">콘텐츠 설정</div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <label>템플릿 유형</label>
+              <select class="form-sel" id="sel-tmpl" onchange="this.classList.toggle('selected',this.value!='')">
+                <option value="">선택 안 함</option>
+                <option value="선택형">선택형</option>
+                <option value="단답형">단답형</option>
+                <option value="OX형">OX형</option>
+                <option value="TF형">TF형</option>
+                <option value="연결형">연결형</option>
+                <option value="서술형">서술형</option>
+              </select>
+            </div>
+            <div class="form-col">
+              <label>난이도</label>
+              <select class="form-sel" id="sel-lv" onchange="this.classList.toggle('selected',this.value!='')">
+                <option value="">선택 안 함</option>
+                <option value="상">상</option>
+                <option value="중">중</option>
+                <option value="하">하</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-col">
+              <label>교재</label>
+              <div class="form-sel-fixed">
+                <span>초등 수학 3-1</span>
+                <span class="lock-icon">🔒</span>
+              </div>
+            </div>
+            <div class="form-col">
+              <label>단원</label>
+              <select class="form-sel" id="sel-unit" onchange="this.classList.toggle('selected',this.value!='')">
+                <option value="">선택 안 함</option>
+                <option value="1. 덧셈과 뺄셈" selected>1. 덧셈과 뺄셈</option>
+                <option value="2. 평면도형">2. 평면도형</option>
+                <option value="3. 나눗셈">3. 나눗셈</option>
+                <option value="4. 곱셈">4. 곱셈</option>
+                <option value="5. 길이와 시간">5. 길이와 시간</option>
+                <option value="6. 분수와 소수">6. 분수와 소수</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 구분선 -->
+          <div style="border-top:1px solid var(--g2);margin:6px 0 14px;"></div>
+
+          <!-- 문서 첨부 -->
+          <div class="form-col" style="margin-bottom:14px;">
+            <label>문서 첨부 <span class="opt">선택사항</span></label>
+            <div id="dropZone" class="drop-zone" ondragover="dzOver(event)" ondragleave="dzLeave(event)" ondrop="dzDrop(event)" onclick="document.getElementById('fileInput').click()">
+              <div id="dropInner" class="drop-inner">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="#C8CDD8" stroke-width="1.5"/><path d="M14 2v6h6M12 12v6M9 15l3-3 3 3" stroke="#C8CDD8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span style="font-size:12px;color:var(--g4);">파일을 드래그하거나 <u style="color:var(--blue);cursor:pointer;">클릭하여 업로드</u></span>
+                <span style="font-size:10px;color:var(--g3);">PDF · HWP · Word · PPTX</span>
+              </div>
+              <div id="dropResult" class="drop-result" style="display:none;"></div>
+            </div>
+            <input type="file" id="fileInput" accept=".pdf,.hwp,.doc,.docx,.pptx" style="display:none;" onchange="fileSelected(this)">
+          </div>
+
+          <div class="form-col">
+            <label>요청사항 <span class="opt">선택사항</span></label>
+            <textarea class="form-ta" id="ta-content" placeholder="예) 단원에 연관된 문제 3개 만들어줘" oninput="updateCount(this)"></textarea>
+            <div class="char-count" id="charCount">0 / 20,000</div>
+          </div>
+        </div>
+
+        <div class="privacy-note">입력하신 모든 데이터는 외부에 공개되거나 AI에 의해 재사용되지 않습니다.</div>
+
+        <div class="mfoot">
+          <button class="mfbtn cc" style="flex:0 0 auto;width:80px;" onclick="closeModal()">취소</button>
+          <button class="mfbtn nx" id="mfnx" onclick="startGen()">다음</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 생성 중 화면 -->
+    <div class="gen-screen" id="genScreen">
+      <div class="spin"></div>
+      <div class="gen-t">AI가 콘텐츠를 생성하고 있어요</div>
+      <div class="gen-s" id="genS">템플릿 구조 분석 중...</div>
+      <div class="pw"><div class="pf" id="pf"></div></div>
+    </div>
+
+    <!-- 완료 화면: 결과 선택 없이 바로 적용 -->
+    <div class="done-screen" id="doneScreen">
+      <div class="done-ico">✅</div>
+      <div class="done-t">콘텐츠 생성 완료!</div>
+      <div class="done-s">AI가 콘텐츠를 성공적으로 생성했어요.<br>슬라이드에 바로 추가할게요.</div>
+      <div style="margin-top:16px;display:flex;gap:8px;width:100%;max-width:360px;">
+        <button class="mfbtn cc" onclick="resetModal()" style="height:42px;font-size:13px;flex:0 0 auto;width:100px;">← 다시 설정</button>
+        <button class="mfbtn nx" onclick="applyR()" style="height:42px;font-size:13px;">슬라이드에 추가하기</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toastEl"><span id="toastTxt"></span></div>
+
+<script>
+// ── LANDING SCREEN ──
+let landingTmpl = '', landingLv = '', landingFile = null;
+
+function landingInputChange(){
+  const val = document.getElementById('landingInput').value.trim();
+  document.getElementById('landingSend').disabled = !val;
+}
+
+function landingKeydown(e){
+  if(e.key==='Enter' && !e.shiftKey){
+    e.preventDefault();
+    const val = document.getElementById('landingInput').value.trim();
+    if(val) landingGenerate();
+  }
+}
+
+// 커스텀 드롭다운 토글
+function landingDropToggle(type){
+  const id = `ldrop-${type}`;
+  const drop = document.getElementById(id);
+  const isOpen = drop.classList.contains('open');
+  // 모든 드롭 닫기
+  document.querySelectorAll('.landing-drop').forEach(d=>d.classList.remove('open'));
+  if(!isOpen) drop.classList.add('open');
+}
+
+// 외부 클릭 시 드롭 닫기
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.landing-chip') && !e.target.closest('.landing-drop')){
+    document.querySelectorAll('.landing-drop').forEach(d=>d.classList.remove('open'));
+  }
+});
+
+function landingPickTmpl(val){
+  landingTmpl = val;
+  document.getElementById('lchip-tmpl-lbl').textContent = val || '유형 선택';
+  document.getElementById('lchip-tmpl').classList.toggle('active', !!val);
+  document.querySelectorAll('#ldrop-tmpl .landing-drop-item').forEach(el=>{
+    el.classList.toggle('on', el.textContent.trim()===val);
+  });
+  document.getElementById('ldrop-tmpl').classList.remove('open');
+  document.getElementById('landingSend').disabled = !document.getElementById('landingInput').value.trim();
+}
+
+function landingPickLv(val){
+  landingLv = val;
+  document.getElementById('lchip-lv-lbl').textContent = val ? `난이도 ${val}` : '난이도';
+  document.getElementById('lchip-lv').classList.toggle('active', !!val);
+  document.querySelectorAll('#ldrop-lv .landing-drop-item').forEach(el=>{
+    el.classList.toggle('on', el.textContent.startsWith(val) && !!val);
+  });
+  document.getElementById('ldrop-lv').classList.remove('open');
+  document.getElementById('landingSend').disabled = !document.getElementById('landingInput').value.trim();
+}
+
+// 파일 첨부
+function landingFileSelect(input){
+  const file = input.files[0];
+  if(!file) return;
+  landingFile = file;
+  const size = file.size > 1024*1024 ? (file.size/1024/1024).toFixed(1)+'MB' : Math.round(file.size/1024)+'KB';
+  document.getElementById('lchip-file-lbl').textContent = file.name.slice(0,12)+(file.name.length>12?'…':'');
+  document.getElementById('lchip-file').classList.add('active');
+  const preview = document.getElementById('landing-file-preview');
+  preview.style.display = 'flex';
+  document.getElementById('landing-file-name').textContent = `${file.name}  (${size})`;
+}
+function landingFileClear(){
+  landingFile = null;
+  document.getElementById('landingFileInput').value='';
+  document.getElementById('lchip-file-lbl').textContent = '파일 첨부';
+  document.getElementById('lchip-file').classList.remove('active');
+  document.getElementById('landing-file-preview').style.display='none';
+}
+
+function landingQuick(text){
+  const ta = document.getElementById('landingInput');
+  ta.value = text;
+  landingInputChange();
+  ta.focus();
+}
+
+// 에디터로 전환 (공통)
+function landingOpenEditor(){
+  const screen = document.getElementById('landingScreen');
+  screen.classList.add('out');
+  setTimeout(()=>{ screen.style.display='none'; }, 400);
+}
+
+// 3) 콘텐츠 추가 → 에디터 + 템플릿 모달
+function landingGoAddContent(){
+  landingOpenEditor();
+  setTimeout(()=>{ openTmplModal(); }, 450);
+}
+
+// 4) 빈 슬라이드로 시작 → 에디터 (빈 캔버스)
+function landingGoBlank(){
+  landingOpenEditor();
+  // 빈 캔버스 상태 유지 (이미 checkSlideEmpty가 처리)
+}
+
+async function landingGenerate(){
+  const req = document.getElementById('landingInput').value.trim();
+  if(!req) return;
+  landingOpenEditor();
+
+  const tmplMap = {'선택':'선택형','단답':'단답형','OX':'OX형','ox':'OX형','TF':'TF형','tf':'TF형','연결':'연결형','서술':'서술형'};
+  let tmpl = landingTmpl;
+  if(!tmpl){ for(const [k,v] of Object.entries(tmplMap)){ if(req.includes(k)){tmpl=v;break;} } }
+  if(!tmpl) tmpl='선택형';
+  let lv = landingLv;
+  if(!lv){ lv = req.includes('어려') || req.includes('상') ? '상' : req.includes('쉬') || req.includes('하') ? '하' : '중'; }
+  const cntM = req.match(/(\d+)/);
+  const cnt = cntM ? cntM[1] : '3';
+
+  await new Promise(r=>setTimeout(r,420));
+  const hid = addHistory(tmpl, lv, req, cnt, []);
+  await landingCallAPI(hid, tmpl, lv, req, cnt);
+}
+
+// ── 생성 중 상태 제어 ──
+function setGenerating(on, text='AI가 콘텐츠를 생성하고 있어요...'){
+  const overlay = document.getElementById('generatingOverlay');
+  const btnAdd  = document.getElementById('emptyBtnAdd');
+  const btnAi   = document.getElementById('emptyBtnAi');
+  if(overlay){
+    overlay.classList.toggle('show', on);
+    document.getElementById('generatingText').textContent = text;
+  }
+  if(btnAdd) btnAdd.disabled = on;
+  if(btnAi)  btnAi.disabled  = on;
+}
+
+async function landingCallAPI(hid, tmpl, lv, req, cnt){
+  const tmplExamples = {
+    '선택형': `[{"question":"35+47은 얼마입니까?","choices":["80","81","82","83","84"],"answer":3,"hint":"일의 자리부터 더하세요","explanation":"답은 82"},{"question":"126+58은?","choices":["182","183","184","185","186"],"answer":3,"hint":"받아올림 주의","explanation":"답은 184"}]`,
+    '단답형': `[{"question":"35+47=?","choices":[],"answer":"82","hint":"일의 자리부터","explanation":"답은 82"},{"question":"100-37=?","choices":[],"answer":"63","hint":"받아내림","explanation":"답은 63"}]`,
+    'OX형':   `[{"question":"35+47=82이다.","choices":["O","X"],"answer":1,"hint":"계산해보세요","explanation":"O"},{"question":"100-37=64이다.","choices":["O","X"],"answer":2,"hint":"계산해보세요","explanation":"X, 63"}]`,
+    'TF형':   `[{"question":"35+47=82이다.","choices":["True","False"],"answer":1,"hint":"계산","explanation":"True"},{"question":"100-37=64이다.","choices":["True","False"],"answer":2,"hint":"계산","explanation":"False"}]`,
+    '연결형': `[{"question":"결과를 연결하세요.","choices":["35+47=?:82","63-28=?:35"],"answer":"1-82,2-35","hint":"각각 계산","explanation":"82, 35"}]`,
+    '서술형': `[{"question":"35+47을 설명하고 답을 구하세요.","choices":[],"answer":"일의 자리: 5+7=12, 받아올림. 십의 자리: 3+4+1=8. 답은 82","hint":"자릿값별로","explanation":"받아올림 주의"}]`,
+  };
+  const example = tmplExamples[tmpl]||tmplExamples['선택형'];
+  const prompt = `당신은 초등학교 수학 교재 문제 출제 전문가입니다. JSON 배열만 출력하세요. 설명·마크다운 금지.\n\n[조건]\n- 교재: 초등 수학 3-1, 1단원 덧셈과 뺄셈\n- 유형: "${tmpl}"\n- 난이도: ${lv}\n- 문제 수: 정확히 ${cnt}개\n- 요청: ${req}\n\n[예시]\n${example}\n\n위 구조로 정확히 ${cnt}개를 JSON 배열로만 출력하세요.`;
+
+  T(`✦ AI가 ${tmpl} 문제 ${cnt}개를 생성하고 있어요...`);
+  setGenerating(true, `AI가 ${tmpl} 문제 ${cnt}개를 생성하고 있어요...`);
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})
+    });
+    const data = await res.json();
+    const text = data.content?.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+    const questions = JSON.parse(text);
+    const newIds = questions.map(q=>insertQuestionBlock(q));
+    updateHistoryBlockIds(hid, newIds);
+    setGenerating(false);
+    T(`✅ ${tmpl} 문제 ${questions.length}개 생성 완료!`);
+  } catch(e){
+    const fallbacks = {
+      '선택형':(n)=>Array.from({length:n},(_,i)=>({question:`35+${40+i*7}는 얼마입니까?`,choices:['80','81','82','83','84'],answer:3,hint:'일의 자리부터',explanation:`답은 ${75+i*7}`})),
+      '단답형':(n)=>Array.from({length:n},(_,i)=>({question:`${30+i*10}+47=?`,choices:[],answer:`${77+i*10}`,hint:'계산',explanation:`답은 ${77+i*10}`})),
+      'OX형':(n)=>Array.from({length:n},()=>({question:'35+47=82이다.',choices:['O','X'],answer:1,hint:'계산',explanation:'O'})),
+      'TF형':(n)=>Array.from({length:n},()=>({question:'35+47=82이다.',choices:['True','False'],answer:1,hint:'계산',explanation:'True'})),
+      '연결형':(n)=>Array.from({length:n},()=>({question:'결과를 연결하세요.',choices:['35+47=?:82'],answer:'1-82',hint:'계산',explanation:'82'})),
+      '서술형':(n)=>Array.from({length:n},()=>({question:'35+47을 설명하세요.',choices:[],answer:'답은 82',hint:'자릿값',explanation:'받아올림'})),
+    };
+    const fb = (fallbacks[tmpl]||fallbacks['선택형'])(parseInt(cnt)||3);
+    const newIds = fb.map(q=>insertQuestionBlock(q));
+    updateHistoryBlockIds(hid, newIds);
+    setGenerating(false);
+    T(`✅ ${tmpl} 문제 ${fb.length}개 생성 완료!`);
+  }
+}
+
+let curType=null, curBlock=null, rpTab=0, blkCnt=0;
+const gMsgs=['템플릿 구조 분석 중...','학습 목표 처리 중...','콘텐츠 초안 생성 중...','레이아웃 최적화 중...','품질 검토 중...'];
+
+// ── AI 히스토리 ──
+let aiHistory = [];
+let activeHistoryId = null;
+
+function addHistory(tmpl, lv, req, cnt, blockIds){
+  const id = Date.now();
+  const short = req ? req.slice(0,16)+(req.length>16?'…':'') : (tmpl + (lv?' · '+lv:''));
+  aiHistory.unshift({id, tmpl, lv, req, cnt, short, time: new Date(), blockIds: blockIds||[], deleted:[]});
+  renderHistory();
+  return id;
+}
+
+function renderHistory(){
+  const list = document.getElementById('historyList');
+  if(!aiHistory.length){ list.innerHTML='<div class="history-empty"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" stroke="#C8CDD8" stroke-width="1.5"/></svg>AI로 생성한 콘텐츠가<br>여기에 기록됩니다</div>'; return; }
+  list.innerHTML = aiHistory.map((h)=>`
+    <div class="history-item${activeHistoryId===h.id?' active':''}" id="hitem-${h.id}">
+      <div class="history-item-head" onclick="toggleHistoryPanel(${h.id})">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;">
+          <div class="history-item-title" style="flex:1;">${h.short}</div>
+          <span style="font-size:10px;color:var(--ai);flex-shrink:0;margin-top:1px;transition:transform .25s;${activeHistoryId===h.id?'transform:rotate(180deg)':''}">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="var(--ai)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </div>
+        <div class="history-item-meta">
+          <span class="history-item-badge">${h.tmpl||'AI'}</span>
+          <span>${(()=>{const d=h.time;return `${String(d.getFullYear()).slice(2)}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}`})()}</span>
+        </div>
+        ${(()=>{const alive=h.blockIds.filter(bid=>document.getElementById(bid)).length; const del=(h.deleted||[]).length; const total=alive+del; return total>0?`<div style="font-size:9px;color:var(--g4);margin-top:2px;">${alive}개 활성${del>0?' · <span style=color:var(--red)>'+del+'개 삭제</span>':''}</div>`:''})()}
+      </div>
+      <div class="history-action-panel${activeHistoryId===h.id?' open':''}" id="hap-${h.id}">
+        <div class="hap-inner">
+
+          <!-- 요청사항 + 적용기록 통합 영역 -->
+          <div style="background:#F4F2FF;border-radius:7px;padding:8px 10px;margin-bottom:10px;border:1px solid #EAE6FF;">
+            <div style="font-size:9px;color:var(--text);line-height:1.6;margin-bottom:6px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:8px;font-weight:800;color:var(--ai);letter-spacing:.04em;">⚙️ 생성 설정</span>
+                <span style="font-size:8px;color:var(--g4);">${(()=>{const d=h.time;return `${String(d.getFullYear()).slice(2)}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}`})()}</span>
+              </div>
+              <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:${h.req?'5px':'0'};">
+                ${h.tmpl ? `<span style="background:var(--ai-lt);color:var(--ai);font-size:8px;font-weight:700;padding:2px 7px;border-radius:8px;">${h.tmpl}</span>` : ''}
+                ${h.lv   ? `<span style="background:#EEF5FF;color:#4B7CF4;font-size:8px;font-weight:700;padding:2px 7px;border-radius:8px;">난이도 ${h.lv}</span>` : ''}
+              </div>
+              ${h.req ? `<div style="color:var(--g5);font-style:italic;">"${h.req}"</div>` : ''}
+            </div>
+            ${(()=>{const del=(h.deleted||[]).length; return del>0?`<div style="font-size:9px;color:var(--red);margin-bottom:${(h.actionLog&&h.actionLog.length)?'7px':'0'};">🗑 삭제된 콘텐츠 ${del}개</div>`:''})()}
+            ${h.actionLog && h.actionLog.length ? `
+              <div style="font-size:8px;font-weight:800;color:var(--ai);letter-spacing:.04em;margin-bottom:4px;">📋 적용 기록</div>
+              ${h.actionLog.map(log=>`
+                <div style="display:flex;align-items:flex-start;gap:5px;padding:3px 0;border-top:1px solid #E2DEFF;">
+                  <span style="font-size:10px;flex-shrink:0;">${log.icon}</span>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:9px;color:var(--text);line-height:1.4;">${log.msg}</div>
+                    <div style="font-size:8px;color:var(--g4);margin-top:1px;">${log.dateStr}</div>
+                  </div>
+                </div>`).join('')}
+            ` : (!h.req ? `<div style="font-size:9px;color:var(--g4);text-align:center;padding:4px 0;">기록 없음</div>` : '')}
+          </div>
+
+          <div class="hap-title">
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="var(--ai)"/></svg>
+            이 묶음에 일괄 적용
+          </div>
+
+          <button class="hap-btn" onclick="hapToggleSub(${h.id},'phrase')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            ✏️ 전체 문구 수정
+          </button>
+          <div class="hap-sub" id="hsub-${h.id}-phrase">
+            <div class="hap-input-row">
+              <input class="hap-input" id="hinp-${h.id}-phrase" placeholder="추가할 문구 입력 (예: [심화] )">
+              <button class="hap-apply" onclick="hapApplyPhrase(${h.id})">적용</button>
+            </div>
+          </div>
+
+          <button class="hap-btn" onclick="hapRegen(${h.id})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            🔄 전체 재생성
+          </button>
+
+          <button class="hap-btn" onclick="hapAddHint(${h.id})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            💡 힌트·해설 일괄 변경
+          </button>
+
+          <button class="hap-btn" onclick="hapToggleSub(${h.id},'lv')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 20V10M12 20V4M6 20v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            🏷 난이도 일괄 변경
+          </button>
+          <div class="hap-sub" id="hsub-${h.id}-lv">
+            <div class="hap-lv-row">
+              <button class="hap-lv-btn${h.lv==='상'?' on':''}" onclick="hapApplyLv(${h.id},'상',this)">상</button>
+              <button class="hap-lv-btn${h.lv==='중'?' on':''}" onclick="hapApplyLv(${h.id},'중',this)">중</button>
+              <button class="hap-lv-btn${h.lv==='하'?' on':''}" onclick="hapApplyLv(${h.id},'하',this)">하</button>
+            </div>
+          </div>
+
+          <button class="hap-btn danger" onclick="hapDeleteAll(${h.id})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            🗑 이 묶음 전체 삭제
+          </button>
+
+          <!-- 묶음 채팅 -->
+          <div style="margin-top:10px;border-top:1px solid #EAE8FF;padding-top:10px;">
+            <div style="font-size:8px;font-weight:800;color:var(--ai);letter-spacing:.04em;margin-bottom:6px;">✦ AI에게 이 묶음 수정 요청</div>
+            <div class="hap-chat-msgs" id="hchat-${h.id}" style="max-height:120px;overflow-y:auto;margin-bottom:6px;"></div>
+            <div style="display:flex;gap:4px;">
+              <input class="hap-input" id="hchat-inp-${h.id}" placeholder="예) 이 묶음 전체 난이도 낮춰줘" onkeydown="if(event.key==='Enter')sendHapChat(${h.id})" style="flex:1;">
+              <button onclick="sendHapChat(${h.id})" style="width:28px;height:28px;border-radius:5px;border:none;background:var(--ai);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleHistoryPanel(id){
+  const wasActive = activeHistoryId === id;
+  // 하이라이트 초기화
+  document.querySelectorAll('.hap-highlight').forEach(el=>el.classList.remove('hap-highlight'));
+  if(wasActive){
+    activeHistoryId = null;
+  } else {
+    activeHistoryId = id;
+    // 해당 묶음 블록 하이라이트
+    const h = aiHistory.find(x=>x.id===id);
+    if(h && h.blockIds.length){
+      h.blockIds.forEach(bid=>{
+        const el = document.getElementById(bid);
+        if(el){ el.classList.add('hap-highlight'); el.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+      });
+    }
+  }
+  renderHistory();
+}
+
+function hapToggleSub(hid, key){
+  const sub = document.getElementById(`hsub-${hid}-${key}`);
+  if(!sub) return;
+  const isOpen = sub.classList.contains('show');
+  // 같은 패널 내 다른 서브 닫기
+  document.querySelectorAll(`[id^="hsub-${hid}-"]`).forEach(el=>el.classList.remove('show'));
+  if(!isOpen) sub.classList.add('show');
+}
+
+// ── 일괄 적용 로그 ──
+// ── 히스토리 묶음 채팅 ──
+async function sendHapChat(hid){
+  const inp = document.getElementById(`hchat-inp-${hid}`);
+  const msgs = document.getElementById(`hchat-${hid}`);
+  if(!inp || !msgs) return;
+  const userMsg = inp.value.trim();
+  if(!userMsg) return;
+  inp.value = '';
+
+  const h = aiHistory.find(x=>x.id===hid);
+  if(!h) return;
+
+  // 사용자 메시지
+  msgs.innerHTML += `<div class="hap-cmsg-lbl-user">나</div><div class="hap-cmsg-user">${userMsg}</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // 로딩
+  const lid = 'hcl-'+Date.now();
+  msgs.innerHTML += `<div class="hap-cmsg-lbl">✦ AI</div><div class="hap-cmsg-ai" id="${lid}" style="color:var(--g4);">생각하는 중...</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // 블록 내용 수집
+  const blockTexts = h.blockIds.map(bid=>{
+    const el = document.getElementById(bid);
+    if(!el) return null;
+    const qtxt = el.querySelector('.q-txt');
+    return qtxt ? qtxt.textContent.slice(0,60) : null;
+  }).filter(Boolean);
+
+  const context = `이 묶음 정보: 유형=${h.tmpl}, 난이도=${h.lv}, 문제 수=${blockTexts.length}개\n문제 목록:\n${blockTexts.map((t,i)=>`${i+1}. ${t}`).join('\n')}`;
+
+  const prompt = `당신은 콘텐츠 저작툴 AI 어시스턴트입니다. 초등 수학 교재 제작을 돕습니다.\n\n${context}\n\n사용자 요청: ${userMsg}\n\n짧고 친절하게 한국어로 답하세요. 문제 수정 제안이 있으면 구체적으로 알려주세요.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:600, messages:[{role:'user',content:prompt}] })
+    });
+    const data = await res.json();
+    const reply = data.content?.map(i=>i.text||'').join('').trim() || '응답을 받지 못했어요.';
+    const el = document.getElementById(lid);
+    if(el){ el.textContent = reply; el.style.color=''; }
+    msgs.scrollTop = msgs.scrollHeight;
+    addActionLog(hid, '✦', `채팅: "${userMsg.slice(0,20)}${userMsg.length>20?'…':''}"`)
+  } catch(e) {
+    const el = document.getElementById(lid);
+    if(el){ el.textContent = '잠시 오류가 발생했어요. 다시 시도해 주세요.'; el.style.color='var(--red)'; }
+  }
+}
+
+function addActionLog(hid, icon, msg){
+  const h = aiHistory.find(x=>x.id===hid);
+  if(!h) return;
+  if(!h.actionLog) h.actionLog=[];
+  const now = new Date();
+  const d = now;
+  const dateStr = `${String(d.getFullYear()).slice(2)}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}`;
+  h.actionLog.unshift({icon, msg, dateStr});
+  renderHistory();
+}
+
+// ── 패널 드래그 리사이즈 ──
+function startResize(e, side){
+  e.preventDefault();
+  const handle = e.currentTarget;
+  handle.classList.add('dragging');
+  const startX = e.clientX;
+  const panel = side==='left' ? document.getElementById('historyPanel') : document.getElementById('rightPanel');
+  const startW = panel.offsetWidth;
+  const minW = side==='left' ? 140 : 180;
+  const maxW = side==='left' ? 340 : 400;
+  const dir   = side==='left' ? 1 : -1;
+  function onMove(ev){
+    const delta = (ev.clientX - startX) * dir;
+    const newW = Math.min(maxW, Math.max(minW, startW + delta));
+    panel.style.width = newW+'px';
+  }
+  function onUp(){
+    handle.classList.remove('dragging');
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+function hapApplyPhrase(hid){
+  const inp = document.getElementById(`hinp-${hid}-phrase`);
+  if(!inp) return;
+  const phrase = inp.value.trim();
+  if(!phrase){ T('⚠️ 문구를 입력해주세요'); return; }
+  const h = aiHistory.find(x=>x.id===hid);
+  if(!h || !h.blockIds.length){ T('⚠️ 연결된 블록이 없어요'); return; }
+  let cnt = 0;
+  h.blockIds.forEach(bid=>{
+    const el = document.getElementById(bid);
+    if(el){
+      const qtxt = el.querySelector('.q-txt');
+      if(qtxt){ qtxt.textContent = phrase + qtxt.textContent; cnt++; }
+    }
+  });
+  inp.value='';
+  addActionLog(hid,'✏️',`문구 추가: "${phrase}" → ${cnt}개 블록`);
+  T(`✅ ${cnt}개 블록에 문구 추가 완료`);
+}
+
+function hapRegen(hid){
+  const h = aiHistory.find(x=>x.id===hid);
+  if(!h) return;
+  if(!confirm(`"${h.short}" 설정으로 전체 재생성할까요?\n기존 블록은 삭제됩니다.`)) return;
+  // 기존 블록 삭제
+  h.blockIds.forEach(bid=>{ const el=document.getElementById(bid); if(el) el.remove(); });
+  checkSlideEmpty();
+  // 모달 열기 - 기존 설정 채워서
+  openModal();
+  setTimeout(()=>{
+    const ts = document.getElementById('sel-tmpl');
+    const ls = document.getElementById('sel-lv');
+    const ta = document.getElementById('ta-content');
+    if(ts && h.tmpl){ ts.value=h.tmpl; ts.classList.add('selected'); }
+    if(ls && h.lv){ ls.value=h.lv; ls.classList.add('selected'); }
+    if(ta && h.req){ ta.value=h.req; updateCount(ta); }
+  }, 50);
+  addActionLog(hid,'🔄','전체 재생성 요청');
+  T('🔄 이전 설정으로 모달을 열었어요. [다음]을 눌러 재생성하세요.');
+}
+
+function hapAddHint(hid){
+  const h = aiHistory.find(x=>x.id===hid);
+  if(!h || !h.blockIds.length){ T('⚠️ 연결된 블록이 없어요'); return; }
+  h.blockIds.forEach(bid=>{
+    const el = document.getElementById(bid);
+    if(el){
+      const hintArea = el.querySelector('.q-hint-area');
+      const hintTxt = hintArea?.querySelector('.qsub');
+      if(hintTxt && !hintTxt.textContent.trim()){
+        hintTxt.textContent = '자릿값을 맞추어 차례로 계산해보세요.';
+      }
+      const solArea = el.querySelector('.q-sol-area');
+      const solTxt = solArea?.querySelector('.qsub');
+      if(solTxt && !solTxt.textContent.trim()){
+        solTxt.textContent = '받아올림/받아내림에 주의하여 계산합니다.';
+      }
+    }
+  });
+  addActionLog(hid,'💡',`힌트·해설 일괄 변경 → ${h.blockIds.length}개 블록`);
+  T(`✅ ${h.blockIds.length}개 블록에 힌트·해설 변경 완료`);
+}
+
+function hapApplyLv(hid, lv, btn){
+  const h = aiHistory.find(x=>x.id===hid);
+  if(!h) return;
+  h.lv = lv;
+  // 버튼 활성화
+  btn.closest('.hap-lv-row').querySelectorAll('.hap-lv-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  addActionLog(hid,'🏷',`난이도 변경: ${lv}`);
+  T(`✅ 난이도 "${lv}"으로 변경됨 (다음 재생성 시 반영)`);
+}
+
+function hapDeleteAll(hid){
+  const h = aiHistory.find(x=>x.id===hid);
+  if(!h) return;
+  if(!confirm(`"${h.short}" 묶음의 블록 ${h.blockIds.length}개를 모두 삭제할까요?`)) return;
+  h.blockIds.forEach(bid=>{ const el=document.getElementById(bid); if(el) el.remove(); });
+  aiHistory = aiHistory.filter(x=>x.id!==hid);
+  if(activeHistoryId===hid) activeHistoryId=null;
+  renderHistory();
+  checkSlideEmpty();
+  T('🗑 묶음 전체 삭제 완료');
+}
+
+function collapseHistory(id){
+  // X버튼 = 패널 접기만 (삭제 아님)
+  if(activeHistoryId === id){
+    activeHistoryId = null;
+    document.querySelectorAll('.hap-highlight').forEach(el=>el.classList.remove('hap-highlight'));
+    renderHistory();
+  }
+}
+
+function delHistory(id){
+  aiHistory = aiHistory.filter(x=>x.id!==id);
+  if(activeHistoryId===id) activeHistoryId=null;
+  renderHistory();
+}
+
+// ── 빈 슬라이드 ↔ 컨텐츠 토글 ──
+function checkSlideEmpty(){
+  const slide = document.getElementById('slide1');
+  const blocks = slide.querySelectorAll('.cb');
+  const empty = document.getElementById('emptySlate');
+  const addArea = document.getElementById('addArea');
+  if(blocks.length === 0){
+    if(empty) empty.style.display='flex';
+    if(addArea) addArea.style.display='none';
+  } else {
+    if(empty) empty.style.display='none';
+    if(addArea) addArea.style.display='flex';
+  }
+}
+
+window.addEventListener('DOMContentLoaded',()=>{ rpTab=0; renderRp(); checkSlideEmpty(); });
+
+// ── 글자수 카운트 ──
+function updateCount(el){ document.getElementById('charCount').textContent=el.value.length+' / 20,000'; }
+// ── 드래그앤드롭 파일 첨부 ──
+let attachedFile = null;
+
+function dzOver(e){
+  e.preventDefault();
+  document.getElementById('dropZone').classList.add('over');
+}
+function dzLeave(e){
+  document.getElementById('dropZone').classList.remove('over');
+}
+function dzDrop(e){
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('over');
+  const file = e.dataTransfer.files[0];
+  if(file) applyFile(file);
+}
+function fileSelected(input){
+  if(input.files[0]) applyFile(input.files[0]);
+}
+function applyFile(file){
+  attachedFile = file;
+  const zone = document.getElementById('dropZone');
+  const inner = document.getElementById('dropInner');
+  const result = document.getElementById('dropResult');
+  const size = file.size > 1024*1024 ? (file.size/1024/1024).toFixed(1)+'MB' : (file.size/1024).toFixed(0)+'KB';
+  zone.classList.add('has-file');
+  inner.style.display = 'none';
+  result.style.display = 'flex';
+  result.innerHTML = `
+    <div class="drop-file-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="var(--blue)" stroke-width="1.8"/><path d="M14 2v6h6" stroke="var(--blue)" stroke-width="1.8"/></svg>
+    </div>
+    <div style="flex:1;overflow:hidden;">
+      <div class="drop-file-name">${file.name}</div>
+      <div class="drop-file-size">${size}</div>
+    </div>
+    <button class="drop-file-del" onclick="event.stopPropagation();clearDropZone()">✕</button>`;
+}
+function clearDropZone(){
+  attachedFile = null;
+  const zone = document.getElementById('dropZone');
+  const inner = document.getElementById('dropInner');
+  const result = document.getElementById('dropResult');
+  if(!zone) return;
+  zone.classList.remove('has-file','over');
+  if(inner) inner.style.display='';
+  if(result){ result.style.display='none'; result.innerHTML=''; }
+  const fi = document.getElementById('fileInput');
+  if(fi) fi.value='';
+}
+
+function updateDocCount(el){ const el2=document.getElementById('docCharCount'); if(el2) el2.textContent=el.value.length+' / 20,000'; }
+
+// ── 동적 컨텍스트 툴바 ──
+function renderCtx(type){
+  const bar=document.getElementById('ctxBar');
+  bar.className='tb-row2 s-'+(type||'none');
+  if(!type){
+    bar.innerHTML=`<span class="ctx-hint">💡 오브젝트를 선택하면 관련 편집 도구가 여기에 나타납니다</span>`;
+    return;
+  }
+  if(type==='question'){
+    bar.innerHTML=`
+      <div class="ctx-badge cb-text">📝 텍스트 편집</div><div class="csep"></div>
+      <select class="csel" onchange="T('폰트: '+this.value)"><option>고딕</option><option>나눔고딕</option><option>나눔명조</option><option>굴림</option></select>
+      <input class="cnum" type="number" value="14" title="글자 크기" onchange="T('크기: '+this.value+'px')">
+      <div class="csep"></div>
+      <button class="cbtn on" title="굵게" onclick="this.classList.toggle('on')"><b>B</b></button>
+      <button class="cbtn" title="기울임" onclick="this.classList.toggle('on')"><i>I</i></button>
+      <button class="cbtn" title="밑줄" onclick="this.classList.toggle('on')"><u>U</u></button>
+      <button class="cbtn" title="취소선" onclick="this.classList.toggle('on')"><s>S</s></button>
+      <div class="csep"></div>
+      <button class="cbtn" title="왼쪽 정렬" onclick="T('왼쪽 정렬')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 10h12M3 14h18M3 18h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      <button class="cbtn on" title="가운데 정렬" onclick="T('가운데 정렬')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M6 10h12M3 14h18M6 18h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      <button class="cbtn" title="오른쪽 정렬" onclick="T('오른쪽 정렬')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M9 10h12M3 14h18M9 18h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      <div class="csep"></div>
+      <span style="font-size:10px;color:var(--g4)">줄간격</span>
+      <input class="cnum" value="1.67" style="width:50px" onchange="T('줄간격: '+this.value)">
+      <span style="font-size:10px;color:var(--g4);margin-left:2px">자간</span>
+      <input class="cnum" type="number" value="0" style="width:42px" onchange="T('자간: '+this.value)">
+      <div class="csep"></div>
+      <div class="cdot" style="background:#1E2340" title="글자색" onclick="T('글자색 변경')"></div>
+      <div class="cdot" style="background:transparent;border:1.5px dashed var(--g3);margin-left:4px" title="배경색" onclick="T('배경색 변경')"></div>
+      <div class="csep"></div>
+      `;
+  }
+  else if(type==='image'){
+    bar.innerHTML=`
+      <div class="ctx-badge cb-img">🖼️ 이미지 편집</div><div class="csep"></div>
+      <span style="font-size:10px;color:var(--g4)">너비</span>
+      <input class="cnum" type="number" value="660" style="width:54px" onchange="T('너비: '+this.value+'px')">
+      <span style="font-size:10px;color:var(--g4)">px · 높이</span>
+      <input class="cnum" type="number" value="160" style="width:54px" onchange="T('높이: '+this.value+'px')">
+      <span style="font-size:10px;color:var(--g4)">px</span>
+      <div class="csep"></div>
+      <button class="cbtn" onclick="T('✂️ 자르기 모드')">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="6" r="3" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/><path d="m20 4-14.5 9.5M20 20 9.5 12.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        자르기
+      </button>
+      <button class="cbtn" onclick="T('좌우 반전')">좌우반전</button>
+      <button class="cbtn" onclick="T('90° 회전')">회전</button>
+      <div class="csep"></div>
+      <span style="font-size:10px;color:var(--g4)">투명도</span>
+      <input type="range" class="crange" min="0" max="100" value="100" oninput="T('투명도: '+this.value+'%')">
+      <div class="csep"></div>
+      <button class="cbtn" onclick="T('필터 적용')">🎨 필터</button>
+      <button class="cbtn" onclick="T('테두리 설정')">테두리</button>
+      <button class="cbtn" onclick="T('그림자 추가')">그림자</button>
+      <div class="csep"></div>
+      <button class="cai pur" onclick="aiAct('이미지 설명 자동생성')">✨ AI 설명</button>
+      <button class="cai out" onclick="aiAct('대체 텍스트 생성')">대체 텍스트</button>`;
+  }
+  else if(type==='shape'){
+    bar.innerHTML=`
+      <div class="ctx-badge cb-shape">⬛ 도형 편집</div><div class="csep"></div>
+      <span style="font-size:10px;color:var(--g4)">채우기</span>
+      <div class="cdot" style="background:#4B6EF5" onclick="T('채우기 색 변경')"></div>
+      <span style="font-size:10px;color:var(--g4);margin-left:6px">테두리</span>
+      <div class="cdot" style="background:#2B3250" onclick="T('테두리 색 변경')"></div>
+      <div class="csep"></div>
+      <span style="font-size:10px;color:var(--g4)">두께</span>
+      <input class="cnum" type="number" value="1" min="0" max="10" style="width:42px" onchange="T('두께: '+this.value)">
+      <span style="font-size:10px;color:var(--g4);margin-left:4px">모서리</span>
+      <input class="cnum" type="number" value="4" style="width:42px" onchange="T('모서리: '+this.value)">
+      <div class="csep"></div>
+      <span style="font-size:10px;color:var(--g4)">투명도</span>
+      <input type="range" class="crange" min="0" max="100" value="100" oninput="T('투명도: '+this.value+'%')">
+      <div class="csep"></div>
+      <button class="cbtn" onclick="T('그림자 추가')">🌑 그림자</button>
+      <button class="cbtn" onclick="T('잠금')">🔒 잠금</button>`;
+  }
+  else if(type==='table'){
+    bar.innerHTML=`
+      <div class="ctx-badge" style="background:#E0F8EE;color:#0E8A5E;">⊞ 표 편집</div><div class="csep"></div>
+      <span style="font-size:10px;color:var(--g4)">행</span>
+      <input class="cnum" type="number" value="3" min="1" style="width:42px" onchange="T('행: '+this.value)">
+      <span style="font-size:10px;color:var(--g4);margin-left:4px">열</span>
+      <input class="cnum" type="number" value="3" min="1" style="width:42px" onchange="T('열: '+this.value)">
+      <div class="csep"></div>
+      <button class="cbtn" onclick="T('행 추가')">+ 행 추가</button>
+      <button class="cbtn" onclick="T('열 추가')">+ 열 추가</button>
+      <button class="cbtn" onclick="T('행 삭제')">− 행</button>
+      <button class="cbtn" onclick="T('열 삭제')">− 열</button>
+      <div class="csep"></div>
+      <button class="cbtn on" onclick="this.classList.toggle('on');T('헤더 행')">헤더 행</button>
+      <button class="cbtn" onclick="this.classList.toggle('on');T('셀 병합')">셀 병합</button>
+      <div class="csep"></div>
+      <span style="font-size:10px;color:var(--g4)">테두리</span>
+      <select class="csel" onchange="T('테두리: '+this.value)"><option>실선</option><option>점선</option><option>없음</option></select>
+      <div class="cdot" style="background:#1E2340;margin-left:4px" onclick="T('테두리 색')"></div>
+      <div class="csep"></div>
+      <button class="cai pur" onclick="aiAct('표 내용 자동 채우기')">✨ AI 채우기</button>`;
+  }
+  else if(type==='video'){
+    bar.innerHTML=`
+      <div class="ctx-badge" style="background:#FFE8E0;color:#C0380F;">▶ 동영상 편집</div><div class="csep"></div>
+      <span style="font-size:10px;color:var(--g4)">너비</span>
+      <input class="cnum" type="number" value="660" style="width:54px" onchange="T('너비: '+this.value+'px')">
+      <span style="font-size:10px;color:var(--g4)">px</span>
+      <span style="font-size:10px;color:var(--g4);margin-left:4px">높이</span>
+      <input class="cnum" type="number" value="372" style="width:54px" onchange="T('높이: '+this.value+'px')">
+      <span style="font-size:10px;color:var(--g4)">px</span>
+      <div class="csep"></div>
+      <button class="cbtn on" onclick="this.classList.toggle('on');T('자동재생')">자동재생</button>
+      <button class="cbtn" onclick="this.classList.toggle('on');T('반복재생')">반복재생</button>
+      <button class="cbtn on" onclick="this.classList.toggle('on');T('컨트롤바')">컨트롤바</button>
+      <div class="csep"></div>
+      <span style="font-size:10px;color:var(--g4)">시작</span>
+      <input class="cnum" type="text" value="0:00" style="width:50px">
+      <span style="font-size:10px;color:var(--g4);margin-left:4px">종료</span>
+      <input class="cnum" type="text" value="끝" style="width:50px">
+      <div class="csep"></div>
+      <button class="cbtn" onclick="T('자막 업로드')">📄 자막</button>
+      <button class="cbtn" onclick="T('썸네일 변경')">🖼 썸네일</button>
+      <div class="csep"></div>
+      <button class="cai pur" onclick="aiAct('동영상 요약 생성')">✨ AI 요약</button>`;
+  }
+  else if(type==='formula'){
+    bar.innerHTML=`
+      <div class="ctx-badge" style="background:#E0EEFF;color:#1A5AC0;">∑ 수식 편집</div><div class="csep"></div>
+      <button class="cbtn on" onclick="T('수식 편집기 열기')">편집기 열기</button>
+      <div class="csep"></div>
+      <span style="font-size:10px;color:var(--g4)">자주 쓰는 수식</span>
+      <button class="cbtn" onclick="T('분수')">½</button>
+      <button class="cbtn" onclick="T('제곱근')">√</button>
+      <button class="cbtn" onclick="T('거듭제곱')">xⁿ</button>
+      <button class="cbtn" onclick="T('합계')">∑</button>
+      <button class="cbtn" onclick="T('적분')">∫</button>
+      <button class="cbtn" onclick="T('그리스 문자')">αβγ</button>
+      <div class="csep"></div>
+      <span style="font-size:10px;color:var(--g4)">크기</span>
+      <input class="cnum" type="number" value="16" style="width:46px" onchange="T('수식 크기: '+this.value)">
+      <div class="csep"></div>
+      <button class="cai pur" onclick="aiAct('수식 자동 완성')">✨ AI 완성</button>`;
+  }
+}
+
+// ── 블록 선택 ──
+function showRightPanel(){
+  document.getElementById('rpEmpty').style.display='none';
+  document.getElementById('rpTabs').style.display='flex';
+  document.getElementById('rpBody').style.display='flex';
+  renderRp();
+}
+function hideRightPanel(){
+  document.getElementById('rpEmpty').style.display='flex';
+  document.getElementById('rpTabs').style.display='none';
+  document.getElementById('rpBody').style.display='none';
+  // AI탭 배경 리셋
+  const rp = document.getElementById('rightPanel');
+  rp.style.background = 'white';
+}
+
+function selBlock(el){
+  document.querySelectorAll('.cb').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  curBlock=el; curType=el.dataset.type;
+  renderCtx(curType);
+  const lbl={question:'문제 블록 선택됨',image:'이미지 블록 선택됨',shape:'도형 블록 선택됨',table:'표 블록 선택됨',video:'동영상 블록 선택됨',formula:'수식 블록 선택됨'};
+  document.getElementById('sbSel').textContent=lbl[curType]||'블록 선택됨';
+  showRightPanel();
+}
+function bgClick(e){
+  if(e.target===document.getElementById('canvasWrap')){
+    document.querySelectorAll('.cb').forEach(b=>b.classList.remove('sel'));
+    curBlock=null; curType=null;
+    renderCtx(null);
+    document.getElementById('sbSel').textContent='오브젝트 미선택';
+    hideRightPanel();
+  }
+}
+
+// ── 블록 삽입 ──
+function insertBlock(type){
+  blkCnt++;
+  const slide=document.getElementById('slide1');
+  const addArea=slide.querySelector('.add-area');
+  const el=document.createElement('div');
+  el.className='cb'; el.id='blk-'+type+blkCnt; el.dataset.type=type;
+  el.onclick=function(){selBlock(this);};
+  if(type==='question'){
+    const ci=['①','②','③','④','⑤'];
+    el.innerHTML=`
+      <div class="bctrl">
+        <button onclick="event.stopPropagation();T('위로')">▲</button>
+        <button onclick="event.stopPropagation();T('아래로')">▼</button>
+        
+        <button class="del" onclick="event.stopPropagation();rmBlock(this)">✕</button>
+      </div>
+      <div class="q-head"><div class="q-num">${blkCnt-1}</div><div class="q-txt" contenteditable="true" data-ph="발문을 입력합니다."></div></div>
+      <div class="q-choices">${ci.map(c=>`<div class="q-choice" onclick="event.stopPropagation();togC(this)"><div class="q-cnum">${c}</div><div class="q-ctxt" contenteditable="true" data-ph="선택지를 입력합니다."></div></div>`).join('')}</div>
+      <div class="q-hint-area"><div class="qlabel hint">💡 힌트</div><div class="qsub" contenteditable="true" data-ph="힌트를 입력합니다."></div></div>
+      <div class="q-sol-area"><div class="qlabel sol">📋 해설</div><div class="qsub" contenteditable="true" data-ph="해설을 입력합니다."></div></div>
+      <div class="ai-bar"><span class="ai-bar-lbl">✨ AI</span><button class="cai pur" onclick="event.stopPropagation();aiAct('발문 개선')">발문 개선</button><button class="cai out" onclick="event.stopPropagation();aiAct('선택지 재생성')">선택지 재생성</button><button class="cai out" onclick="event.stopPropagation();aiAct('힌트 재생성')">힌트 재생성</button><button class="cai out" onclick="event.stopPropagation();aiAct('해설 재생성')">해설 재생성</button></div>`;
+    T('✅ 문제 블록 추가됨');
+  } else if(type==='image'){
+    el.innerHTML=`
+      <div class="bctrl">
+        <button onclick="event.stopPropagation();T('위로')">▲</button>
+        <button onclick="event.stopPropagation();T('아래로')">▼</button>
+        
+        <button class="del" onclick="event.stopPropagation();rmBlock(this)">✕</button>
+      </div>
+      <div class="img-block">
+        <div class="img-ph" onclick="event.stopPropagation();T('🖼️ 이미지 업로드')">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#C8CDD8" stroke-width="1.5"/><circle cx="8" cy="8" r="1.5" fill="#C8CDD8"/><path d="m21 15-5-5L5 21" stroke="#C8CDD8" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span>클릭하여 이미지 업로드</span><span style="font-size:10px;color:var(--g3)">PNG, JPG, GIF 지원</span>
+        </div>
+        <input class="img-cap" type="text" placeholder="이미지 설명(캡션)을 입력하세요" onclick="event.stopPropagation()">
+      </div>
+      <div class="ai-bar"><span class="ai-bar-lbl">✨ AI</span><button class="cai pur" onclick="event.stopPropagation();aiAct('이미지 설명 자동생성')">설명 자동생성</button><button class="cai out" onclick="event.stopPropagation();aiAct('대체 텍스트 생성')">대체 텍스트</button></div>`;
+    T('✅ 이미지 블록 추가됨 — 이미지 편집 도구 활성화');
+  } else if(type==='shape'){
+    el.innerHTML=`
+      <div class="bctrl">
+        <button onclick="event.stopPropagation();T('위로')">▲</button>
+        <button onclick="event.stopPropagation();T('아래로')">▼</button>
+        
+        <button class="del" onclick="event.stopPropagation();rmBlock(this)">✕</button>
+      </div>
+      <div style="padding:20px;"><div style="width:200px;height:80px;background:var(--blue-lt);border:2px solid var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--blue);">⬛ 도형 블록</div></div>
+      <div class="ai-bar"><span class="ai-bar-lbl">✨ AI</span></div>`;
+    T('✅ 도형 블록 추가됨 — 도형 편집 도구 활성화');
+  }
+  else if(type==='table'){
+    el.innerHTML=`
+      <div class="bctrl">
+        <button onclick="event.stopPropagation();T('위로')">▲</button>
+        <button onclick="event.stopPropagation();T('아래로')">▼</button>
+        
+        <button class="del" onclick="event.stopPropagation();rmBlock(this)">✕</button>
+      </div>
+      <div style="padding:16px 20px;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          ${[0,1,2].map(r=>`<tr>${[0,1,2].map(c2=>`<td style="border:1px solid var(--g2);padding:8px 10px;${r===0?'background:var(--g1);font-weight:700;':''}" contenteditable="true">${r===0?['항목','수량','비고'][c2]:''}</td>`).join('')}</tr>`).join('')}
+        </table>
+      </div>
+      <div class="ai-bar"><span class="ai-bar-lbl">✨ AI</span><button class="cai pur" onclick="event.stopPropagation();aiAct('표 내용 자동 채우기')">AI 채우기</button></div>`;
+    T('✅ 표 블록 추가됨 — 표 편집 도구 활성화');
+  } else if(type==='video'){
+    el.innerHTML=`
+      <div class="bctrl">
+        <button onclick="event.stopPropagation();T('위로')">▲</button>
+        <button onclick="event.stopPropagation();T('아래로')">▼</button>
+        
+        <button class="del" onclick="event.stopPropagation();rmBlock(this)">✕</button>
+      </div>
+      <div style="padding:16px 20px;">
+        <div style="background:#1E2340;border-radius:8px;height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;" onclick="event.stopPropagation();T('동영상 URL 입력')">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="rgba(255,255,255,.1)"/><path d="m10 8 6 4-6 4V8z" fill="white"/></svg>
+          <span style="font-size:12px;color:rgba(255,255,255,.6)">동영상 URL 입력 또는 업로드</span>
+        </div>
+      </div>
+      <div class="ai-bar"><span class="ai-bar-lbl">✨ AI</span><button class="cai pur" onclick="event.stopPropagation();aiAct('동영상 요약 생성')">AI 요약</button></div>`;
+    T('✅ 동영상 블록 추가됨 — 동영상 편집 도구 활성화');
+  } else if(type==='formula'){
+    el.innerHTML=`
+      <div class="bctrl">
+        <button onclick="event.stopPropagation();T('위로')">▲</button>
+        <button onclick="event.stopPropagation();T('아래로')">▼</button>
+        
+        <button class="del" onclick="event.stopPropagation();rmBlock(this)">✕</button>
+      </div>
+      <div style="padding:16px 20px;display:flex;align-items:center;gap:12px;">
+        <div style="background:var(--g1);border:1.5px solid var(--g2);border-radius:8px;padding:14px 20px;font-size:20px;color:var(--text);cursor:pointer;min-width:120px;text-align:center;" onclick="event.stopPropagation();T('수식 편집기 열기')">
+          <i>f(x) = ax² + bx + c</i>
+        </div>
+        <span style="font-size:11px;color:var(--g4)">클릭하여 수식을 편집하세요</span>
+      </div>
+      <div class="ai-bar"><span class="ai-bar-lbl">✨ AI</span><button class="cai pur" onclick="event.stopPropagation();aiAct('수식 자동 완성')">AI 완성</button></div>`;
+    T('✅ 수식 블록 추가됨 — 수식 편집 도구 활성화');
+  }
+  slide.insertBefore(el, addArea);
+  setTimeout(()=>selBlock(el), 30);
+  checkSlideEmpty();
+}
+
+function rmBlock(btn){
+  if(confirm('이 블록을 삭제할까요?')){
+    const el = btn.closest('.cb');
+    const bid = el.id;
+    // 히스토리에서 이 블록이 속한 묶음 찾아 deleted에 기록
+    const owner = aiHistory.find(h=>h.blockIds.includes(bid));
+    if(owner){
+      if(!owner.deleted) owner.deleted=[];
+      const qtxt = el.querySelector('.q-txt');
+      owner.deleted.push({ id:bid, preview: qtxt ? qtxt.textContent.slice(0,20)+'…' : bid });
+      renderHistory();
+    }
+    el.remove();
+    checkSlideEmpty();
+    curBlock=null; curType=null;
+    renderCtx(null);
+    document.getElementById('sbSel').textContent='오브젝트 미선택';
+    hideRightPanel();
+    T('블록 삭제됨');
+  }
+}
+function togC(el){el.classList.toggle('correct');}
+
+// ── 우측 패널 ──
+function switchRp(n,el){
+  rpTab=n;
+  document.querySelectorAll('.rp-tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  const rp = document.getElementById('rightPanel');
+  rp.style.background = n===1 ? '#1E2540' : 'white';
+  document.querySelectorAll('.rp-tab').forEach(t=>{
+    t.style.background = n===1 ? '#1E2540' : 'white';
+    t.style.color = n===1 ? 'rgba(255,255,255,.4)' : '';
+  });
+  el.style.color = n===1 ? (el.classList.contains('aitab') ? '#A87DFF' : 'rgba(255,255,255,.8)') : '';
+  renderRp();
+}
+function renderRp(){
+  const b=document.getElementById('rpBody');
+  if(rpTab===0){
+    // 속성 탭 — 기존 저작툴 속성 영역 그대로
+    b.innerHTML=`
+      <div class="attr-wrap">
+        <div class="rp-sec">
+          <div class="rp-sec-t">발문 음원</div>
+          <div style="border:1.5px dashed var(--g3);border-radius:6px;padding:9px;text-align:center;cursor:pointer;font-size:10px;color:var(--g4);transition:all .15s;" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--g3)'" onclick="T('🎵 음원 업로드')">
+            🎵 음원 파일 업로드
+          </div>
+        </div>
+        <div class="rp-divider"></div>
+        <div class="rp-sec">
+          <div class="rp-sec-t">단일선택형 문항 정보</div>
+          <div class="rp-row"><span class="rp-lbl">문항번호</span><input class="rp-inp" value="1"></div>
+          <div class="rp-row"><span class="rp-lbl">배점</span><input class="rp-inp" type="number" value="5"></div>
+          <div class="rp-row"><span class="rp-lbl">정답</span>
+            <select class="rp-sel"><option>①</option><option selected>②</option><option>③</option><option>④</option><option>⑤</option></select>
+          </div>
+        </div>
+        <div class="rp-divider"></div>
+        <div class="rp-sec">
+          <div class="rp-sec-t">표시 설정</div>
+          <div class="rp-row"><span class="rp-lbl">힌트</span>
+            <div class="rp-toggle-row" style="flex:1">
+              <button class="rp-toggle on" onclick="this.classList.toggle('on')">표시</button>
+              <button class="rp-toggle" onclick="this.classList.toggle('on')">숨기기</button>
+            </div>
+          </div>
+          <div class="rp-row"><span class="rp-lbl">해설</span>
+            <div class="rp-toggle-row" style="flex:1">
+              <button class="rp-toggle on" onclick="this.classList.toggle('on')">표시</button>
+              <button class="rp-toggle" onclick="this.classList.toggle('on')">숨기기</button>
+            </div>
+          </div>
+        </div>
+        <div class="rp-divider"></div>
+        <div class="rp-sec">
+          <div class="rp-sec-t">경계선</div>
+          <div class="rp-row"><span class="rp-lbl">분리</span>
+            <select class="rp-sel" onchange="T('경계선: '+this.value)">
+              <option>없음</option><option>실선</option><option>점선</option>
+            </select>
+          </div>
+          <div class="rp-row"><span class="rp-lbl">태그</span>
+            <input class="rp-inp" placeholder="태그를 입력하세요">
+          </div>
+        </div>
+      </div>`;
+  } else {
+    // AI 탭 — 항상 새로 렌더링 (채팅 휘발)
+    b.innerHTML=`
+    <div class="ai-panel" id="aiPanel">
+      <div class="ai-suggest-area">
+        <div class="ai-section-lbl">AI 제안</div>
+
+        <div class="ai-card c-design" onclick="rpAiAction('이미지 자동제안')">
+          <div class="ai-card-hd"><span class="ai-badge design">🖼 이미지 자동제안</span></div>
+          <div class="ai-card-desc">선택된 문제에 어울리는 삽화·도식 이미지를 제안해 드려요</div>
+          <button class="ai-card-btn design" onclick="event.stopPropagation();rpAiAction('이미지 자동제안')">제안</button>
+        </div>
+
+        <div class="ai-card c-gen" onclick="rpAiAction('힌트·해설 자동제안')">
+          <div class="ai-card-hd"><span class="ai-badge gen">💡 힌트·해설 자동제안</span></div>
+          <div class="ai-card-desc">선택된 문제의 힌트와 해설을 AI가 자동으로 작성해 드려요</div>
+          <button class="ai-card-btn gen" onclick="event.stopPropagation();rpAiAction('힌트·해설 자동제안')">생성</button>
+        </div>
+      </div>
+
+      <div class="ai-chat-area">
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:8px;">
+          <div class="ai-chat-lbl" style="margin-bottom:0;flex:1;">AI에게 물어보세요</div>
+        </div>
+        <div style="font-size:9px;color:rgba(255,255,255,.28);line-height:1.6;margin-bottom:8px;padding:6px 8px;background:rgba(255,255,255,.04);border-radius:6px;border:1px solid rgba(255,255,255,.07);">
+          💬 이 대화는 현재 선택된 콘텐츠에 한정되며,<br>다른 콘텐츠를 선택하면 초기화됩니다.
+        </div>
+        <div class="ai-chat-msgs" id="aiMsgs" style="max-height:140px;"></div>
+        <div class="ai-chat-row">
+          <input class="ai-chat-input" id="aiInput" placeholder="예) 이 문제를 더 쉽게 바꿔줘" onkeydown="if(event.key==='Enter')sendAiChat()">
+          <button class="ai-send" onclick="sendAiChat()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }
+}
+
+function rpAiAction(a){
+  T('✨ AI: '+a+' 실행 중...');
+
+  const promptMap = {
+    '이미지 자동제안':    '초등 수학 3-1, 1단원 덧셈과 뺄셈 주제로 삽화나 도식이 포함된 선택형 문제 1개를 생성해주세요.',
+    '힌트·해설 자동제안': '초등 수학 3-1, 1단원 덧셈과 뺄셈 주제의 선택형 문제 1개를 힌트와 상세 해설을 포함하여 생성해주세요.',
+    '유사문항 제안':      '초등 수학 3-1, 1단원 덧셈과 뺄셈 주제로 현재 문제와 유사한 난이도의 선택형 문제 2개를 생성해주세요.',
+  };
+  const userPrompt = promptMap[a] || '초등 수학 3-1, 1단원 덧셈과 뺄셈 선택형 문제 2개를 생성해주세요.';
+  generateAndInsert(userPrompt);
+}
+
+const aiReplies = [
+  '발문을 좀 더 쉬운 표현으로 바꿔드릴게요. 선택지도 함께 조정할까요?',
+  '해당 학년 수준에 맞게 문제 난이도를 조정했어요.',
+  '유사한 유형의 문제 3개를 추가로 생성할까요?',
+  '힌트를 더 구체적으로 수정했어요. 검토 후 적용해보세요.',
+];
+let aiMsgCnt = 0;
+let aiChatHistory = []; // 세션 누적 채팅 HTML 저장
+
+function clearAiChat(){
+  aiChatHistory = [];
+  const msgs = document.getElementById('aiMsgs');
+  if(msgs) msgs.innerHTML = '';
+}
+
+function saveAiChatMsg(html){
+  aiChatHistory.push(html);
+}
+
+async function sendAiChat(){
+  const inp = document.getElementById('aiInput');
+  if(!inp || !inp.value.trim()) return;
+  const userMsg = inp.value.trim();
+  const msgs = document.getElementById('aiMsgs');
+  if(!msgs) return;
+  inp.value = '';
+
+  // 사용자 메시지 표시 + 히스토리 저장
+  const userHtml = `<div class="ai-msg-wrap"><div class="ai-msg-lbl" style="color:rgba(255,255,255,.4);">나</div><div class="ai-msg" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.1);">${userMsg}</div></div>`;
+  msgs.innerHTML += userHtml;
+  saveAiChatMsg(userHtml);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // 로딩
+  const loadId = 'load-' + Date.now();
+  msgs.innerHTML += `<div id="${loadId}" class="ai-msg-wrap"><div class="ai-msg-lbl">✦ AI 응답</div><div class="ai-msg" style="color:rgba(255,255,255,.4);">생각하는 중...</div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // 문제 생성 요청 감지
+  const isGenReq = /문제|생성|만들|추가|선택형|단답형|OX|힌트|해설/.test(userMsg);
+
+  if(isGenReq){
+    const prompt = `초등 수학 3-1, 1단원 덧셈과 뺄셈 관련으로 다음 요청을 처리해주세요: "${userMsg}"\n문제를 생성해야 한다면 아래 JSON 형식으로만 출력하세요 (설명 없이):\n[\n  {\n    "question": "발문",\n    "choices": ["선택지1","선택지2","선택지3","선택지4","선택지5"],\n    "answer": 1,\n    "hint": "힌트",\n    "explanation": "해설"\n  }\n]\n문제 생성이 아닌 질문이라면 짧고 친절하게 한국어로 답해주세요.`;
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:prompt}] })
+      });
+      const data = await res.json();
+      const text = data.content?.map(i=>i.text||'').join('').trim();
+
+      // JSON 배열이면 문제 삽입
+      if(text.startsWith('[')){
+        const qs = JSON.parse(text.replace(/```json|```/g,'').trim());
+        document.getElementById(loadId).remove();
+        const aiHtml = `<div class="ai-msg-wrap"><div class="ai-msg-lbl">✦ AI 응답</div><div class="ai-msg">문제 ${qs.length}개를 슬라이드에 추가했어요! 🎉</div></div>`;
+        msgs.innerHTML += aiHtml; saveAiChatMsg(aiHtml);
+        msgs.scrollTop = msgs.scrollHeight;
+        qs.forEach(q => insertQuestionBlock(q));
+        T(`✅ 문제 ${qs.length}개 추가됨`);
+      } else {
+        document.getElementById(loadId).remove();
+        const aiHtml = `<div class="ai-msg-wrap"><div class="ai-msg-lbl">✦ AI 응답</div><div class="ai-msg">${text}</div></div>`;
+        msgs.innerHTML += aiHtml; saveAiChatMsg(aiHtml);
+        msgs.scrollTop = msgs.scrollHeight;
+      }
+    } catch(e) {
+      document.getElementById(loadId).remove();
+      const aiHtml = `<div class="ai-msg-wrap"><div class="ai-msg-lbl">✦ AI 응답</div><div class="ai-msg">죄송해요, 잠시 오류가 발생했어요. 다시 시도해 주세요.</div></div>`;
+      msgs.innerHTML += aiHtml; saveAiChatMsg(aiHtml);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+  } else {
+    // 일반 질문 — Claude API로 답변
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:400,
+          system:'당신은 콘텐츠 저작툴의 AI 어시스턴트입니다. 초등 수학 교재 제작을 돕습니다. 짧고 친절하게 한국어로 답하세요.',
+          messages:[{role:'user',content:userMsg}] })
+      });
+      const data = await res.json();
+      const reply = data.content?.map(i=>i.text||'').join('').trim();
+      document.getElementById(loadId).remove();
+      const aiHtml2 = `<div class="ai-msg-wrap"><div class="ai-msg-lbl">✦ AI 응답</div><div class="ai-msg">${reply}</div></div>`;
+      msgs.innerHTML += aiHtml2; saveAiChatMsg(aiHtml2);
+      msgs.scrollTop = msgs.scrollHeight;
+    } catch(e) {
+      document.getElementById(loadId).remove();
+      const aiHtml2 = `<div class="ai-msg-wrap"><div class="ai-msg-lbl">✦ AI 응답</div><div class="ai-msg">죄송해요, 잠시 오류가 발생했어요.</div></div>`;
+      msgs.innerHTML += aiHtml2; saveAiChatMsg(aiHtml2);
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+  }
+}
+
+// 공통: 프롬프트 → 문제 생성 → 슬라이드 삽입
+async function generateAndInsert(userPrompt){
+  const prompt = `당신은 초등학교 수학 교재 문제 출제 전문가입니다. 아래 요청으로 문제를 JSON 배열로만 생성하세요. 설명이나 마크다운 없이 JSON만 출력하세요.\n\n요청: ${userPrompt}\n\n출력 형식:\n[\n  {\n    "question": "발문",\n    "choices": ["선택지1","선택지2","선택지3","선택지4","선택지5"],\n    "answer": 2,\n    "hint": "힌트",\n    "explanation": "해설"\n  }\n]`;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:prompt}] })
+    });
+    const data = await res.json();
+    const text = data.content?.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+    const qs = JSON.parse(text);
+    qs.forEach(q => insertQuestionBlock(q));
+    T(`✅ 문제 ${qs.length}개 생성 완료!`);
+  } catch(e) {
+    const samples = [
+      {question:'35 + 47은 얼마입니까?', choices:['71','72','81','82','83'], answer:4, hint:'일의 자리부터 더하세요.', explanation:'5+7=12, 받아올림 1, 3+4+1=8. 답은 82입니다.'},
+      {question:'100 - 63은 얼마입니까?', choices:['27','37','43','47','57'], answer:2, hint:'받아내림을 생각하세요.', explanation:'10-3=7, 9-6=3. 답은 37입니다.'},
+    ];
+    samples.forEach(q => insertQuestionBlock(q));
+    T('✅ 문제 2개 생성 완료!');
+  }
+}
+
+// ── AI ──
+function aiAct(a){
+  T('✨ AI: '+a+' 실행 중...');
+  setTimeout(()=>{
+    T('✅ '+a+' 완료');
+    // AI로 생성된 블록이면 히스토리에 기록
+    if(curBlock){
+      const blkId = curBlock.id;
+      const owner = aiHistory.find(h=>h.blockIds && h.blockIds.includes(blkId));
+      if(owner){
+        const iconMap = {'발문 개선':'✏️','선택지 재생성':'🔄','힌트 재생성':'💡','해설 재생성':'📋'};
+        const icon = iconMap[a] || '✨';
+        addActionLog(owner.id, icon, `${a} 적용`);
+      }
+    }
+  }, 1800);
+}
+
+// ── MODAL ──
+function openModal(){
+  document.getElementById('overlay').classList.add('open');
+  // 폼 초기화
+  const tmplSel = document.getElementById('sel-tmpl');
+  const lvSel = document.getElementById('sel-lv');
+  const ta = document.getElementById('ta-content');
+  if(tmplSel){ tmplSel.value=''; tmplSel.classList.remove('selected'); }
+  if(lvSel){ lvSel.value=''; lvSel.classList.remove('selected'); }
+  if(ta){ ta.value=''; }
+  const cc = document.getElementById('charCount');
+  if(cc) cc.textContent='0 / 20,000';
+  clearDropZone();
+  resetModal();
+}
+function closeModal(){document.getElementById('overlay').classList.remove('open');}
+function ovClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
+
+let gi=0,giv;
+
+async function startGen(){
+  // 값을 폼에서 바로 읽기
+  const tmpl = document.getElementById('sel-tmpl')?.value || '선택형';
+  const lv   = document.getElementById('sel-lv')?.value   || '중';
+  const req  = document.getElementById('ta-content')?.value || '';
+
+  // 문제 수 파싱 (히스토리 저장 전에 먼저)
+  const cntMatch = req.match(/(\d+)/);
+  const cnt = cntMatch ? cntMatch[1] : '3';
+
+  // 히스토리 미리 등록 (blockIds는 나중에 채움)
+  const hid = addHistory(tmpl, lv, req, cnt, []);
+
+  document.getElementById('aiTabBody0').style.display='none';
+  document.getElementById('genScreen').classList.add('show');
+  document.getElementById('doneScreen').classList.remove('show');
+  gi=0;
+  const pf=document.getElementById('pf');
+  pf.style.animation='none';pf.offsetHeight;pf.style.animation='pg 2.8s ease-in-out forwards';
+  giv=setInterval(()=>{document.getElementById('genS').textContent=gMsgs[gi%gMsgs.length];gi++;},550);
+  const tmplExamples = {
+    '선택형': `[{"question":"35+47은 얼마입니까?","choices":["80","81","82","83","84"],"answer":3,"hint":"일의 자리부터 더하세요","explanation":"5+7=12 받아올림 1, 3+4+1=8. 답은 82"},{"question":"126+58은 얼마입니까?","choices":["182","183","184","185","186"],"answer":3,"hint":"받아올림에 주의하세요","explanation":"6+8=14 받아올림 1, 2+5+1=8, 1+0=1. 답은 184"}]`,
+    '단답형': `[{"question":"35+47=?","choices":[],"answer":"82","hint":"일의 자리부터 더하세요","explanation":"5+7=12 받아올림 1, 3+4+1=8. 답은 82"},{"question":"100-37=?","choices":[],"answer":"63","hint":"받아내림에 주의하세요","explanation":"10-7=3 받아내림, 9-3=6. 답은 63"}]`,
+    'OX형':   `[{"question":"35+47=82이다.","choices":["O","X"],"answer":1,"hint":"직접 계산해 보세요","explanation":"35+47=82이므로 O가 정답"},{"question":"126-58=78이다.","choices":["O","X"],"answer":1,"hint":"받아내림에 주의하세요","explanation":"126-58=68이 아닌 68이므로 X"}]`,
+    'TF형':   `[{"question":"35+47=82이다.","choices":["True","False"],"answer":1,"hint":"직접 계산해 보세요","explanation":"35+47=82이므로 True"},{"question":"100-37=63이다.","choices":["True","False"],"answer":1,"hint":"받아내림에 주의하세요","explanation":"100-37=63이므로 True"}]`,
+    '연결형': `[{"question":"계산 결과를 알맞게 연결하세요.","choices":["35+47=?:82","63-28=?:35","100-37=?:63"],"answer":"1-82,2-35,3-63","hint":"각각 계산해보세요","explanation":"35+47=82, 63-28=35, 100-37=63"},{"question":"빈칸에 알맞은 수를 연결하세요.","choices":["□+25=61:36","84-□=47:37","□-19=45:64"],"answer":"1-36,2-37,3-64","hint":"역연산을 활용하세요","explanation":"61-25=36, 84-47=37, 45+19=64"}]`,
+    '서술형': `[{"question":"35+47을 계산하는 방법을 설명하고 답을 구하세요.","choices":[],"answer":"일의 자리: 5+7=12, 받아올림 1. 십의 자리: 3+4+1=8. 따라서 82입니다.","hint":"자릿값별로 나누어 생각하세요","explanation":"받아올림에 주의하여 자릿수별로 더합니다"},{"question":"126-58의 계산 과정을 설명하고 답을 구하세요.","choices":[],"answer":"일의 자리: 6<8이므로 받아내림. 16-8=8. 십의 자리: 1-1-5<0이므로 받아내림. 11-1-5=5. 백의 자리: 0. 답은 68.","hint":"받아내림이 필요한지 확인하세요","explanation":"자릿수별로 받아내림을 확인하며 계산합니다"}]`,
+  };
+  const example = tmplExamples[tmpl] || tmplExamples['선택형'];
+
+  const prompt = `당신은 초등학교 수학 교재 문제 출제 전문가입니다.
+반드시 JSON 배열만 출력하세요. 설명·주석·마크다운 절대 금지. 첫 글자는 반드시 '[' 이어야 합니다.
+
+[조건]
+- 교재: 초등 수학 3-1, 1단원 덧셈과 뺄셈
+- 문제 유형: "${tmpl}" (이 유형 외 절대 금지)
+- 난이도: ${lv}
+- 문제 수: 정확히 ${cnt}개 (배열 원소가 반드시 ${cnt}개여야 합니다)
+- 추가 요청: ${req || '없음'}
+
+[출력 예시 - 이 구조 그대로, 단 내용은 새로 만들 것]:
+${example}
+
+위 예시와 동일한 JSON 구조로, 서로 다른 "${tmpl}" 문제를 정확히 ${cnt}개 만들어 JSON 배열로만 출력하세요.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(i => i.text || '').join('');
+    const clean = text.replace(/```json|```/g, '').trim();
+    const questions = JSON.parse(clean);
+    clearInterval(giv);
+    closeModal();
+    const newIds = questions.map(q => insertQuestionBlock(q));
+    updateHistoryBlockIds(hid, newIds);
+    T(`✅ ${tmpl} 문제 ${questions.length}개 생성 완료!`);
+  } catch(e) {
+    console.error(e);
+    clearInterval(giv);
+    const fallbacks = {
+      '선택형': (n)=>Array.from({length:n},(_,i)=>({question:`35+${40+i*7}는 얼마입니까?`,choices:['80','81','82','83','84'],answer:3,hint:'일의 자리부터 더하세요',explanation:`답은 ${75+i*7}`})),
+      '단답형': (n)=>Array.from({length:n},(_,i)=>({question:`${30+i*10}+${47+i*5}=?`,choices:[],answer:`${77+i*15}`,hint:'자릿수별로 계산하세요',explanation:`답은 ${77+i*15}`})),
+      'OX형':   (n)=>Array.from({length:n},(_,i)=>({question:`35+${40+i}=${75+i}이다.`,choices:['O','X'],answer:1,hint:'계산해보세요',explanation:'O가 정답'})),
+      'TF형':   (n)=>Array.from({length:n},(_,i)=>({question:`35+${40+i}=${75+i}이다.`,choices:['True','False'],answer:1,hint:'계산해보세요',explanation:'True가 정답'})),
+      '연결형': (n)=>Array.from({length:n},(_,i)=>({question:'계산 결과를 연결하세요.',choices:['35+47=?:82','63-28=?:35'],answer:'1-82,2-35',hint:'각각 계산',explanation:'35+47=82, 63-28=35'})),
+      '서술형': (n)=>Array.from({length:n},(_,i)=>({question:`${30+i*10}+${47+i*5}를 계산하는 방법을 서술하세요.`,choices:[],answer:'자릿수별로 계산합니다.',hint:'자릿값별로',explanation:'받아올림 주의'})),
+    };
+    const fbFn = fallbacks[tmpl] || fallbacks['선택형'];
+    const fb = fbFn(parseInt(cnt)||3);
+    closeModal();
+    const newIds = fb.map(q => insertQuestionBlock(q));
+    updateHistoryBlockIds(hid, newIds);
+    T(`✅ ${tmpl} 문제 생성 완료!`);
+  }
+}
+
+function applyR(){ /* startGen에서 직접 처리하므로 미사용 */ }
+
+function resetModal(){
+  document.getElementById('aiTabBody0').style.display='';
+  document.getElementById('genScreen').classList.remove('show');
+  document.getElementById('doneScreen').classList.remove('show');
+}
+
+function insertQuestionBlock(q){
+  blkCnt++;
+  const slide = document.getElementById('slide1');
+  const addArea = slide.querySelector('.add-area');
+  const el = document.createElement('div');
+  el.className = 'cb'; el.id = 'blk-question' + blkCnt; el.dataset.type = 'question';
+  el.onclick = function(){ selBlock(this); };
+
+  const ci = ['①','②','③','④','⑤'];
+  const hasChoices = Array.isArray(q.choices) && q.choices.length > 0;
+
+  // 선택지 렌더링 (선택형/OX형/TF형/연결형)
+  // 연결형 감지 (choices가 "텍스트:텍스트" 형태)
+  const isMatching = hasChoices && q.choices[0]?.includes(':');
+
+  let choicesHtml;
+  if(isMatching){
+    // 연결형: 왼쪽 항목 | 오른쪽 항목 테이블
+    const pairs = q.choices.map(c => c.split(':'));
+    choicesHtml = `<div style="padding:8px 20px 12px;">
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;">
+        ${pairs.map((p,i)=>`
+          <div style="padding:9px 14px;border:1.5px solid var(--g2);border-radius:8px;font-size:13px;background:var(--g1);" contenteditable="true">${p[0]||''}</div>
+          <div style="font-size:18px;color:var(--g3);text-align:center;">↔</div>
+          <div style="padding:9px 14px;border:1.5px solid var(--blue);border-radius:8px;font-size:13px;background:var(--blue-lt);" contenteditable="true">${p[1]||''}</div>
+        `).join('')}
+      </div>
+    </div>`;
+  } else if(hasChoices){
+    choicesHtml = `<div class="q-choices">${q.choices.map((c, i) => `
+        <div class="q-choice${q.answer === i+1 ? ' correct' : ''}" onclick="event.stopPropagation();togC(this)">
+          <div class="q-cnum">${ci[i] || i+1}</div>
+          <div class="q-ctxt" contenteditable="true">${c}</div>
+        </div>`).join('')}</div>`;
+  } else {
+    // 단답형/서술형: 답 입력란
+    choicesHtml = `<div style="padding:8px 20px 12px;">
+        <div style="font-size:11px;font-weight:700;color:var(--g4);margin-bottom:5px;">정답</div>
+        <div contenteditable="true" style="min-height:36px;padding:8px 12px;border:1.5px solid var(--g2);border-radius:6px;font-size:13px;color:var(--text);outline:none;line-height:1.6;"
+          onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--g2)'"
+        >${typeof q.answer === 'string' ? q.answer : ''}</div>
+      </div>`;
+  }
+
+  el.innerHTML = `
+    <div class="bctrl">
+      <button onclick="event.stopPropagation();T('위로')">▲</button>
+      <button onclick="event.stopPropagation();T('아래로')">▼</button>
+      
+      <button class="del" onclick="event.stopPropagation();rmBlock(this)">✕</button>
+    </div>
+    <div class="q-head">
+      <div class="q-num">${blkCnt - 1}</div>
+      <div class="q-txt" contenteditable="true">${q.question}</div>
+    </div>
+    ${choicesHtml}
+    <div class="q-hint-area"><div class="qlabel hint">💡 힌트</div><div class="qsub" contenteditable="true">${q.hint || ''}</div></div>
+    <div class="q-sol-area"><div class="qlabel sol">📋 해설</div><div class="qsub" contenteditable="true">${q.explanation || ''}</div></div>
+    <div class="ai-bar"><span class="ai-bar-lbl">✨ AI</span>
+      <button class="cai pur" onclick="event.stopPropagation();aiAct('발문 개선')">발문 개선</button>
+      <button class="cai out" onclick="event.stopPropagation();aiAct('선택지 재생성')">선택지 재생성</button>
+      <button class="cai out" onclick="event.stopPropagation();aiAct('힌트 재생성')">힌트 재생성</button>
+      <button class="cai out" onclick="event.stopPropagation();aiAct('해설 재생성')">해설 재생성</button>
+    </div>`;
+
+  slide.insertBefore(el, addArea);
+  selBlock(el);
+  checkSlideEmpty();
+  return el.id;
+}
+
+function updateHistoryBlockIds(hid, ids){
+  const h = aiHistory.find(x=>x.id===hid);
+  if(h) h.blockIds = ids.filter(Boolean);
+}
+
+// ── 템플릿 선택 모달 ──
+let selectedTmplName = null, selectedTmplIsOcr = false;
+
+function openTmplModal(){
+  selectedTmplName = null;
+  selectedTmplIsOcr = false;
+  document.querySelectorAll('.tmpl-item').forEach(el => el.classList.remove('sel'));
+  document.getElementById('tmplPreview').innerHTML = `
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#C8CDD8" stroke-width="1.5"/><path d="M8 12h8M8 8h8M8 16h5" stroke="#C8CDD8" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <div style="font-size:11px;color:var(--g3);margin-top:4px;">템플릿을 선택하세요</div>`;
+  const btn = document.getElementById('tmplConfirm');
+  btn.classList.remove('active','ocr-active');
+  btn.textContent = '템플릿 선택';
+  document.getElementById('tmplOverlay').classList.add('open');
+}
+
+function closeTmplModal(){
+  document.getElementById('tmplOverlay').classList.remove('open');
+}
+
+function tmplOvClick(e){
+  if(e.target === document.getElementById('tmplOverlay')) closeTmplModal();
+}
+
+function selectTmpl(el, name, desc, isOcr=false){
+  document.querySelectorAll('.tmpl-item').forEach(i => i.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedTmplName = name;
+  selectedTmplIsOcr = isOcr;
+  selectedRecIdx = -1; selectedRecTmpl = '';
+
+  const preview = document.getElementById('tmplPreview');
+  const btn = document.getElementById('tmplConfirm');
+
+  if(isOcr){
+    preview.className = 'tmpl-preview-box ocr-preview';
+    preview.innerHTML = `
+      <svg width="36" height="36" viewBox="0 0 48 48" fill="none">
+        <rect x="6" y="6" width="36" height="36" rx="3" stroke="#FF8C42" stroke-width="2.5"/>
+        <path d="M6 13h5M6 35h5M37 13h5M37 35h5M13 6v5M35 6v5M13 37v5M35 37v5" stroke="#FF8C42" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="24" cy="24" r="7" stroke="#FF8C42" stroke-width="2.2"/>
+        <circle cx="24" cy="24" r="2.5" fill="#FF8C42"/>
+      </svg>
+      <div class="tmpl-preview-name" style="color:#C05E10;">문제추출 (OCR)</div>
+      <div class="tmpl-preview-desc">시험지 파일을 업로드하면<br>AI가 문제를 자동 인식하여<br>슬라이드에 추가합니다.</div>
+      <div style="margin-top:8px;font-size:10px;background:#FFE8D0;color:#C05E10;padding:4px 10px;border-radius:8px;">PDF·HWP·이미지 지원</div>`;
+    btn.classList.remove('active');
+    btn.classList.add('ocr-active');
+    btn.textContent = '📄 문제추출 시작';
+  } else {
+    const recHtml = renderRecCards(name);
+    preview.className = 'tmpl-preview-box';
+    preview.style.alignItems = recHtml ? 'stretch' : 'center';
+    preview.style.justifyContent = recHtml ? 'flex-start' : 'center';
+    preview.innerHTML = recHtml || `
+      <div class="tmpl-preview-name">${name}</div>
+      <div class="tmpl-preview-desc">${desc}</div>`;
+    btn.classList.remove('ocr-active');
+    btn.classList.add('active');
+    btn.textContent = '빈 템플릿으로 추가';
+  }
+}
+
+
+// ── 추천 콘텐츠 데이터 ──
+const recData = {
+  '선택형': [
+    {title:'딸기는 무슨색일까?', choices:['빨간색','노란색','파란색'], hint:'직접 확인해보세요', explanation:'딸기는 빨간색입니다'},
+    {title:'다음 중 포유류는?', choices:['고래','독수리','개구리'], hint:'새끼를 낳는 동물', explanation:'고래는 포유류입니다'},
+    {title:'35+47의 계산 결과로 옳은 것은?', choices:['82','83','84','85','86'], hint:'일의 자리부터 계산', explanation:'35+47=82'},
+  ],
+  '단답형': [
+    {title:'35 + 47 = ?', choices:[], answer:'82', hint:'일의 자리부터', explanation:'답은 82'},
+    {title:'100 - 37 = ?', choices:[], answer:'63', hint:'받아내림 주의', explanation:'답은 63'},
+    {title:'□ + 25 = 61 일 때, □는?', choices:[], answer:'36', hint:'역연산', explanation:'61-25=36'},
+  ],
+  'OX형': [
+    {title:'35 + 47 = 82 이다.', choices:['O','X'], answer:1, hint:'계산해보세요', explanation:'O'},
+    {title:'받아올림이 있으면 더 어렵다.', choices:['O','X'], answer:1, hint:'생각해보세요', explanation:'O'},
+  ],
+  'T/F형': [
+    {title:'100 - 37 = 63 이다.', choices:['True','False'], answer:1, hint:'계산', explanation:'True'},
+    {title:'덧셈과 뺄셈은 관계가 없다.', choices:['True','False'], answer:2, hint:'역연산 관계', explanation:'False'},
+  ],
+  '연결형': [
+    {title:'계산 결과를 알맞게 연결하세요.', choices:['35+47=?:82','63-28=?:35','100-37=?:63'], answer:'1-82,2-35,3-63', hint:'각각 계산', explanation:'82, 35, 63'},
+  ],
+  '서술형 활동': [
+    {title:'35+47을 계산하는 방법을 설명하고 답을 구하세요.', choices:[], answer:'일의 자리: 5+7=12, 받아올림 1. 십의 자리: 3+4+1=8. 답은 82', hint:'자릿값별로', explanation:'받아올림 주의'},
+    {title:'받아올림이 무엇인지 예를 들어 설명하세요.', choices:[], answer:'일의 자리 합이 10 이상일 때 십의 자리로 1을 올리는 것', hint:'예시 포함', explanation:''},
+  ],
+  '순서입력형': [
+    {title:'덧셈 계산 순서를 올바르게 배열하세요.', choices:['일의 자리 더하기','받아올림 확인','십의 자리 더하기'], answer:1, hint:'자릿값 순서', explanation:'일의 자리 → 받아올림 → 십의 자리'},
+  ],
+  '순서조합형': [
+    {title:'조각을 조합하여 올바른 덧셈식을 완성하세요.', choices:['35','+','47','=','82'], answer:1, hint:'순서대로', explanation:'35+47=82'},
+  ],
+};
+
+// ── 추천 콘텐츠 썸네일 SVG ──
+const recThumbs = {"선택형_0": "<svg viewBox=\"0 0 120 130\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"130\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"30\" height=\"7\" rx=\"2\" fill=\"#4B6EF5\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"22\" width=\"108\" height=\"6\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"32\" width=\"80\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"52\" width=\"108\" height=\"16\" rx=\"3\" fill=\"#4B6EF5\"/><circle cx=\"14\" cy=\"60\" r=\"5\" fill=\"white\"/><rect x=\"6\" y=\"74\" width=\"108\" height=\"16\" rx=\"3\" fill=\"#F5F5F5\"/><circle cx=\"14\" cy=\"82\" r=\"5\" fill=\"#ddd\"/><rect x=\"6\" y=\"96\" width=\"108\" height=\"16\" rx=\"3\" fill=\"#F5F5F5\"/><circle cx=\"14\" cy=\"104\" r=\"5\" fill=\"#ddd\"/>\n</svg>", "선택형_1": "<svg viewBox=\"0 0 120 130\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"130\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"30\" height=\"7\" rx=\"2\" fill=\"#4B6EF5\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"22\" width=\"108\" height=\"6\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"32\" width=\"80\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"52\" width=\"108\" height=\"16\" rx=\"3\" fill=\"#4B6EF5\"/><circle cx=\"14\" cy=\"60\" r=\"5\" fill=\"white\"/><rect x=\"6\" y=\"74\" width=\"108\" height=\"16\" rx=\"3\" fill=\"#F5F5F5\"/><circle cx=\"14\" cy=\"82\" r=\"5\" fill=\"#ddd\"/><rect x=\"6\" y=\"96\" width=\"108\" height=\"16\" rx=\"3\" fill=\"#F5F5F5\"/><circle cx=\"14\" cy=\"104\" r=\"5\" fill=\"#ddd\"/>\n</svg>", "선택형_2": "<svg viewBox=\"0 0 120 130\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"130\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"30\" height=\"7\" rx=\"2\" fill=\"#4B6EF5\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"22\" width=\"108\" height=\"6\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"32\" width=\"80\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"52\" width=\"108\" height=\"16\" rx=\"3\" fill=\"#4B6EF5\"/><circle cx=\"14\" cy=\"60\" r=\"5\" fill=\"white\"/><rect x=\"6\" y=\"74\" width=\"108\" height=\"16\" rx=\"3\" fill=\"#F5F5F5\"/><circle cx=\"14\" cy=\"82\" r=\"5\" fill=\"#ddd\"/><rect x=\"6\" y=\"96\" width=\"108\" height=\"16\" rx=\"3\" fill=\"#F5F5F5\"/><circle cx=\"14\" cy=\"104\" r=\"5\" fill=\"#ddd\"/>\n</svg>", "단답형_0": "<svg viewBox=\"0 0 120 100\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"100\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"30\" height=\"7\" rx=\"2\" fill=\"#22C98B\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"22\" width=\"108\" height=\"6\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"32\" width=\"60\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"48\" width=\"108\" height=\"24\" rx=\"4\" fill=\"white\" stroke=\"#D0D4E0\" stroke-width=\"1.5\"/>\n  <rect x=\"14\" y=\"57\" width=\"40\" height=\"5\" rx=\"2\" fill=\"#22C98B\" opacity=\".4\"/>\n</svg>", "단답형_1": "<svg viewBox=\"0 0 120 100\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"100\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"30\" height=\"7\" rx=\"2\" fill=\"#22C98B\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"22\" width=\"108\" height=\"6\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"32\" width=\"60\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"48\" width=\"108\" height=\"24\" rx=\"4\" fill=\"white\" stroke=\"#D0D4E0\" stroke-width=\"1.5\"/>\n  <rect x=\"14\" y=\"57\" width=\"40\" height=\"5\" rx=\"2\" fill=\"#22C98B\" opacity=\".4\"/>\n</svg>", "단답형_2": "<svg viewBox=\"0 0 120 100\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"100\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"30\" height=\"7\" rx=\"2\" fill=\"#22C98B\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"22\" width=\"108\" height=\"6\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"32\" width=\"60\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"48\" width=\"108\" height=\"24\" rx=\"4\" fill=\"white\" stroke=\"#D0D4E0\" stroke-width=\"1.5\"/>\n  <rect x=\"14\" y=\"57\" width=\"40\" height=\"5\" rx=\"2\" fill=\"#22C98B\" opacity=\".4\"/>\n</svg>", "OX형_0": "<svg viewBox=\"0 0 120 100\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"100\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"22\" height=\"7\" rx=\"2\" fill=\"#FF4F6A\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"22\" width=\"108\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"31\" width=\"70\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"48\" width=\"50\" height=\"22\" rx=\"5\" fill=\"#E8FFF5\" stroke=\"#22C98B\" stroke-width=\"1.5\"/>\n  <text x=\"31\" y=\"63\" font-size=\"14\" font-weight=\"900\" fill=\"#22C98B\" text-anchor=\"middle\" font-family=\"Arial\">O</text>\n  <rect x=\"64\" y=\"48\" width=\"50\" height=\"22\" rx=\"5\" fill=\"#FFF0F3\" stroke=\"#FF4F6A\" stroke-width=\"1.5\"/>\n  <text x=\"89\" y=\"63\" font-size=\"14\" font-weight=\"900\" fill=\"#FF4F6A\" text-anchor=\"middle\" font-family=\"Arial\">X</text>\n</svg>", "OX형_1": "<svg viewBox=\"0 0 120 100\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"100\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"22\" height=\"7\" rx=\"2\" fill=\"#FF4F6A\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"22\" width=\"108\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"31\" width=\"70\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"48\" width=\"50\" height=\"22\" rx=\"5\" fill=\"#E8FFF5\" stroke=\"#22C98B\" stroke-width=\"1.5\"/>\n  <text x=\"31\" y=\"63\" font-size=\"14\" font-weight=\"900\" fill=\"#22C98B\" text-anchor=\"middle\" font-family=\"Arial\">O</text>\n  <rect x=\"64\" y=\"48\" width=\"50\" height=\"22\" rx=\"5\" fill=\"#FFF0F3\" stroke=\"#FF4F6A\" stroke-width=\"1.5\"/>\n  <text x=\"89\" y=\"63\" font-size=\"14\" font-weight=\"900\" fill=\"#FF4F6A\" text-anchor=\"middle\" font-family=\"Arial\">X</text>\n</svg>", "T/F형_0": "<svg viewBox=\"0 0 120 100\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"100\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"26\" height=\"7\" rx=\"2\" fill=\"#7C4DFF\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"22\" width=\"108\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"31\" width=\"90\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"48\" width=\"50\" height=\"22\" rx=\"5\" fill=\"#EEF5FF\" stroke=\"#7C4DFF\" stroke-width=\"1.5\"/>\n  <text x=\"31\" y=\"63\" font-size=\"9\" font-weight=\"800\" fill=\"#7C4DFF\" text-anchor=\"middle\" font-family=\"Arial\">True</text>\n  <rect x=\"64\" y=\"48\" width=\"50\" height=\"22\" rx=\"5\" fill=\"#F5F5F5\" stroke=\"#ccc\" stroke-width=\"1.5\"/>\n  <text x=\"89\" y=\"63\" font-size=\"9\" font-weight=\"800\" fill=\"#999\" text-anchor=\"middle\" font-family=\"Arial\">False</text>\n</svg>", "T/F형_1": "<svg viewBox=\"0 0 120 100\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"100\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"26\" height=\"7\" rx=\"2\" fill=\"#7C4DFF\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"22\" width=\"108\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"31\" width=\"90\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"48\" width=\"50\" height=\"22\" rx=\"5\" fill=\"#EEF5FF\" stroke=\"#7C4DFF\" stroke-width=\"1.5\"/>\n  <text x=\"31\" y=\"63\" font-size=\"9\" font-weight=\"800\" fill=\"#7C4DFF\" text-anchor=\"middle\" font-family=\"Arial\">True</text>\n  <rect x=\"64\" y=\"48\" width=\"50\" height=\"22\" rx=\"5\" fill=\"#F5F5F5\" stroke=\"#ccc\" stroke-width=\"1.5\"/>\n  <text x=\"89\" y=\"63\" font-size=\"9\" font-weight=\"800\" fill=\"#999\" text-anchor=\"middle\" font-family=\"Arial\">False</text>\n</svg>", "연결형_0": "<svg viewBox=\"0 0 120 110\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"110\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"30\" height=\"7\" rx=\"2\" fill=\"#FF8C42\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"24\" width=\"40\" height=\"14\" rx=\"3\" fill=\"white\" stroke=\"#D0D4E0\" stroke-width=\"1.2\"/>\n  <rect x=\"6\" y=\"42\" width=\"40\" height=\"14\" rx=\"3\" fill=\"white\" stroke=\"#D0D4E0\" stroke-width=\"1.2\"/>\n  <rect x=\"6\" y=\"60\" width=\"40\" height=\"14\" rx=\"3\" fill=\"white\" stroke=\"#D0D4E0\" stroke-width=\"1.2\"/>\n  <rect x=\"74\" y=\"24\" width=\"40\" height=\"14\" rx=\"3\" fill=\"white\" stroke=\"#D0D4E0\" stroke-width=\"1.2\"/>\n  <rect x=\"74\" y=\"42\" width=\"40\" height=\"14\" rx=\"3\" fill=\"white\" stroke=\"#D0D4E0\" stroke-width=\"1.2\"/>\n  <rect x=\"74\" y=\"60\" width=\"40\" height=\"14\" rx=\"3\" fill=\"white\" stroke=\"#D0D4E0\" stroke-width=\"1.2\"/>\n  <line x1=\"46\" y1=\"31\" x2=\"74\" y2=\"31\" stroke=\"#FF8C42\" stroke-width=\"1.5\" stroke-dasharray=\"3,2\"/>\n  <line x1=\"46\" y1=\"49\" x2=\"74\" y2=\"67\" stroke=\"#FF8C42\" stroke-width=\"1.5\" stroke-dasharray=\"3,2\"/>\n</svg>", "서술형 활동_0": "<svg viewBox=\"0 0 120 110\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"110\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"30\" height=\"7\" rx=\"2\" fill=\"#4B7CF4\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"22\" width=\"108\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"31\" width=\"80\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"48\" width=\"108\" height=\"48\" rx=\"4\" fill=\"white\" stroke=\"#D0D4E0\" stroke-width=\"1.5\"/>\n  <rect x=\"12\" y=\"56\" width=\"70\" height=\"3\" rx=\"1.5\" fill=\"#E0E3EA\"/>\n  <rect x=\"12\" y=\"64\" width=\"55\" height=\"3\" rx=\"1.5\" fill=\"#E0E3EA\"/>\n  <rect x=\"12\" y=\"72\" width=\"65\" height=\"3\" rx=\"1.5\" fill=\"#E0E3EA\"/>\n</svg>", "서술형 활동_1": "<svg viewBox=\"0 0 120 110\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"110\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"30\" height=\"7\" rx=\"2\" fill=\"#4B7CF4\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"22\" width=\"108\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"31\" width=\"80\" height=\"5\" rx=\"2\" fill=\"#E0E3EA\"/>\n  <rect x=\"6\" y=\"48\" width=\"108\" height=\"48\" rx=\"4\" fill=\"white\" stroke=\"#D0D4E0\" stroke-width=\"1.5\"/>\n  <rect x=\"12\" y=\"56\" width=\"70\" height=\"3\" rx=\"1.5\" fill=\"#E0E3EA\"/>\n  <rect x=\"12\" y=\"64\" width=\"55\" height=\"3\" rx=\"1.5\" fill=\"#E0E3EA\"/>\n  <rect x=\"12\" y=\"72\" width=\"65\" height=\"3\" rx=\"1.5\" fill=\"#E0E3EA\"/>\n</svg>", "순서입력형_0": "<svg viewBox=\"0 0 120 100\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"100\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"40\" height=\"7\" rx=\"2\" fill=\"#22b8c9\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"24\" width=\"32\" height=\"20\" rx=\"4\" fill=\"white\" stroke=\"#22b8c9\" stroke-width=\"1.5\"/>\n  <text x=\"22\" y=\"38\" font-size=\"10\" font-weight=\"800\" fill=\"#22b8c9\" text-anchor=\"middle\" font-family=\"Arial\">1</text>\n  <rect x=\"44\" y=\"24\" width=\"32\" height=\"20\" rx=\"4\" fill=\"white\" stroke=\"#ddd\" stroke-width=\"1.5\"/>\n  <text x=\"60\" y=\"38\" font-size=\"10\" fill=\"#999\" text-anchor=\"middle\" font-family=\"Arial\">2</text>\n  <rect x=\"82\" y=\"24\" width=\"32\" height=\"20\" rx=\"4\" fill=\"white\" stroke=\"#ddd\" stroke-width=\"1.5\"/>\n  <text x=\"98\" y=\"38\" font-size=\"10\" fill=\"#999\" text-anchor=\"middle\" font-family=\"Arial\">3</text>\n</svg>", "순서조합형_0": "<svg viewBox=\"0 0 120 100\" xmlns=\"http://www.w3.org/2000/svg\" width=\"100%\" height=\"100%\">\n  <rect width=\"120\" height=\"100\" rx=\"6\" fill=\"#F8F9FC\"/>\n  <rect x=\"6\" y=\"8\" width=\"40\" height=\"7\" rx=\"2\" fill=\"#9b59b6\" opacity=\".85\"/>\n  <rect x=\"6\" y=\"24\" width=\"32\" height=\"20\" rx=\"4\" fill=\"white\" stroke=\"#9b59b6\" stroke-width=\"1.5\"/>\n  <text x=\"22\" y=\"38\" font-size=\"10\" font-weight=\"800\" fill=\"#9b59b6\" text-anchor=\"middle\" font-family=\"Arial\">1</text>\n  <rect x=\"44\" y=\"24\" width=\"32\" height=\"20\" rx=\"4\" fill=\"white\" stroke=\"#ddd\" stroke-width=\"1.5\"/>\n  <text x=\"60\" y=\"38\" font-size=\"10\" fill=\"#999\" text-anchor=\"middle\" font-family=\"Arial\">2</text>\n  <rect x=\"82\" y=\"24\" width=\"32\" height=\"20\" rx=\"4\" fill=\"white\" stroke=\"#ddd\" stroke-width=\"1.5\"/>\n  <text x=\"98\" y=\"38\" font-size=\"10\" fill=\"#999\" text-anchor=\"middle\" font-family=\"Arial\">3</text>\n</svg>"};
+
+// 추천 썸네일 그리드 렌더링
+function renderRecCards(tmpl) {
+  const items = recData[tmpl] || [];
+  const noExclude = ['빈 문서','내 자료','문제추출'];
+  if(items.length===0 || noExclude.some(x=>tmpl.includes(x))) return '';
+  const safeT = tmpl.replace(/'/g,"\\'");
+  return `
+    <div class="rec-label">✦ 추천 콘텐츠</div>
+    <div class="rec-grid">
+    ${items.map((item,i)=>{
+      const svg = recThumbs[tmpl+'_'+i] || recThumbs[tmpl+'_0'] || '';
+      return `<div class="rec-thumb" onclick="selectRecCard(this,${i},'${safeT}')">
+        <div class="rec-thumb-img">${svg}</div>
+        <div class="rec-thumb-foot">
+          <div class="rec-thumb-badge" style="background:${recBadgeColor(tmpl)};">${tmpl}</div>
+          <div class="rec-thumb-title">${item.title}</div>
+          <div class="rec-use-row">
+            <button class="rec-use-btn" onclick="event.stopPropagation();useRec(${i},'${safeT}')" style="background:${recBadgeColor(tmpl)};">사용하기</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
+    </div>`;
+}
+
+function recBadgeColor(t){
+  const m={'선택형':'#4B6EF5','단답형':'#22C98B','OX형':'#FF4F6A','T/F형':'#7C4DFF','연결형':'#FF8C42','서술형 활동':'#4B7CF4','순서입력형':'#22b8c9','순서조합형':'#9b59b6'};
+  return m[t]||'#8A93A8';
+}
+
+let selectedRecIdx = -1;
+
+function selectRecCard(el, idx, tmpl){
+  el.closest('.tmpl-preview-box').querySelectorAll('.rec-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedRecIdx = idx;
+  selectedRecTmpl = tmpl;
+}
+
+let selectedRecTmpl = '';
+
+function useRec(idx, tmpl){
+  const item = (recData[tmpl]||[])[idx];
+  if(!item) return;
+  closeTmplModal();
+  insertQuestionBlock(item);
+  T(`✅ '${tmpl}' 추천 콘텐츠 추가됨`);
+}
+
+function confirmTmpl(){
+  closeTmplModal();
+  if(selectedTmplIsOcr){
+    openOcrWindow();
+  } else if(selectedRecIdx>=0 && selectedRecTmpl){
+    useRec(selectedRecIdx, selectedRecTmpl);
+    selectedRecIdx=-1; selectedRecTmpl='';
+  } else {
+    insertBlock('question');
+    T(`✅ '${selectedTmplName}' 템플릿 추가됨`);
+  }
+}
+
+// ── AI 모달 탭 전환 ──
+function switchAiTab(i){
+  [0,1].forEach(j=>{
+    document.getElementById('aiTab'+j).classList.toggle('on', i===j);
+    document.getElementById('aiTabBody'+j).style.display = i===j ? '' : 'none';
+  });
+}
+
+// ── OCR ──
+function openOcrWindow(){
+  T('📷 시험지 가져오기 창을 열고 있어요...');
+  window.open('https://t2-extractq.vsaidt.com','_blank','width=1100,height=750,noopener');
+}
+
+// ── TOAST ──
+let tt;
+function T(msg){const el=document.getElementById('toastEl');document.getElementById('toastTxt').textContent=msg;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2200);}
+</script>
+</body>
+</html>
