@@ -192,11 +192,32 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .resize-handle:hover::after,.resize-handle.dragging::after{background:white;}
 
 /* 좌측 히스토리 패널 */
-.history-panel{width:200px;background:white;border-right:1px solid var(--g2);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;}
+.history-panel{width:200px;background:white;border-right:1px solid var(--g2);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;position:relative;}
 .history-header{padding:12px 14px 8px;border-bottom:1px solid var(--g2);flex-shrink:0;}
 .history-title{font-size:11px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:5px;}
 .history-title svg{color:var(--ai);}
-.history-list{flex:1;overflow-y:auto;padding:8px 0;}
+.history-list{flex:1;overflow-y:auto;padding:8px 0;min-height:0;}
+/* ── 좌측 하단 전체채팅 ── */
+/* ── 공통 채팅 ── */
+.global-chat{display:flex;flex-direction:column;flex-shrink:0;background:#1A1F3A;border-top:none;}
+.gc-header{padding:12px 14px 8px;border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;}
+.gc-title{font-size:11px;font-weight:800;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:5px;}
+.gc-desc{font-size:9px;color:rgba(255,255,255,.28);line-height:1.5;margin-top:4px;padding:5px 7px;background:rgba(255,255,255,.05);border-radius:6px;}
+.gc-msgs{max-height:90px;overflow-y:auto;padding:6px 10px 0;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.1) transparent;}
+.gc-msgs::-webkit-scrollbar{width:3px;}
+.gc-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px;}
+.gc-msg-wrap{margin-bottom:8px;}
+.gc-msg-lbl{font-size:8px;font-weight:700;color:rgba(255,255,255,.35);margin-bottom:2px;}
+.gc-msg-lbl.ai{color:#A87DFF;}
+.gc-msg{border-radius:8px;padding:7px 9px;font-size:10px;line-height:1.5;}
+.gc-msg.user{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);margin-left:16px;}
+.gc-msg.ai{background:rgba(124,77,255,.2);border:1px solid rgba(124,77,255,.3);color:rgba(255,255,255,.88);}
+.gc-input-area{padding:10px;border-top:1px solid rgba(255,255,255,.08);flex-shrink:0;}
+.gc-row{display:flex;gap:6px;}
+.gc-inp{flex:1;height:32px;padding:0 10px;border-radius:8px;border:1.5px solid rgba(255,255,255,.12);font-size:11px;color:white;outline:none;font-family:'Noto Sans KR',sans-serif;background:rgba(255,255,255,.07);}
+.gc-inp:focus{border-color:var(--ai);}
+.gc-inp::placeholder{color:rgba(255,255,255,.25);}
+.gc-send{width:32px;height:32px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--ai),#A87DFF);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .history-list::-webkit-scrollbar{width:3px;}
 .history-list::-webkit-scrollbar-thumb{background:var(--g3);border-radius:2px;}
 .history-empty{padding:24px 14px;text-align:center;color:var(--g3);font-size:11px;line-height:1.7;}
@@ -598,6 +619,64 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .tmpl-confirm.active{opacity:1;pointer-events:all;background:linear-gradient(135deg,var(--blue),var(--blue-dk));}
 .tmpl-confirm.ocr-active{opacity:1;pointer-events:all;background:linear-gradient(135deg,var(--orange),#e07030) !important;}
 
+
+/* ── 저장 메타 모달 ── */
+.save-overlay{position:fixed;inset:0;background:rgba(10,15,40,.5);backdrop-filter:blur(5px);z-index:2000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.save-overlay.open{opacity:1;pointer-events:all;}
+.save-modal{background:white;border-radius:16px;width:760px;max-height:90vh;display:flex;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.28);transform:translateY(12px) scale(.97);transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
+.save-overlay.open .save-modal{transform:none;}
+.save-sidebar{width:190px;background:#F8F9FC;border-right:1px solid var(--g2);padding:18px 0;display:flex;flex-direction:column;gap:2px;flex-shrink:0;}
+.save-sb-header{padding:0 16px 12px;border-bottom:1px solid var(--g2);margin-bottom:8px;}
+.save-sb-title{font-size:13px;font-weight:800;color:var(--text);}
+.save-sb-item{display:flex;align-items:center;gap:8px;padding:8px 16px;cursor:pointer;border-radius:0;transition:background .12s;font-size:11px;font-weight:600;color:var(--g5);}
+.save-sb-item:hover{background:var(--g1);}
+.save-sb-thumb{width:48px;height:34px;border-radius:5px;background:white;border:1.5px solid var(--g2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+.save-sb-item.active{background:#EEF1FF;color:var(--blue);}
+.save-sb-item.active .save-sb-thumb{border-color:var(--blue);}
+.save-content{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.save-topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 24px 14px;border-bottom:1px solid var(--g2);flex-shrink:0;}
+.save-topbar-title{font-size:15px;font-weight:800;color:var(--text);}
+.save-close{width:32px;height:32px;border-radius:50%;border:none;background:var(--g1);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--g4);}
+.save-close:hover{background:var(--g2);}
+.save-steps{display:flex;align-items:center;gap:6px;padding:0 24px 14px;border-bottom:1px solid var(--g2);flex-shrink:0;}
+.save-step{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;background:var(--g1);color:var(--g4);transition:all .2s;}
+.save-step.active{background:var(--ai);color:white;}
+.save-step.done{background:#E8FFF5;color:#22C98B;}
+.save-arrow{color:var(--g3);font-size:12px;}
+.save-body{flex:1;overflow-y:auto;padding:20px 24px;}
+.save-field{margin-bottom:16px;}
+.save-label{font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.save-label .req{color:var(--ai);font-size:10px;}
+.save-label .auto-badge{font-size:8px;background:linear-gradient(135deg,var(--ai),#A87DFF);color:white;padding:1px 6px;border-radius:8px;font-weight:800;}
+.save-inp{width:100%;height:36px;padding:0 12px;border:1.5px solid var(--g2);border-radius:8px;font-size:12px;color:var(--text);outline:none;font-family:'Noto Sans KR',sans-serif;transition:border-color .15s;}
+.save-inp:focus{border-color:var(--ai);}
+.save-row2{display:flex;gap:12px;}
+.save-row2 .save-field{flex:1;}
+.save-radio-row{display:flex;gap:10px;flex-wrap:wrap;}
+.save-radio{display:flex;align-items:center;gap:5px;padding:6px 12px;border:1.5px solid var(--g2);border-radius:8px;cursor:pointer;font-size:11px;color:var(--g5);transition:all .15s;}
+.save-radio:hover{border-color:var(--ai);color:var(--ai);}
+.save-radio.on{border-color:var(--ai);background:var(--ai-lt);color:var(--ai);font-weight:700;}
+.save-radio input{display:none;}
+.save-sel{width:100%;height:36px;padding:0 10px;border:1.5px solid var(--g2);border-radius:8px;font-size:12px;color:var(--text);outline:none;font-family:'Noto Sans KR',sans-serif;background:white;}
+.save-sel:focus{border-color:var(--ai);}
+.save-tag-wrap{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px;border:1.5px solid var(--g2);border-radius:8px;min-height:38px;cursor:text;}
+.save-tag-wrap:focus-within{border-color:var(--ai);}
+.save-tag{display:flex;align-items:center;gap:4px;padding:3px 8px;background:var(--ai-lt);color:var(--ai);border-radius:20px;font-size:10px;font-weight:700;}
+.save-tag .rm{cursor:pointer;opacity:.6;font-size:11px;line-height:1;}
+.save-tag .rm:hover{opacity:1;}
+.save-tag-inp{border:none;outline:none;font-size:11px;font-family:'Noto Sans KR',sans-serif;min-width:80px;flex:1;}
+.save-ai-hint{font-size:9px;color:var(--ai);background:var(--ai-lt);padding:4px 10px;border-radius:6px;margin-top:4px;display:flex;align-items:center;gap:4px;}
+.save-footer{padding:14px 24px;border-top:1px solid var(--g2);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;}
+.save-btn-cancel{height:40px;padding:0 20px;border-radius:8px;border:1.5px solid var(--g2);background:white;color:var(--g5);font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.save-btn-temp{height:40px;padding:0 20px;border-radius:8px;border:1.5px solid var(--ai);background:white;color:var(--ai);font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.save-btn-next{height:40px;padding:0 24px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--blue),var(--blue-dk));color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;}
+.save-btn-next:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(75,110,245,.35);}
+.save-btn-next:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;}
+.save-difficulty-row{display:flex;gap:8px;}
+.save-diff-btn{flex:1;height:34px;border-radius:8px;border:1.5px solid var(--g2);background:white;font-size:11px;font-weight:600;color:var(--g5);cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;}
+.save-diff-btn:hover{border-color:var(--ai);color:var(--ai);}
+.save-diff-btn.on{border-color:var(--ai);background:var(--ai-lt);color:var(--ai);font-weight:700;}
+
 /* TOAST */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(50px);background:rgba(30,35,64,.95);color:white;padding:9px 20px;border-radius:18px;font-size:12px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:2000;transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
 .toast.show{transform:translateX(-50%) translateY(0);}
@@ -713,7 +792,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <div style="display:flex;gap:6px;">
     
     <button class="tbtn prim" onclick="T('👁 미리보기 실행')">미리보기</button>
-    <button class="tbtn save" onclick="T('✅ 저장 완료')">저장하기</button>
+    <button class="tbtn save" onclick="openSaveModal()">저장하기</button>
   </div>
 </div>
 
@@ -801,14 +880,29 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 <div class="editor-body">
 
   <!-- 좌측 히스토리 패널 -->
-  <div class="history-panel" id="historyPanel" style="width:200px;">
+  <div class="history-panel" id="historyPanel" style="width:220px;">
     <div class="history-header">
       <div class="history-title">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="currentColor" style="color:var(--ai)"/></svg>
         AI 생성 히스토리
       </div>
     </div>
-    <div class="history-list" id="historyList">
+    <div class="history-list" id="historyList"></div>
+    <!-- 전체 AI 채팅 (하단 고정) -->
+    <div class="global-chat">
+      <div style="padding:8px 12px 6px;border-top:2px solid var(--ai-lt);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;display:flex;align-items:center;gap:5px;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span style="font-size:10px;font-weight:800;color:rgba(255,255,255,.65);">전체 AI 수정 요청</span>
+      </div>
+      <div class="gc-msgs" id="gcMsgs"></div>
+      <div class="gc-input-area">
+        <div class="gc-row">
+          <input class="gc-inp" id="gcInput" placeholder="예) 전체 난이도를 낮춰줘" onkeydown="if(event.key==='Enter')sendGlobalChat()">
+          <button class="gc-send" onclick="sendGlobalChat()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -857,10 +951,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
         속성
       </button>
-      <button class="rp-tab aitab" id="tab-ai" onclick="switchRp(1,this)">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="currentColor"/></svg>
-        AI <span class="ai-pill">NEW</span>
-      </button>
+
     </div>
     <!-- 초기 빈 안내 -->
     <div id="rpEmpty" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center;">
@@ -1877,7 +1968,7 @@ function renderCtx(type){
 // ── 블록 선택 ──
 function showRightPanel(){
   document.getElementById('rpEmpty').style.display='none';
-  document.getElementById('rpTabs').style.display='flex';
+  document.getElementById('rpTabs').style.display='none';
   document.getElementById('rpBody').style.display='flex';
   renderRp();
 }
@@ -2101,42 +2192,6 @@ function renderRp(){
           </div>
         </div>
       </div>`;
-  } else {
-    // AI 탭 — 항상 새로 렌더링 (채팅 휘발)
-    b.innerHTML=`
-    <div class="ai-panel" id="aiPanel">
-      <div class="ai-suggest-area">
-        <div class="ai-section-lbl">AI 제안</div>
-
-        <div class="ai-card c-design" onclick="rpAiAction('이미지 자동제안')">
-          <div class="ai-card-hd"><span class="ai-badge design">🖼 이미지 자동제안</span></div>
-          <div class="ai-card-desc">선택된 문제에 어울리는 삽화·도식 이미지를 제안해 드려요</div>
-          <button class="ai-card-btn design" onclick="event.stopPropagation();rpAiAction('이미지 자동제안')">제안</button>
-        </div>
-
-        <div class="ai-card c-gen" onclick="rpAiAction('힌트·해설 자동제안')">
-          <div class="ai-card-hd"><span class="ai-badge gen">💡 힌트·해설 자동제안</span></div>
-          <div class="ai-card-desc">선택된 문제의 힌트와 해설을 AI가 자동으로 작성해 드려요</div>
-          <button class="ai-card-btn gen" onclick="event.stopPropagation();rpAiAction('힌트·해설 자동제안')">생성</button>
-        </div>
-      </div>
-
-      <div class="ai-chat-area">
-        <div style="display:flex;align-items:center;gap:5px;margin-bottom:8px;">
-          <div class="ai-chat-lbl" style="margin-bottom:0;flex:1;">AI에게 물어보세요</div>
-        </div>
-        <div style="font-size:9px;color:rgba(255,255,255,.28);line-height:1.6;margin-bottom:8px;padding:6px 8px;background:rgba(255,255,255,.04);border-radius:6px;border:1px solid rgba(255,255,255,.07);">
-          💬 이 대화는 현재 선택된 콘텐츠에 한정되며,<br>다른 콘텐츠를 선택하면 초기화됩니다.
-        </div>
-        <div class="ai-chat-msgs" id="aiMsgs" style="max-height:140px;"></div>
-        <div class="ai-chat-row">
-          <input class="ai-chat-input" id="aiInput" placeholder="예) 이 문제를 더 쉽게 바꿔줘" onkeydown="if(event.key==='Enter')sendAiChat()">
-          <button class="ai-send" onclick="sendAiChat()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>`;
   }
 }
 
@@ -2662,6 +2717,224 @@ function openOcrWindow(){
 // ── TOAST ──
 let tt;
 function T(msg){const el=document.getElementById('toastEl');document.getElementById('toastTxt').textContent=msg;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2200);}
+
+// ── 2) 좌측 탭 전환 ──
+function switchLp(n){
+  [0,1].forEach(i=>{
+    document.getElementById('lptab-'+i).classList.toggle('on', i===n);
+    document.getElementById('lp-body-'+i).classList.toggle('show', i===n);
+  });
+}
+
+// ── 2) 전체 공통 채팅 ──
+async function sendGlobalChat(){
+  const inp = document.getElementById('gcInput');
+  const msgs = document.getElementById('gcMsgs');
+  if(!inp||!msgs) return;
+  const userMsg = inp.value.trim();
+  if(!userMsg) return;
+  inp.value = '';
+
+  msgs.innerHTML += `<div class="gc-msg-wrap"><div class="gc-msg-lbl">나</div><div class="gc-msg user">${userMsg}</div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const lid = 'gc-'+Date.now();
+  msgs.innerHTML += `<div class="gc-msg-wrap"><div class="gc-msg-lbl ai">✦ AI</div><div class="gc-msg ai" id="${lid}" style="color:rgba(255,255,255,.35);">생각하는 중...</div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const blocks = document.querySelectorAll('.cb[id]');
+  const blockSummary = Array.from(blocks).slice(0,6).map((b,i)=>{
+    const qt = b.querySelector('.q-txt');
+    return `${i+1}. ${qt ? qt.textContent.slice(0,40) : '블록'}`;
+  }).join('\n');
+
+  const prompt = `당신은 콘텐츠 저작툴 AI입니다. 현재 슬라이드의 콘텐츠 목록:\n${blockSummary}\n\n사용자 요청: ${userMsg}\n\n짧고 친절하게 한국어로 답하세요.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:prompt}]})
+    });
+    const data = await res.json();
+    const reply = data.content?.map(i=>i.text||'').join('').trim()||'응답을 받지 못했어요.';
+    const el = document.getElementById(lid);
+    if(el){el.textContent=reply;el.style.color='';}
+  } catch(e) {
+    const el = document.getElementById(lid);
+    if(el){el.textContent='오류가 발생했어요. 다시 시도해 주세요.';el.style.color='#FF4F6A';}
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ── 3) 저장 메타 모달 ──
+let saveStep = 0;
+
+function openSaveModal(){
+  saveStep = 0;
+  document.getElementById('saveOverlay').classList.add('open');
+  renderSaveStep();
+}
+function closeSaveModal(){
+  document.getElementById('saveOverlay').classList.remove('open');
+}
+function saveOvClick(e){
+  if(e.target===document.getElementById('saveOverlay')) closeSaveModal();
+}
+
+function renderSaveStep(){
+  ['sstep-0','sstep-1'].forEach((id,i)=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.className = 'save-step' + (i<saveStep?' done':i===saveStep?' active':'');
+  });
+  const nextBtn = document.getElementById('saveBtnNext');
+  if(nextBtn) nextBtn.textContent = saveStep===0 ? '다음 단계' : '✅ 저장 완료';
+
+  const body = document.getElementById('saveBody');
+  if(!body) return;
+
+  if(saveStep===0){
+    const autoTags = aiHistory.length ? [
+      aiHistory[0].tmpl||'선택형',
+      `난이도 ${aiHistory[0].lv||'중'}`,
+      '초등 수학 3-1'
+    ] : ['초등 수학 3-1','덧셈과 뺄셈'];
+
+    body.innerHTML = `
+      <div class="save-field">
+        <div class="save-label">콘텐츠 명 <span class="req">*</span></div>
+        <input class="save-inp" id="smeta-name" value="콘텐츠 1">
+      </div>
+      <div class="save-field">
+        <div class="save-label">교과/비교과 <span class="req">*</span></div>
+        <div class="save-radio-row">
+          <label class="save-radio on" onclick="this.classList.add('on');this.parentNode.querySelectorAll('.save-radio').forEach(r=>r!==this&&r.classList.remove('on'))">교과서 콘텐츠</label>
+          <label class="save-radio" onclick="this.classList.add('on');this.parentNode.querySelectorAll('.save-radio').forEach(r=>r!==this&&r.classList.remove('on'))">비교과서 콘텐츠</label>
+        </div>
+      </div>
+      <div class="save-row2">
+        <div class="save-field">
+          <div class="save-label">평가 영역 <span class="req">*</span></div>
+          <select class="save-sel" id="smeta-eval">
+            <option>창의적 사고력</option><option>문제 해결력</option>
+            <option>의사소통 능력</option><option>정보 처리 능력</option>
+          </select>
+        </div>
+        <div class="save-field">
+          <div class="save-label">난이도 <span class="req">*</span></div>
+          <div class="save-difficulty-row">
+            ${['상','중상','중','중하','하'].map(d=>`<button class="save-diff-btn${d==='하'?' on':''}" onclick="document.querySelectorAll('.save-diff-btn').forEach(b=>b.classList.remove('on'));this.classList.add('on')">${d}</button>`).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="save-row2">
+        <div class="save-field">
+          <div class="save-label">배점 <span class="req">*</span></div>
+          <input class="save-inp" id="smeta-score" type="number" value="50">
+        </div>
+        <div class="save-field">
+          <div class="save-label">출처</div>
+          <input class="save-inp" id="smeta-source" placeholder="출처를 입력하세요">
+        </div>
+      </div>
+      <div class="save-field">
+        <div class="save-label">해시태그 <span class="req">*</span> <span class="auto-badge">✦ AI 자동 태깅</span></div>
+        <div class="save-tag-wrap" id="sTagWrap" onclick="document.getElementById('sTagInput').focus()">
+          ${autoTags.map(t=>`<span class="save-tag">${t} <span class="rm" onclick="event.stopPropagation();this.parentNode.remove()">✕</span></span>`).join('')}
+          <input class="save-tag-inp" id="sTagInput" placeholder="태그 입력 후 Enter" onkeydown="saveTagKeydown(event)">
+        </div>
+        <div class="save-ai-hint">✦ AI가 콘텐츠를 분석해 태그를 추천했어요. 수정 가능합니다.</div>
+      </div>
+      <div class="save-field">
+        <div class="save-label">검인정 심사</div>
+        <div style="font-size:11px;color:var(--g4);padding:8px 10px;background:var(--g1);border-radius:6px;">대기 (검인정 심사 완료 처리는 [콘텐츠 목록]에서 가능합니다.)</div>
+      </div>`;
+  } else {
+    const name = document.getElementById('smeta-name')?.value||'콘텐츠 1';
+    const evalV = document.getElementById('smeta-eval')?.value||'창의적 사고력';
+    const diff = document.querySelector('.save-diff-btn.on')?.textContent||'하';
+    const score = document.getElementById('smeta-score')?.value||'50';
+    body.innerHTML = `
+      <div style="text-align:center;padding:32px 0 24px;">
+        <div style="font-size:40px;margin-bottom:12px;">✅</div>
+        <div style="font-size:16px;font-weight:800;color:var(--text);margin-bottom:8px;">저장 준비 완료!</div>
+        <div style="font-size:12px;color:var(--g4);line-height:1.8;">입력하신 메타 정보로 콘텐츠를 최종 저장합니다.<br>저장 후 [콘텐츠 목록]에서 확인할 수 있어요.</div>
+      </div>
+      <div style="background:var(--g1);border-radius:10px;padding:14px 18px;">
+        <div style="font-size:11px;font-weight:800;color:var(--text);margin-bottom:10px;">📋 저장 요약</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:11px;">
+          <div><span style="color:var(--g4);">콘텐츠 명</span><br><b>${name}</b></div>
+          <div><span style="color:var(--g4);">평가 영역</span><br><b>${evalV}</b></div>
+          <div><span style="color:var(--g4);">난이도</span><br><b>${diff}</b></div>
+          <div><span style="color:var(--g4);">배점</span><br><b>${score}점</b></div>
+        </div>
+      </div>`;
+  }
+}
+
+function saveTagKeydown(e){
+  if(e.key==='Enter'||e.key===','){
+    e.preventDefault();
+    const val = e.target.value.trim();
+    if(!val) return;
+    const wrap = document.getElementById('sTagWrap');
+    const span = document.createElement('span');
+    span.className='save-tag';
+    span.innerHTML=`${val} <span class="rm" onclick="this.parentNode.remove()">✕</span>`;
+    wrap.insertBefore(span, e.target);
+    e.target.value='';
+  }
+}
+
+function saveNextStep(){
+  if(saveStep===0){ saveStep=1; renderSaveStep(); }
+  else { closeSaveModal(); T('✅ 콘텐츠가 저장되었습니다!'); }
+}
+
 </script>
+
+<!-- ══ 저장 메타 모달 ══ -->
+<div class="save-overlay" id="saveOverlay" onclick="saveOvClick(event)">
+  <div class="save-modal" onclick="event.stopPropagation()">
+    <!-- 좌측 슬라이드 목록 -->
+    <div class="save-sidebar">
+      <div class="save-sb-header">
+        <div class="save-sb-title">콘텐츠 저장하기</div>
+      </div>
+      <div class="save-sb-item active" id="saveSbItem0">
+        <div class="save-sb-thumb">
+          <svg width="28" height="20" viewBox="0 0 28 20" fill="none"><rect x="2" y="2" width="10" height="7" rx="1.5" fill="#4B6EF5" opacity=".3"/><rect x="2" y="11" width="24" height="3" rx="1" fill="#E0E3EA"/><rect x="2" y="16" width="18" height="2" rx="1" fill="#E0E3EA"/></svg>
+        </div>
+        <span>콘텐츠 1</span>
+      </div>
+    </div>
+    <!-- 우측 메타 입력 -->
+    <div class="save-content">
+      <div class="save-topbar">
+        <div class="save-topbar-title">📋 메타 정보 설정</div>
+        <button class="save-close" onclick="closeSaveModal()">✕</button>
+      </div>
+      <div class="save-steps">
+        <div class="save-step active" id="sstep-0">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          1단계 · 상세 설정
+        </div>
+        <div class="save-arrow">›</div>
+        <div class="save-step" id="sstep-1">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 3H8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          2단계 · 최종 반영
+        </div>
+      </div>
+      <div class="save-body" id="saveBody">
+        <!-- 1단계 폼 -->
+      </div>
+      <div class="save-footer">
+        <button class="save-btn-cancel" onclick="closeSaveModal()">취소</button>
+        <button class="save-btn-temp" onclick="T('✅ 임시 저장 완료')">임시 저장</button>
+        <button class="save-btn-next" id="saveBtnNext" onclick="saveNextStep()">다음 단계</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
