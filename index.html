@@ -1214,6 +1214,19 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 <!-- ★ NEW LANDING SCREEN ★ -->
 <div class="landing-screen" id="landingScreen">
 
+  <!-- 우측 상단 유저 영역 -->
+  <div style="position:absolute;top:16px;right:20px;display:flex;align-items:center;gap:10px;z-index:10;">
+
+    <!-- 프로필 버튼 -->
+    <button onclick="toggleProfileMenu(this)"
+      style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#4B6EF5,#7C4DFF);
+             color:white;font-size:13px;font-weight:800;border:none;cursor:pointer;
+             box-shadow:0 2px 8px rgba(75,110,245,.35);transition:all .15s;font-family:'Noto Sans KR',sans-serif;"
+      onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+      홍
+    </button>
+  </div>
+
   <!-- Hero 영역 -->
   <div class="landing-hero">
     <div class="landing-logo">
@@ -1223,6 +1236,24 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       <div class="landing-title">콘텐츠 <span>저작툴</span></div>
     </div>
     <div class="landing-sub">교육 콘텐츠를 쉽고 빠르게 만들어보세요</div>
+
+    <!-- 내 자료 버튼 -->
+    <button onclick="openMyContentsPage()"
+      style="display:flex;align-items:center;gap:7px;height:36px;padding:0 16px;
+             border-radius:20px;border:1.5px solid var(--g2);background:white;
+             font-size:12px;font-weight:700;color:var(--g5);cursor:pointer;
+             font-family:'Noto Sans KR',sans-serif;margin-bottom:28px;
+             box-shadow:0 2px 8px rgba(0,0,0,.06);transition:all .18s;"
+      onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'"
+      onmouseout="this.style.borderColor='var(--g2)';this.style.color='var(--g5)'">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      </svg>
+      내 자료함 보기
+      <span id="myContentsCount" style="background:var(--blue);color:white;font-size:10px;
+             font-weight:800;padding:1px 7px;border-radius:10px;min-width:18px;text-align:center;">0</span>
+    </button>
 
     <div class="landing-main-btns">
       <div class="landing-main-btn lmb-direct" onclick="landingDirect()">
@@ -1291,6 +1322,60 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       <div class="lg-cards" id="lgCardsTeacher"></div>
     </div>
 
+  </div>
+</div>
+
+<!-- ★ 내 자료 페이지 ★ -->
+<div id="myContentsPage" style="position:fixed;inset:0;z-index:2100;
+     background:#F8F9FB;display:none;flex-direction:column;overflow:hidden;">
+
+  <!-- 상단 헤더 -->
+  <div style="height:60px;background:white;border-bottom:1px solid #EFEFEF;
+              display:flex;align-items:center;padding:0 28px;gap:14px;flex-shrink:0;">
+    <button onclick="closeMyContentsPage()"
+      style="display:flex;align-items:center;gap:6px;height:36px;padding:0 14px;
+             border-radius:10px;border:1.5px solid #E5E7EB;background:white;
+             font-size:12px;font-weight:700;color:#6B7280;cursor:pointer;
+             font-family:'Noto Sans KR',sans-serif;transition:all .15s;"
+      onmouseover="this.style.borderColor='#1C1F2E';this.style.color='#1C1F2E'"
+      onmouseout="this.style.borderColor='#E5E7EB';this.style.color='#6B7280'">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      돌아가기
+    </button>
+    <div style="font-size:16px;font-weight:800;color:#1C1F2E;">내 자료함</div>
+    <div id="myPageCount" style="font-size:12px;color:#9CA3AF;"></div>
+  </div>
+
+  <!-- 콘텐츠 영역 -->
+  <div style="flex:1;overflow-y:auto;padding:28px 32px;">
+
+    <!-- 탭 -->
+    <div style="display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid #F0F0F0;" id="myPageTabs">
+      <button class="my-tab on" onclick="myPageFilter('mine',this)"
+        style="height:40px;padding:0 20px;border:none;background:none;
+               font-size:13px;font-weight:700;color:#1C1F2E;cursor:pointer;
+               font-family:'Noto Sans KR',sans-serif;border-bottom:2.5px solid #1C1F2E;
+               margin-bottom:-2px;transition:all .15s;">
+        내가 만든 자료
+      </button>
+      <button class="my-tab" onclick="myPageFilter('liked',this)"
+        style="height:40px;padding:0 20px;border:none;background:none;
+               font-size:13px;font-weight:700;color:#9CA3AF;cursor:pointer;
+               font-family:'Noto Sans KR',sans-serif;border-bottom:2.5px solid transparent;
+               margin-bottom:-2px;transition:all .15s;">
+        찜한 자료
+      </button>
+    </div>
+
+    <!-- 자료 그리드 -->
+    <div id="myPageGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;"></div>
+
+    <!-- 빈 상태 -->
+    <div id="myPageEmpty" style="display:none;text-align:center;padding:80px 24px;">
+      <div style="font-size:48px;margin-bottom:16px;">📂</div>
+      <div style="font-size:16px;font-weight:800;color:#1C1F2E;margin-bottom:8px;" id="myPageEmptyTitle">아직 자료가 없어요</div>
+      <div style="font-size:13px;color:#9CA3AF;line-height:1.7;" id="myPageEmptyDesc">콘텐츠를 만들어서 저장하시면<br>여기에 모아 볼 수 있어요</div>
+    </div>
   </div>
 </div>
 
@@ -1865,12 +1950,60 @@ const lgTeacherContents = [
     icon:'💪', author:'오민수 교사', desc:'받아올림 반복 연습 20문항' },
 ];
 
+const lgSelectedIds = new Set(); // 체크된 카드 ID
+const lgLikedIds = new Set(JSON.parse(sessionStorage.getItem('lgLikedIds')||'[]')); // 찜 목록
+
+function lgToggleLike(id, el){
+  const item = [...lgOfficialContents,...lgTeacherContents].find(x=>x.id===id);
+  if(!item) return;
+  if(lgLikedIds.has(id)){
+    lgLikedIds.delete(id);
+    if(el) el.textContent = '🤍';
+    T('찜을 취소했어요');
+  } else {
+    lgLikedIds.add(id);
+    if(el){ el.textContent = '❤️'; el.style.transform='scale(1.4)'; setTimeout(()=>el.style.transform='scale(1)',200); }
+    T('찜 목록에 추가했어요 ♥');
+  }
+  sessionStorage.setItem('lgLikedIds', JSON.stringify([...lgLikedIds]));
+  // 내 자료함이 열려있으면 찜 탭 갱신
+  if(document.getElementById('myContentsPage')?.style.display!=='none'){
+    const activeTab = document.querySelector('.my-tab.on');
+    if(activeTab?.textContent?.includes('찜')) renderMyPageGrid('liked');
+  }
+}
+
 function lgRenderCards(containerId, items){
   const el = document.getElementById(containerId);
   if(!el) return;
   el.innerHTML = items.map(item => `
-    <div class="lg-card" onclick="lgInsertContent('${item.id}')">
-      <div class="lg-card-thumb" style="background:${item.color};">
+    <div class="lg-card" id="lgcard-${item.id}" style="position:relative;">
+      <!-- 체크박스 -->
+      <div onclick="event.stopPropagation();lgToggleCheck('${item.id}',this)"
+        style="position:absolute;top:8px;left:8px;z-index:10;
+               width:20px;height:20px;border-radius:6px;
+               border:2px solid rgba(255,255,255,.8);background:rgba(255,255,255,.25);
+               display:flex;align-items:center;justify-content:center;cursor:pointer;
+               transition:all .15s;" id="lgchk-${item.id}">
+      </div>
+      <!-- 찜 버튼 -->
+      <div onclick="event.stopPropagation();lgToggleLike('${item.id}',this)"
+        id="lglike-${item.id}"
+        style="position:absolute;top:8px;right:38px;z-index:10;
+               width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.85);
+               display:flex;align-items:center;justify-content:center;cursor:pointer;
+               transition:all .15s;font-size:14px;" title="찜하기">
+        ${lgLikedIds.has(item.id)?'❤️':'🤍'}
+      </div>
+      <!-- 미리보기 버튼 -->
+      <div onclick="event.stopPropagation();lgPreview('${item.id}')"
+        style="position:absolute;top:8px;right:8px;z-index:10;
+               width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.85);
+               display:flex;align-items:center;justify-content:center;cursor:pointer;
+               transition:all .15s;font-size:12px;" title="미리보기">
+        👁
+      </div>
+      <div class="lg-card-thumb" style="background:${item.color};" onclick="lgToggleCheck('${item.id}',document.getElementById('lgchk-${item.id}'))">
         <div class="lg-card-thumb-placeholder">
           <div style="font-size:32px;line-height:1;">${item.icon}</div>
           <div style="font-size:10px;color:${item.accent};font-weight:700;
@@ -1887,9 +2020,153 @@ function lgRenderCards(containerId, items){
         </div>
       </div>
       <div class="lg-card-overlay">
-        <button class="lg-card-add-btn">+ 저작툴에 추가</button>
+        <button class="lg-card-add-btn" onclick="event.stopPropagation();lgInsertContent('${item.id}')">+ 저작툴에 추가</button>
       </div>
     </div>`).join('');
+  lgUpdateBatchBar();
+}
+
+// 체크박스 토글
+function lgToggleCheck(id, chkEl){
+  if(lgSelectedIds.has(id)){
+    lgSelectedIds.delete(id);
+    if(chkEl){ chkEl.style.background='rgba(255,255,255,.25)'; chkEl.innerHTML=''; chkEl.style.borderColor='rgba(255,255,255,.8)'; }
+    document.getElementById('lgcard-'+id)?.style.setProperty('outline','none');
+    document.getElementById('lgcard-'+id)?.style.removeProperty('outline');
+  } else {
+    lgSelectedIds.add(id);
+    if(chkEl){ chkEl.style.background='#4B6EF5'; chkEl.style.borderColor='#4B6EF5';
+      chkEl.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>'; }
+    document.getElementById('lgcard-'+id)?.setAttribute('style',
+      document.getElementById('lgcard-'+id).getAttribute('style')+';outline:2px solid #4B6EF5;');
+  }
+  lgUpdateBatchBar();
+}
+
+// 하단 일괄 삽입 바
+function lgUpdateBatchBar(){
+  let bar = document.getElementById('lgBatchBar');
+  if(lgSelectedIds.size > 0){
+    if(!bar){
+      bar = document.createElement('div');
+      bar.id = 'lgBatchBar';
+      bar.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+        z-index:4000;background:#1C1F2E;border-radius:16px;padding:12px 20px;
+        display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.25);
+        font-family:'Noto Sans KR',sans-serif;`;
+      document.body.appendChild(bar);
+    }
+    bar.innerHTML = `
+      <span style="font-size:12px;font-weight:700;color:white;">${lgSelectedIds.size}개 선택됨</span>
+      <button onclick="lgInsertSelected()"
+        style="height:34px;padding:0 18px;border-radius:10px;border:none;
+               background:#4B6EF5;color:white;font-size:12px;font-weight:800;
+               cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;"
+        onmouseover="this.style.background='#3A5AE0'" onmouseout="this.style.background='#4B6EF5'">
+        저작툴에 추가
+      </button>
+      <button onclick="lgClearSelection()"
+        style="height:34px;padding:0 14px;border-radius:10px;border:1.5px solid rgba(255,255,255,.2);
+               background:transparent;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;
+               font-family:'Noto Sans KR',sans-serif;">
+        취소
+      </button>`;
+  } else {
+    bar?.remove();
+  }
+}
+
+function lgClearSelection(){
+  lgSelectedIds.forEach(id=>{
+    const chk = document.getElementById('lgchk-'+id);
+    if(chk){ chk.style.background='rgba(255,255,255,.25)'; chk.innerHTML=''; chk.style.borderColor='rgba(255,255,255,.8)'; }
+  });
+  lgSelectedIds.clear();
+  lgUpdateBatchBar();
+}
+
+function lgInsertSelected(){
+  if(lgSelectedIds.size===0) return;
+  const ids = [...lgSelectedIds];
+  lgClearSelection();
+  // 랜딩 닫기
+  landingOpenEditor();
+  setTimeout(()=>{
+    setGenerating(true, `${ids.length}개 콘텐츠 불러오는 중...`);
+    setTimeout(()=>{
+      setGenerating(false);
+      ids.forEach(id=>{
+        const item = [...lgOfficialContents,...lgTeacherContents].find(x=>x.id===id);
+        if(!item) return;
+        const hid = addHistory(item.type,'중',item.title,'1',[]);
+        const q={num:1,question:`[${item.title}] ${item.desc}`,type:item.type,
+                 choices:['보기 1','보기 2','보기 3','보기 4','보기 5'],answer:1,
+                 hint:`${item.subject} ${item.grade}`,solution:''};
+        const bid=insertQuestionBlock(q);
+        updateHistoryBlockIds(hid,[bid]);
+      });
+      T(`✅ ${ids.length}개 콘텐츠를 저작툴에 추가했어요`);
+    },1000);
+  },450);
+}
+
+// 미리보기 모달
+function lgPreview(id){
+  const item = [...lgOfficialContents,...lgTeacherContents].find(x=>x.id===id);
+  if(!item) return;
+  const existing = document.getElementById('lgPreviewModal');
+  if(existing) existing.remove();
+  const m = document.createElement('div');
+  m.id='lgPreviewModal';
+  m.style.cssText='position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;background:rgba(10,15,40,.55);backdrop-filter:blur(6px);';
+  m.innerHTML=`
+    <div style="width:480px;max-height:80vh;border-radius:20px;overflow:hidden;
+                background:white;box-shadow:0 24px 80px rgba(0,0,0,.25);display:flex;flex-direction:column;">
+      <div style="padding:20px 24px 16px;border-bottom:1px solid var(--g2);display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:10px;background:${item.color};
+                    display:flex;align-items:center;justify-content:center;font-size:20px;">${item.icon}</div>
+        <div style="flex:1;">
+          <div style="font-size:15px;font-weight:800;color:var(--text);">${item.title}</div>
+          <div style="font-size:11px;color:var(--g4);">${item.grade} · ${item.subject} · ${item.type}</div>
+        </div>
+        <button onclick="this.closest('#lgPreviewModal').remove()"
+          style="width:32px;height:32px;border-radius:8px;border:1.5px solid var(--g2);
+                 background:white;cursor:pointer;font-size:14px;color:var(--g4);">✕</button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:20px 24px;">
+        <div style="font-size:12px;font-weight:700;color:var(--g4);margin-bottom:12px;">콘텐츠 미리보기</div>
+        <div style="border:1.5px solid var(--g2);border-radius:12px;overflow:hidden;">
+          <div style="padding:16px 20px;background:${item.color}20;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;">${item.title}</div>
+            <div style="font-size:12px;color:var(--g5);line-height:1.7;">${item.desc}</div>
+          </div>
+          <div style="border-top:1px solid var(--g2);padding:14px 20px;">
+            <div style="font-size:11px;font-weight:700;color:var(--g4);margin-bottom:8px;">샘플 문항</div>
+            <div style="display:flex;align-items:flex-start;gap:8px;">
+              <div style="width:24px;height:24px;border-radius:6px;background:#3B4168;color:white;
+                          font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+              <div style="font-size:13px;color:var(--text);font-weight:500;line-height:1.5;">[${item.title}] ${item.desc}</div>
+            </div>
+          </div>
+        </div>
+        ${item.author?`<div style="margin-top:12px;font-size:11px;color:var(--g4);">제작: ${item.author}</div>`:''}
+      </div>
+      <div style="padding:16px 24px;border-top:1px solid var(--g2);display:flex;gap:8px;">
+        <button onclick="lgInsertContent('${id}');this.closest('#lgPreviewModal').remove()"
+          style="flex:1;height:42px;border-radius:10px;border:none;background:#1C1F2E;color:white;
+                 font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">
+          저작툴에 추가하기
+        </button>
+        <button onclick="lgToggleCheck('${id}',document.getElementById('lgchk-${id}'));this.closest('#lgPreviewModal').remove()"
+          style="height:42px;padding:0 18px;border-radius:10px;border:1.5px solid var(--blue);
+                 background:white;color:var(--blue);font-size:12px;font-weight:700;
+                 cursor:pointer;font-family:'Noto Sans KR',sans-serif;">
+          선택에 추가
+        </button>
+      </div>
+    </div>`;
+  m.addEventListener('click',e=>{ if(e.target===m) m.remove(); });
+  document.body.appendChild(m);
 }
 
 function lgSwitchTab(tab, btn){
@@ -2067,7 +2344,7 @@ function lgAllRender(section){
   const display  = filtered.length > 0 ? filtered : pool; // fallback: 전체 표시
 
   grid.innerHTML = display.map(item=>`
-    <div class="lg-card" onclick="lgInsertContent('${item.id}');document.getElementById('lgAllModal').remove();"
+    <div class="lg-card" id="lgcard-${item.id}-modal" style="position:relative;" onclick="lgInsertContent('${item.id}');document.getElementById('lgAllModal').remove();"
       style="border-radius:14px;overflow:hidden;border:1.5px solid #EFEFEF;
              background:white;cursor:pointer;transition:all .2s;position:relative;">
       <div style="width:100%;aspect-ratio:16/9;background:${item.color};
@@ -2091,6 +2368,169 @@ function lgAllRender(section){
     </div>`).join('');
 }
 
+// ── 내 자료 저장소 (세션 기반) ──
+let myContentsList = JSON.parse(sessionStorage.getItem('myContentsList')||'[]');
+
+function lgUpdateMyCount(){
+  const el = document.getElementById('myContentsCount');
+  if(el) el.textContent = myContentsList.length;
+}
+
+function lgSaveToMyContents(id, title, type, grade, source='gallery'){
+  if(myContentsList.some(x=>x.id===id)) return;
+  myContentsList.push({ id, title, type, grade, source, savedAt: new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}) });
+  sessionStorage.setItem('myContentsList', JSON.stringify(myContentsList));
+  lgUpdateMyCount();
+}
+
+// 내 자료 페이지 열기/닫기
+function openMyContentsPage(){
+  const landing = document.getElementById('landingScreen');
+  if(landing){ landing.classList.add('out'); setTimeout(()=>landing.style.display='none',400); }
+  const page = document.getElementById('myContentsPage');
+  if(page){ page.style.display='flex'; renderMyPageGrid('mine'); }
+}
+
+function closeMyContentsPage(){
+  const page = document.getElementById('myContentsPage');
+  if(page) page.style.display='none';
+  const landing = document.getElementById('landingScreen');
+  if(landing){ landing.style.display='flex'; landing.style.opacity='1'; landing.style.transform='none'; landing.classList.remove('out'); }
+}
+
+// 내 자료 그리드 렌더링
+let myPageCurrentFilter = 'all';
+function myPageFilter(filter, btn){
+  myPageCurrentFilter = filter;
+  document.querySelectorAll('.my-tab').forEach(b=>{
+    b.style.color='#9CA3AF'; b.style.fontWeight='700'; b.style.borderBottomColor='transparent';
+    b.classList.remove('on');
+  });
+  btn.style.color='#1C1F2E'; btn.style.borderBottomColor='#1C1F2E';
+  btn.classList.add('on');
+  renderMyPageGrid(filter);
+}
+
+function renderMyPageGrid(filter){
+  const grid = document.getElementById('myPageGrid');
+  const empty = document.getElementById('myPageEmpty');
+  const countEl = document.getElementById('myPageCount');
+  if(!grid) return;
+
+  // 찜 탭: lgLikedIds 기반으로 갤러리 콘텐츠 렌더링
+  if(filter==='liked'){
+    const likedItems = [...lgOfficialContents,...lgTeacherContents].filter(x=>lgLikedIds.has(x.id));
+    if(countEl) countEl.textContent = `총 ${likedItems.length}개`;
+    if(likedItems.length===0){
+      grid.style.display='none'; if(empty){ empty.style.display='block';
+        const t=document.getElementById('myPageEmptyTitle'); if(t) t.textContent='찜한 자료가 없어요';
+        const d=document.getElementById('myPageEmptyDesc'); if(d) d.textContent='갤러리에서 ♥ 버튼을 눌러 찜해보세요';
+      } return;
+    }
+    grid.style.display='grid'; if(empty) empty.style.display='none';
+    grid.innerHTML = likedItems.map(item=>`
+      <div style="border-radius:14px;overflow:hidden;border:1.5px solid #E5E7EB;background:white;
+                  display:flex;flex-direction:column;transition:all .2s;"
+           onmouseover="this.style.borderColor='${item.accent}';this.style.boxShadow='0 8px 24px rgba(0,0,0,.1)'"
+           onmouseout="this.style.borderColor='#E5E7EB';this.style.boxShadow='none'">
+        <div style="height:90px;background:${item.color};display:flex;align-items:center;
+                    justify-content:center;flex-direction:column;gap:6px;position:relative;">
+          <div style="font-size:28px;">${item.icon}</div>
+          <div style="font-size:10px;font-weight:700;color:${item.accent};background:rgba(255,255,255,.8);
+                      padding:2px 8px;border-radius:10px;">${item.type}</div>
+          <!-- 찜 해제 버튼 -->
+          <div onclick="lgToggleLike('${item.id}',null);renderMyPageGrid('liked')"
+            style="position:absolute;top:7px;right:7px;width:24px;height:24px;
+                   border-radius:7px;background:rgba(255,255,255,.85);
+                   display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;">❤️</div>
+        </div>
+        <div style="padding:10px 12px;flex:1;">
+          <div style="font-size:12px;font-weight:700;color:#1C1F2E;margin-bottom:3px;
+                      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.title}</div>
+          <div style="font-size:10px;color:#9CA3AF;">${item.grade} · ${item.subject}${item.author?` · ${item.author}`:''}</div>
+        </div>
+        <div style="padding:8px 12px 12px;display:flex;gap:6px;">
+          <button onclick="lgInsertContent('${item.id}')"
+            style="flex:1;height:30px;border-radius:8px;border:none;background:#1C1F2E;
+                   color:white;font-size:11px;font-weight:700;cursor:pointer;
+                   font-family:'Noto Sans KR',sans-serif;">저작툴에 추가</button>
+          <button onclick="lgPreview('${item.id}')"
+            style="height:30px;padding:0 10px;border-radius:8px;border:1.5px solid #E5E7EB;
+                   background:white;color:#6B7280;font-size:11px;cursor:pointer;
+                   font-family:'Noto Sans KR',sans-serif;">미리보기</button>
+        </div>
+      </div>`).join('');
+    return;
+  }
+
+  let items = myContentsList.slice().reverse();
+  if(filter==='mine') items = items; // 전체
+  else if(filter==='ai') items = items.filter(x=>x.source==='ai');
+  else if(filter==='gallery') items = items.filter(x=>x.source==='gallery');
+
+  if(countEl) countEl.textContent = `총 ${items.length}개`;
+  if(items.length===0){
+    grid.style.display='none';
+    if(empty){ empty.style.display='block';
+      const t=document.getElementById('myPageEmptyTitle'); if(t) t.textContent='아직 자료가 없어요';
+      const d=document.getElementById('myPageEmptyDesc'); if(d) d.textContent='콘텐츠를 만들어서 저장하시면 여기에 모아 볼 수 있어요';
+    } return;
+  }
+  grid.style.display='grid'; if(empty) empty.style.display='none';
+
+  const typeColors = {'AI 생성':'#EEF1FF','개념+문항':'#E8FFF5','문항':'#FFF0F3','활동':'#F3EEFF','갤러리':'#FFF9EF'};
+  const typeAccents= {'AI 생성':'#4B6EF5','개념+문항':'#22C98B','문항':'#FF4F6A','활동':'#7C4DFF','갤러리':'#FF8C42'};
+  const typeIcons  = {'AI 생성':'✨','개념+문항':'📖','문항':'✏️','활동':'🎯','갤러리':'📋'};
+
+  grid.innerHTML = items.map(item=>{
+    const bg = typeColors[item.type] || '#F3F4F6';
+    const acc= typeAccents[item.type] || '#6B7280';
+    const ico= typeIcons[item.type] || '📄';
+    return `
+    <div style="border-radius:14px;overflow:hidden;border:1.5px solid #E5E7EB;background:white;
+                cursor:pointer;transition:all .2s;display:flex;flex-direction:column;"
+         onmouseover="this.style.borderColor='${acc}';this.style.boxShadow='0 8px 24px rgba(0,0,0,.1)'"
+         onmouseout="this.style.borderColor='#E5E7EB';this.style.boxShadow='none'">
+      <div style="height:90px;background:${bg};display:flex;align-items:center;justify-content:center;
+                  flex-direction:column;gap:6px;">
+        <div style="font-size:28px;">${ico}</div>
+        <div style="font-size:10px;font-weight:700;color:${acc};background:rgba(255,255,255,.8);
+                    padding:2px 8px;border-radius:10px;">${item.type||'콘텐츠'}</div>
+      </div>
+      <div style="padding:12px 14px;flex:1;">
+        <div style="font-size:12px;font-weight:700;color:#1C1F2E;margin-bottom:4px;
+                    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.title}</div>
+        <div style="font-size:10px;color:#9CA3AF;">${item.grade||''} · ${item.savedAt||''}</div>
+      </div>
+      <div style="padding:8px 14px 12px;display:flex;gap:6px;">
+        <button onclick="myPageOpenEditor('${item.id}')"
+          style="flex:1;height:30px;border-radius:8px;border:none;background:#1C1F2E;
+                 color:white;font-size:11px;font-weight:700;cursor:pointer;
+                 font-family:'Noto Sans KR',sans-serif;">편집하기</button>
+        <button onclick="myPageShare('${item.id}')"
+          style="height:30px;padding:0 10px;border-radius:8px;border:1.5px solid #E5E7EB;
+                 background:white;color:#6B7280;font-size:11px;cursor:pointer;
+                 font-family:'Noto Sans KR',sans-serif;" title="공유">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="2"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49" stroke="currentColor" stroke-width="2"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" stroke="currentColor" stroke-width="2"/></svg>
+        </button>
+      </div>
+    </div>`; }).join('');
+}
+
+function myPageOpenEditor(id){
+  closeMyContentsPage();
+  const item = myContentsList.find(x=>x.id===id);
+  if(item?.lgId){ lgInsertContent(item.lgId); }
+  else { landingDirect(); T('✅ 편집 화면으로 이동했어요'); }
+}
+
+function myPageShare(id){
+  T('🔗 공유 링크가 복사됐어요 (준비 중)');
+}
+
+// 기존 showMyContents는 페이지로 리다이렉트
+function showMyContents(){ openMyContentsPage(); }
+
 function lgInsertContent(id){
   const item = [...lgOfficialContents, ...lgTeacherContents].find(x=>x.id===id);
   if(!item) return;
@@ -2113,6 +2553,7 @@ function lgInsertContent(id){
       ];
       const newIds = mockQuestions.map(q => insertQuestionBlock(q));
       updateHistoryBlockIds(hid, newIds);
+      lgSaveToMyContents(item.id, item.title, item.type, item.grade);
       T(`✅ "${item.title}" 콘텐츠가 저작툴에 추가되었어요`);
     }, 1000);
   }, 450);
@@ -2370,6 +2811,304 @@ function aclShowWelcome(){
     `);
     aclStep = 1;
   }, 900);
+}
+
+// ── 전체 단원 일괄 생성 ──
+function aclShowBulkOptions(){
+  document.querySelectorAll('.acl-inline-btn').forEach(b=>b.classList.add('disabled'));
+  aclAddUserMsg('전체 단원 생성');
+  const grade = lgCurrentGrade || lgGrades[0];
+  const units = grade.units || [];
+  const tid = showTyping();
+  setTimeout(()=>{
+    removeTyping(tid);
+    const msgId = 'bulk-'+Date.now();
+    aclAddAiMsg(`
+      <p><strong>📚 ${grade.label} 전체 단원 일괄 생성</strong></p>
+      <p style="font-size:12px;color:var(--g4);margin-bottom:10px;">생성할 단원을 선택하고 단원당 문항 수를 설정하세요.</p>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px;" id="bulkUnitChecks">
+        ${units.map((u,i)=>`
+          <label style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;
+                         border:1.5px solid #E5E7EB;background:white;cursor:pointer;transition:all .15s;"
+                 onmouseover="this.style.background='#F8F9FF';this.style.borderColor='#4B6EF5'"
+                 onmouseout="this.style.background='white';this.style.borderColor='#E5E7EB'">
+            <input type="checkbox" checked style="accent-color:#4B6EF5;width:15px;height:15px;" id="bchk-${i}">
+            <span style="font-size:12px;font-weight:600;color:#374151;">${u}</span>
+          </label>`).join('')}
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 12px;
+                  background:#F8F9FF;border-radius:9px;border:1.5px solid #E0E4FF;">
+        <span style="font-size:12px;color:#374151;font-weight:600;">단원당 문항 수</span>
+        <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+          <button onclick="var v=parseInt(document.getElementById('bulkCntInp').value||3);if(v>1)document.getElementById('bulkCntInp').value=v-1"
+            style="width:26px;height:26px;border-radius:7px;border:1.5px solid #E5E7EB;background:white;cursor:pointer;font-size:14px;">-</button>
+          <input id="bulkCntInp" value="3" type="number" min="1" max="10"
+            style="width:40px;height:26px;text-align:center;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif;">
+          <button onclick="var v=parseInt(document.getElementById('bulkCntInp').value||3);if(v<10)document.getElementById('bulkCntInp').value=v+1"
+            style="width:26px;height:26px;border-radius:7px;border:1.5px solid #E5E7EB;background:white;cursor:pointer;font-size:14px;">+</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:7px;">
+        <button onclick="aclStartBulkGeneration()"
+          style="flex:1;height:36px;border-radius:9px;border:none;background:#1C1F2E;color:white;
+                 font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">
+          🚀 일괄 생성 시작
+        </button>
+        <button onclick="this.closest('[id]').style.display='none'"
+          style="height:36px;padding:0 14px;border-radius:9px;border:1.5px solid #E5E7EB;
+                 background:white;font-size:12px;color:#6B7280;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">
+          취소
+        </button>
+      </div>`);
+    aclStep = 1;
+  }, 600);
+}
+
+function aclShowTotalEvalRangeStep(contentType){
+  const grade = lgCurrentGrade || lgGrades[0];
+  const unitName = (lgCurrentUnit||'').split(' · ')[1] || '덧셈과 뺄셈';
+  const units = grade.units || [];
+
+  aclAddAiMsg(`
+    <p><strong>📊 총괄평가</strong> 범위를 선택해주세요.</p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;" id="evalRangeChoices">
+
+      <!-- 현재 단원만 -->
+      <button onclick="aclPickEvalRange('current','${contentType}',this)"
+        style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;
+               border-radius:12px;border:1.5px solid #E5E7EB;background:white;
+               cursor:pointer;text-align:left;transition:all .18s;font-family:'Noto Sans KR',sans-serif;"
+        onmouseover="this.style.borderColor='#4B6EF5';this.style.background='#F8F9FF'"
+        onmouseout="this.style.borderColor='#E5E7EB';this.style.background='white'">
+        <div style="width:38px;height:38px;border-radius:10px;background:#EEF1FF;
+                    display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📝</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:800;color:#1C1F2E;margin-bottom:3px;">현재 단원만</div>
+          <div style="font-size:11px;color:#6B7280;line-height:1.5;">${unitName}에 대한 총괄평가를 만들어요.<br>선택형·단답형·서술형을 균형 있게 배합해요.</div>
+        </div>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="margin-top:4px;flex-shrink:0;"><path d="M9 18l6-6-6-6" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+
+      <!-- 전체 단원 -->
+      <button onclick="aclPickEvalRange('all','${contentType}',this)"
+        style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;
+               border-radius:12px;border:1.5px solid #E5E7EB;background:white;
+               cursor:pointer;text-align:left;transition:all .18s;font-family:'Noto Sans KR',sans-serif;"
+        onmouseover="this.style.borderColor='#22C98B';this.style.background='#F0FFF8'"
+        onmouseout="this.style.borderColor='#E5E7EB';this.style.background='white'">
+        <div style="width:38px;height:38px;border-radius:10px;background:#E8FFF5;
+                    display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📚</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:800;color:#1C1F2E;margin-bottom:3px;">전체 단원 (${grade.label})</div>
+          <div style="font-size:11px;color:#6B7280;line-height:1.5;">${grade.units.length}개 단원 전체를 아우르는 총괄평가를 만들어요.<br>각 단원별 핵심 내용을 골고루 포함해요.</div>
+          <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;">
+            ${units.map(u=>`<span style="font-size:9px;padding:2px 7px;border-radius:8px;background:#E8FFF5;color:#22C98B;font-weight:700;">${u.split(' · ')[0]}</span>`).join('')}
+          </div>
+        </div>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="margin-top:4px;flex-shrink:0;"><path d="M9 18l6-6-6-6" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>`);
+}
+
+function aclPickEvalRange(range, contentType, btn){
+  document.querySelectorAll('#evalRangeChoices button').forEach(b=>{
+    b.style.opacity='.45'; b.style.pointerEvents='none';
+  });
+  btn.style.opacity='1'; btn.style.pointerEvents='auto';
+  btn.style.outline='2px solid #4B6EF5';
+
+  const label = range==='all' ? '전체 단원 총괄평가' : '현재 단원 총괄평가';
+  aclAddUserMsg(label);
+  aclSelectedTmpl = '선택형+단답형+서술형';
+
+  const tid = showTyping();
+  setTimeout(()=>{
+    removeTyping(tid);
+    if(range==='all'){
+      // 전체 단원 → 일괄 생성 플로우
+      aclShowBulkEvalOptions(contentType);
+    } else {
+      // 현재 단원만
+      const unitName = (lgCurrentUnit||'').split(' · ')[1] || '덧셈과 뺄셈';
+      aclAddAiMsg(`<p>✅ <strong>${unitName}</strong> 총괄평가를 만들어드릴게요!</p>
+        <p style="font-size:11px;color:var(--g4);">문항 수를 입력해주세요. (예: "10문항으로 만들어줘")</p>`);
+      setAclInputState(true, '총괄평가 문항 수를 입력해주세요...');
+      aclStep = 3;
+    }
+  }, 500);
+}
+
+function aclShowBulkEvalOptions(contentType){
+  const grade = lgCurrentGrade || lgGrades[0];
+  const units = grade.units || [];
+  aclAddAiMsg(`
+    <p><strong>📚 ${grade.label} 전체 단원 총괄평가</strong></p>
+    <p style="font-size:12px;color:var(--g4);margin-bottom:10px;">단원을 선택하고 단원당 문항 수를 설정하세요.</p>
+    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px;" id="bulkEvalChecks">
+      ${units.map((u,i)=>`
+        <label style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;
+                       border:1.5px solid #E5E7EB;background:white;cursor:pointer;">
+          <input type="checkbox" checked style="accent-color:#4B6EF5;width:15px;height:15px;" id="bevchk-${i}">
+          <span style="font-size:12px;font-weight:600;color:#374151;">${u}</span>
+        </label>`).join('')}
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 12px;
+                background:#F8F9FF;border-radius:9px;border:1.5px solid #E0E4FF;">
+      <span style="font-size:12px;color:#374151;font-weight:600;">단원당 문항 수</span>
+      <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+        <button onclick="var v=parseInt(document.getElementById('bevCntInp').value||3);if(v>1)document.getElementById('bevCntInp').value=v-1"
+          style="width:26px;height:26px;border-radius:7px;border:1.5px solid #E5E7EB;background:white;cursor:pointer;font-size:14px;">-</button>
+        <input id="bevCntInp" value="3" type="number" min="1" max="10"
+          style="width:40px;height:26px;text-align:center;border:1.5px solid #E5E7EB;border-radius:7px;font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif;">
+        <button onclick="var v=parseInt(document.getElementById('bevCntInp').value||3);if(v<10)document.getElementById('bevCntInp').value=v+1"
+          style="width:26px;height:26px;border-radius:7px;border:1.5px solid #E5E7EB;background:white;cursor:pointer;font-size:14px;">+</button>
+      </div>
+    </div>
+    <button onclick="aclStartBulkEvalGeneration()"
+      style="width:100%;height:38px;border-radius:9px;border:none;background:#1C1F2E;color:white;
+             font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">
+      🚀 전체 단원 총괄평가 생성
+    </button>`);
+}
+
+async function aclStartBulkEvalGeneration(){
+  const grade = lgCurrentGrade || lgGrades[0];
+  const units = grade.units || [];
+  const cnt = parseInt(document.getElementById('bevCntInp')?.value||'3');
+  const selected = units.filter((_,i)=>document.getElementById('bevchk-'+i)?.checked);
+  if(selected.length===0){ T('⚠️ 단원을 1개 이상 선택해주세요'); return; }
+
+  document.querySelectorAll('#aclMsgs button').forEach(b=>{b.disabled=true;b.style.opacity='.4';});
+  aclAddUserMsg(`${selected.length}개 단원 총괄평가, 단원당 ${cnt}문항`);
+
+  const progId = 'bev-'+Date.now();
+  const msgs = document.getElementById('aclMsgs');
+  const progEl = document.createElement('div');
+  progEl.className='acl-msg-ai'; progEl.id=progId;
+  msgs.appendChild(progEl); msgs.scrollTop=msgs.scrollHeight;
+
+  for(let i=0; i<selected.length; i++){
+    const u = selected[i];
+    const unitName = u.split(' · ')[1]||u;
+    progEl.innerHTML=`<div class="acl-msg-ai-avatar">AI</div>
+      <div class="acl-msg-ai-bubble">
+        <div style="font-size:12px;font-weight:700;margin-bottom:8px;">📊 총괄평가 생성 중... (${i+1}/${selected.length})</div>
+        <div style="background:#F0F0F0;border-radius:20px;height:6px;overflow:hidden;margin-bottom:6px;">
+          <div style="background:var(--blue);height:6px;border-radius:20px;width:${Math.round((i/selected.length)*100)}%"></div>
+        </div>
+        <div style="font-size:11px;color:var(--g4);">현재: ${u}</div>
+      </div>`;
+    msgs.scrollTop=msgs.scrollHeight;
+    await new Promise(r=>setTimeout(r,300));
+    const req = `${unitName} 총괄평가 ${cnt}문항 (선택형+단답형+서술형 균형)`;
+    const hid = addHistory('혼합형','중',req,String(cnt),[]);
+    await landingCallAPI(hid,'선택형','중',req,String(cnt));
+    lgCurrentUnit = u;
+  }
+
+  document.getElementById(progId)?.remove();
+  aclAddAiMsg(`<p>✅ <strong>${selected.length}개 단원 총괄평가</strong> 생성 완료!</p>
+    <p style="font-size:11px;color:var(--g4);">에디터에서 단원별로 확인해보세요.</p>`);
+
+  setTimeout(()=>{
+    const acl = document.getElementById('aiChatLanding');
+    if(acl){ acl.classList.add('out'); setTimeout(()=>acl.classList.remove('show','out'),300); }
+  }, 800);
+}
+
+async function aclStartBulkGeneration(){
+  const grade = lgCurrentGrade || lgGrades[0];
+  const units = grade.units || [];
+  const cnt = parseInt(document.getElementById('bulkCntInp')?.value||'3');
+  const selected = units.filter((_,i)=>document.getElementById('bchk-'+i)?.checked);
+  if(selected.length===0){ T('⚠️ 단원을 1개 이상 선택해주세요'); return; }
+
+  // 버튼 비활성
+  document.querySelectorAll('#aclMsgs button').forEach(b=>{b.disabled=true;b.style.opacity='.4';});
+  aclAddUserMsg(`${selected.length}개 단원, 단원당 ${cnt}문항으로 생성`);
+
+  // 프로그레스 표시
+  const progId = 'prog-'+Date.now();
+  const msgs = document.getElementById('aclMsgs');
+  const progEl = document.createElement('div');
+  progEl.className='acl-msg-ai'; progEl.id=progId;
+  msgs.appendChild(progEl); msgs.scrollTop=msgs.scrollHeight;
+
+  for(let i=0; i<selected.length; i++){
+    const u = selected[i];
+    const unitName = u.split(' · ')[1]||u;
+    progEl.innerHTML=`<div class="acl-msg-ai-avatar">AI</div>
+      <div class="acl-msg-ai-bubble">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;">
+          📚 전체 단원 생성 중... (${i+1}/${selected.length})
+        </div>
+        <div style="background:#F0F0F0;border-radius:20px;height:6px;overflow:hidden;margin-bottom:6px;">
+          <div style="background:var(--blue);height:6px;border-radius:20px;transition:width .4s;
+                      width:${Math.round((i/selected.length)*100)}%"></div>
+        </div>
+        <div style="font-size:11px;color:var(--g4);">현재: ${u}</div>
+      </div>`;
+    msgs.scrollTop=msgs.scrollHeight;
+
+    // 각 단원 생성 (기존 aclStartGenInEditor 활용)
+    const req = `${unitName} 선택형 ${cnt}개`;
+    await new Promise(r=>setTimeout(r,300)); // 시각적 딜레이
+    const hid = addHistory('선택형','중',req,String(cnt),[]);
+    await landingCallAPI(hid,'선택형','중',req,String(cnt));
+    lgCurrentUnit = u;
+  }
+
+  document.getElementById(progId)?.remove();
+  aclAddAiMsg(`<p>✅ <strong>${selected.length}개 단원</strong> 일괄 생성이 완료됐어요!</p>
+    <p style="font-size:11px;color:var(--g4);">에디터에서 확인해보세요.</p>`);
+
+  // 에디터로 전환
+  setTimeout(()=>{
+    const acl = document.getElementById('aiChatLanding');
+    if(acl){ acl.classList.add('out'); setTimeout(()=>acl.classList.remove('show','out'),300); }
+  }, 800);
+}
+
+// ── 수준별 3종 세트 ──
+async function aclStartLevelSetGeneration(){
+  const cnt = parseInt(document.getElementById('lvCntInp')?.value||'3');
+  const unitName = (lgCurrentUnit||'덧셈과 뺄셈').split(' · ')[1]||'덧셈과 뺄셈';
+  const levels = [{lv:'상',label:'어려운'},{lv:'중',label:'보통'},{lv:'하',label:'쉬운'}];
+
+  document.querySelectorAll('#aclMsgs button').forEach(b=>{b.disabled=true;b.style.opacity='.4';});
+  aclAddUserMsg(`${unitName} 수준별 3종 세트 (난이도별 ${cnt}문항)`);
+
+  const progId2 = 'prog2-'+Date.now();
+  const msgs = document.getElementById('aclMsgs');
+  const progEl2 = document.createElement('div');
+  progEl2.className='acl-msg-ai'; progEl2.id=progId2;
+  msgs.appendChild(progEl2); msgs.scrollTop=msgs.scrollHeight;
+
+  for(let i=0; i<levels.length; i++){
+    const {lv, label} = levels[i];
+    progEl2.innerHTML=`<div class="acl-msg-ai-avatar">AI</div>
+      <div class="acl-msg-ai-bubble">
+        <div style="font-size:12px;font-weight:700;margin-bottom:8px;">📊 수준별 세트 생성 중... (${i+1}/3)</div>
+        <div style="background:#F0F0F0;border-radius:20px;height:6px;overflow:hidden;margin-bottom:6px;">
+          <div style="background:var(--blue);height:6px;border-radius:20px;width:${Math.round(((i)/3)*100)}%"></div>
+        </div>
+        <div style="font-size:11px;color:var(--g4);">현재: ${lv}급 문항 생성 중</div>
+      </div>`;
+    msgs.scrollTop=msgs.scrollHeight;
+    await new Promise(r=>setTimeout(r,300));
+    const req = `${unitName} ${label} 선택형 ${cnt}개`;
+    const hid = addHistory('선택형',lv,req,String(cnt),[]);
+    await landingCallAPI(hid,'선택형',lv,req,String(cnt));
+  }
+
+  document.getElementById(progId2)?.remove();
+  aclAddAiMsg(`<p>✅ <strong>수준별 3종 세트</strong> 생성 완료!</p>
+    <p style="font-size:11px;color:var(--g4);">상·중·하 각 ${cnt}문항씩, 총 ${cnt*3}문항이 에디터에 추가됐어요.</p>`);
+
+  setTimeout(()=>{
+    const acl = document.getElementById('aiChatLanding');
+    if(acl){ acl.classList.add('out'); setTimeout(()=>acl.classList.remove('show','out'),300); }
+  }, 800);
 }
 
 // 이대로 진행 → 콘텐츠 유형 선택
@@ -2647,14 +3386,15 @@ function aclPickEvalType(evalType, contentType, btn){
   setTimeout(()=>{
     removeTyping(tid);
     if(evalType === '기타'){
-      // 기타: 복수 선택 문항 유형
       aclShowMultiTmplStep(contentType);
+    } else if(evalType === '총괄평가'){
+      // 총괄평가: 단원 범위 선택 (현재 단원 or 전체 단원)
+      aclShowTotalEvalRangeStep(contentType);
     } else {
-      // 진단/형성/총괄: 균형 배합 평가지 자동 생성
+      // 진단/형성: 바로 문항 수 입력
       const evalDescMap = {
         '진단평가': '학생의 현재 수준을 파악하기 위해 선택형·단답형·서술형을 균형 있게 배합한 진단 평가지를 만들어드릴게요.',
         '형성평가': '학습 중 이해도를 확인하는 형성 평가지를 선택형·단답형·서술형 균형 있게 만들어드릴게요.',
-        '총괄평가': '단원 전체를 아우르는 총괄 평가지를 선택형·단답형·서술형 균형 있게 만들어드릴게요.',
       };
       aclSelectedTmpl = '선택형+단답형+서술형';
       aclAddAiMsg(`<p>${evalDescMap[evalType]||''}</p>
@@ -2923,6 +3663,21 @@ async function aclSend(){
 
   aclCurrentReq = msg;
 
+  // 첨부파일이 있으면 step에 무관하게 바로 생성
+  if(attachedFile && attachedFile.base64 && aclStep < 3){
+    aclContentType = aclContentType || '문항';
+    aclStep = 3;
+    // 첨부 유형 안내
+    const fileLabel = attachedFile.type === 'image' ? '이미지' : '파일';
+    const tid0 = showTyping();
+    setTimeout(async()=>{
+      removeTyping(tid0);
+      aclAddAiMsg(`<p>첨부하신 ${fileLabel}를 분석해서 콘텐츠를 만들어드릴게요! ✨</p>`);
+      await aclGeneratePreview(msg, aclContentType, attachedFile);
+    }, 500);
+    return;
+  }
+
   if(aclStep === 3){
     // 타이핑 인디케이터 + 생성 중 텍스트 표시
     const tid = showTyping();
@@ -2947,7 +3702,7 @@ async function aclSend(){
 
     try {
       // API로 미리보기 콘텐츠 생성
-      await aclGeneratePreview(msg, aclContentType);
+      await aclGeneratePreview(msg, aclContentType, attachedFile);
     } finally {
       removeTyping(tid);
       document.getElementById('aclLoadBar')?.remove();
@@ -2956,14 +3711,14 @@ async function aclSend(){
 }
 
 // AI 미리보기 생성 → 채팅창에 표시
-async function aclGeneratePreview(req, contentType){
+async function aclGeneratePreview(req, contentType, attachedFileArg){
   const tmpl = aclSelectedTmpl || (contentType === '개념설명+활동' ? '서술형' : '선택형');
   const cntMatch = req.match(/\d+/);
   const cnt = parseInt(cntMatch ? cntMatch[0] : '3');
   const lv = req.includes('어려')||req.includes('상') ? '상' : req.includes('쉬')||req.includes('하') ? '하' : '중';
 
   // 첨부된 파일/이미지가 있으면 분석 모드
-  const attached = aclAttachedFile; // send 전 저장됐을 수 있음
+  const attached = attachedFileArg || null;
   const hasAttach = !!(attached?.base64);
 
   const isConceptType = contentType.includes('개념');
@@ -3184,59 +3939,127 @@ async function aclGeneratePreview(req, contentType){
   window._aclPreviewMeta = {tmpl, lv, req, cnt, concept: previewData?.concept || null, contentType, previewData};
 }
 
+// 템플릿별 저작툴 스타일 미리보기 렌더
+function renderTmplPreview(question, tmpl, idx){
+  const qText = question || '발문을 입력합니다.';
+  const ci = ['①','②','③','④','⑤'];
+  let html = `<div style="border-bottom:1px solid #F0F0F0;padding:14px 18px 12px;">
+    <div style="display:flex;align-items:flex-start;gap:10px;">
+      <div style="min-width:28px;height:28px;border-radius:7px;background:#3B4168;color:white;
+                  font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${idx+1}</div>
+      <div style="font-size:13.5px;color:#1C1F2E;font-weight:600;line-height:1.6;flex:1;">${qText}</div>
+    </div>`;
+
+  if(tmpl==='선택형'){
+    const choices=['선택지를 입력합니다.','선택지를 입력합니다.','선택지를 입력합니다.','선택지를 입력합니다.','선택지를 입력합니다.'];
+    html+=`<div style="display:flex;flex-direction:column;gap:4px;margin-top:10px;">
+      ${choices.map((ch,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:7px;border:1px solid ${i===0?'#4B9EFF':'#E5E7EB'};background:${i===0?'#E8F4FF':'white'};">
+        <span style="width:21px;height:21px;border-radius:50%;flex-shrink:0;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;border:1.5px solid ${i===0?'#4B9EFF':'#D1D5DB'};background:${i===0?'#4B9EFF':'white'};color:${i===0?'white':'#9CA3AF'};">${ci[i]}</span>
+        <span style="font-size:12px;color:${i===0?'#1C1F2E':'#9CA3AF'};">${ch}</span>
+      </div>`).join('')}
+    </div>`;
+  } else if(tmpl==='서술형'){
+    html+=`<div style="margin-top:10px;">
+      <div style="font-size:12px;color:#374151;margin-bottom:6px;"><strong>풀이 :</strong><span style="display:inline-block;width:180px;border-bottom:1.5px solid #374151;margin-left:6px;"></span></div>
+      <div style="font-size:12px;color:#374151;margin-bottom:8px;"><strong>답 :</strong><span style="display:inline-block;width:90px;border-bottom:1.5px solid #374151;margin-left:6px;"></span></div>
+      <div style="background:#F3F4F6;border-radius:8px;height:70px;border:1px solid #E5E7EB;display:flex;align-items:flex-end;justify-content:space-between;padding:8px 10px;">
+        <span style="font-size:10px;color:#9CA3AF;">모범 답안을 입력합니다.</span>
+        <div style="display:flex;gap:5px;">
+          <button style="height:24px;padding:0 8px;border-radius:5px;border:1px solid #D1D5DB;background:white;font-size:10px;color:#6B7280;cursor:default;">키보드</button>
+          <button style="height:24px;padding:0 8px;border-radius:5px;border:1px solid #D1D5DB;background:white;font-size:10px;color:#6B7280;cursor:default;">손글씨</button>
+        </div>
+      </div>
+    </div>`;
+  } else if(tmpl==='단답형'){
+    html+=`<div style="margin-top:10px;"><div style="height:38px;border-radius:7px;border:1.5px dashed #C0C4CC;background:#FAFAFA;display:flex;align-items:center;padding:0 12px;"><span style="font-size:12px;color:#C0C4CC;">선택지를 입력합니다.</span></div></div>`;
+  } else if(tmpl==='OX형'){
+    html+=`<div style="margin-top:12px;display:flex;gap:20px;justify-content:center;padding:8px 0 12px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <div style="width:72px;height:72px;border-radius:50%;border:3px solid #8A93A8;display:flex;align-items:center;justify-content:center;"><svg width="44" height="44" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="16" stroke="#8A93A8" stroke-width="3.5"/></svg></div>
+        <span style="font-size:11px;color:#9CA3AF;">힌트를 입력합니다.</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <div style="width:72px;height:72px;border-radius:50%;border:3px solid #8A93A8;display:flex;align-items:center;justify-content:center;"><svg width="44" height="44" viewBox="0 0 48 48" fill="none"><path d="M14 14l20 20M34 14L14 34" stroke="#8A93A8" stroke-width="3.5" stroke-linecap="round"/></svg></div>
+        <span style="font-size:11px;color:#9CA3AF;">힌트를 입력합니다.</span>
+      </div>
+    </div>`;
+  } else if(tmpl==='TF형'){
+    html+=`<div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+      ${[0,1].map(()=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;border:1px solid #E5E7EB;">
+        <span style="width:22px;height:22px;border-radius:50%;border:1.5px solid #8A93A8;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#8A93A8;">T</span>
+        <span style="width:22px;height:22px;border-radius:50%;border:1.5px solid #8A93A8;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#8A93A8;">F</span>
+        <span style="font-size:12px;color:#9CA3AF;margin-left:4px;">선택지를 입력합니다.</span>
+      </div>`).join('')}
+    </div>`;
+  } else if(tmpl==='순서입력형'){
+    html+=`<div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      ${[0,1,2,3].map(()=>`<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+        <div style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid #E5E7EB;background:#F9FAFB;text-align:center;font-size:11px;color:#9CA3AF;">선택지를 입력합니다.</div>
+        <div style="display:flex;align-items:center;gap:5px;">
+          <button style="width:22px;height:22px;border-radius:5px;background:#3B4168;color:white;border:none;font-size:10px;cursor:default;">◀</button>
+          <span style="font-size:11px;color:#374151;font-weight:600;">선택</span>
+          <button style="width:22px;height:22px;border-radius:5px;background:#3B4168;color:white;border:none;font-size:10px;cursor:default;">▶</button>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  } else if(tmpl==='순서조합형'){
+    html+=`<div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      ${[0,1,2,3].map(()=>`<div style="padding:10px;border-radius:8px;border:1.5px dashed #D1D5DB;background:#F9FAFB;text-align:center;font-size:11.5px;color:#9CA3AF;cursor:default;">선택지를 입력합니다.</div>`).join('')}
+    </div>`;
+  } else if(tmpl==='연결형'){
+    html+=`<div style="margin-top:10px;display:grid;grid-template-columns:1fr 20px 1fr;gap:6px;align-items:center;">
+      ${[0,1].map(()=>`
+        <div style="padding:7px 10px;border-radius:7px;border:1px solid #E5E7EB;background:#FAFAFA;font-size:11px;color:#9CA3AF;">선택지를 입력합니다.</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:7px;height:7px;border-radius:50%;background:#9CA3AF;"></div><div style="width:1px;height:8px;background:#9CA3AF;"></div><div style="width:7px;height:7px;border-radius:50%;background:#9CA3AF;"></div></div>
+        <div style="padding:7px 10px;border-radius:7px;border:1px solid #E5E7EB;background:#FAFAFA;font-size:11px;color:#9CA3AF;">선택지를 입력합니다.</div>`).join('')}
+    </div>`;
+  }
+
+  html+=`<div style="background:#F5F3FF;border-top:1px solid #EDE9FF;padding:10px 14px;">
+    <span style="font-size:10px;font-weight:800;color:#7C4DFF;background:#E8E0FF;padding:2px 8px;border-radius:10px;margin-right:6px;">힌트</span>
+    <span style="font-size:11px;color:#9CA3AF;">힌트를 입력합니다.</span>
+  </div>
+  <div style="background:#F0F0F0;border-top:1px solid #E5E7EB;padding:10px 14px;">
+    <span style="font-size:10px;font-weight:800;color:#374151;background:#D4D6DC;padding:2px 8px;border-radius:10px;margin-right:6px;">해설</span>
+    <span style="font-size:11px;color:#9CA3AF;">해설을 입력합니다.</span>
+  </div>
+  </div>`;
+  return html;
+}
+
 async function aclRenderPreview(previewData, contentType, tmpl, lv, cnt, req){
-  // 기존 aclGeneratePreview의 미리보기 렌더링 재사용
   aclCurrentReq = req;
   window._aclPreviewMeta = {tmpl, lv, req, cnt, concept:previewData?.concept||null, contentType, previewData};
-
   const isConceptCard = contentType.includes('개념');
-  const isActivityCard = contentType.includes('활동');
-  const ci_sym = ['①','②','③','④','⑤'];
-  let previewHTML = `
-    <div style="font-size:11px;font-weight:600;color:#9CA3AF;margin-bottom:10px;display:flex;align-items:center;gap:5px;">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/></svg>
-      저작툴 미리보기 (이미지 분석 기반)
-    </div>
-    <div style="border:1.5px solid #E5E7EB;border-radius:14px;overflow:hidden;background:white;box-shadow:0 2px 12px rgba(0,0,0,.07);">`;
+  const effectiveTmpl = tmpl || (contentType.includes('활동')?'서술형':'선택형');
+
+  let previewHTML = `<div style="font-size:11px;font-weight:600;color:#9CA3AF;margin-bottom:10px;display:flex;align-items:center;gap:5px;">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/></svg>
+    저작툴 미리보기
+  </div>
+  <div style="border:1.5px solid #E5E7EB;border-radius:14px;overflow:hidden;background:white;box-shadow:0 2px 12px rgba(0,0,0,.07);">`;
+
+  if(isConceptCard && previewData.concept){
+    previewHTML+=`<div style="padding:14px 18px;background:linear-gradient(135deg,#FAFAFF,#F5F3FF);border-bottom:1px solid #E8E4FF;">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+        <div style="width:18px;height:18px;border-radius:5px;background:linear-gradient(135deg,#7C4DFF,#A87DFF);display:flex;align-items:center;justify-content:center;">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="white"/></svg>
+        </div>
+        <span style="font-size:10px;font-weight:800;color:#7C4DFF;">개념 설명</span>
+      </div>
+      <div style="font-size:12.5px;color:#374151;line-height:1.75;padding:10px 12px;background:white;border-radius:8px;border-left:3px solid #7C4DFF;">${previewData.concept}</div>
+    </div>`;
+  }
 
   if(previewData.items && previewData.items.length>0){
-    previewData.items.forEach((item,idx)=>{
-      previewHTML += `<div style="border-bottom:1px solid #F5F5F5;padding:16px 20px 14px;">
-        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
-          <div style="min-width:26px;height:26px;border-radius:7px;background:#3B4168;color:white;
-                      font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;">${idx+1}</div>
-          <div style="font-size:13.5px;color:#1C1F2E;font-weight:600;line-height:1.6;">${item.question||''}</div>
-        </div>
-        ${tmpl==='선택형'?`<div style="display:flex;flex-direction:column;gap:4px;padding-left:36px;">
-          ${['보기 ①','보기 ②','보기 ③','보기 ④','보기 ⑤'].map((ch,ci2)=>`
-            <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:7px;
-                        ${ci2===0?'background:#E8F4FF;border:1.5px solid #4B9EFF;':'border:1px solid #EFEFEF;'}">
-              <span style="width:20px;height:20px;border-radius:50%;flex-shrink:0;font-size:10px;font-weight:800;
-                           display:flex;align-items:center;justify-content:center;
-                           ${ci2===0?'background:#4B9EFF;color:white;':'border:1.5px solid #D1D5DB;color:#9CA3AF;'}">${ci_sym[ci2]}</span>
-              <span style="font-size:12px;color:${ci2===0?'#1C1F2E':'#9CA3AF'};">${ch}</span>
-            </div>`).join('')}
-        </div>`:tmpl==='단답형'?`<div style="padding-left:36px;"><div style="height:36px;border-radius:8px;border:1.5px solid #E5E7EB;background:#FAFAFA;display:flex;align-items:center;padding:0 12px;"><span style="font-size:12px;color:#C0C4CC;">답을 입력하세요</span></div></div>`:''}
-      </div>`;
-    });
-    previewHTML += '</div>';
-  } else { previewHTML += '</div>'; }
+    previewData.items.forEach((item,idx)=>{ previewHTML += renderTmplPreview(item.question, effectiveTmpl, idx); });
+  }
+  previewHTML += '</div>';
 
   previewHTML += `<div style="border-top:1px solid #F0F0F0;padding:12px 0 4px;" id="aclPreviewBtns">
     <div style="display:flex;gap:8px;">
-      <button onclick="aclApplyToEditor()"
-        style="flex:1;height:42px;border-radius:10px;border:none;background:#1C1F2E;color:white;
-               font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;"
-        onmouseover="this.style.background='#2D3148'" onmouseout="this.style.background='#1C1F2E'">
-        저작툴에 추가하기
-      </button>
-      <button onclick="aclRetryGenerate()"
-        style="height:42px;padding:0 16px;border-radius:10px;border:1.5px solid #E5E7EB;background:white;
-               font-size:12px;font-weight:600;color:#6B7280;cursor:pointer;font-family:'Noto Sans KR',sans-serif;"
-        onmouseover="this.style.borderColor='#1C1F2E';this.style.color='#1C1F2E'"
-        onmouseout="this.style.borderColor='#E5E7EB';this.style.color='#6B7280'">
-        다시 생성
-      </button>
+      <button onclick="aclApplyToEditor()" style="flex:1;height:42px;border-radius:10px;border:none;background:#1C1F2E;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;" onmouseover="this.style.background='#2D3148'" onmouseout="this.style.background='#1C1F2E'">저작툴에 추가하기</button>
+      <button onclick="aclRetryGenerate()" style="height:42px;padding:0 16px;border-radius:10px;border:1.5px solid #E5E7EB;background:white;font-size:12px;font-weight:600;color:#6B7280;cursor:pointer;font-family:'Noto Sans KR',sans-serif;" onmouseover="this.style.borderColor='#1C1F2E';this.style.color='#1C1F2E'" onmouseout="this.style.borderColor='#E5E7EB';this.style.color='#6B7280'">다시 생성</button>
     </div>
     <div style="font-size:10.5px;color:#B0B5C4;margin-top:8px;text-align:center;">수정 요청이 있으면 아래 입력창에 바로 입력하세요</div>
   </div>`;
@@ -3244,6 +4067,7 @@ async function aclRenderPreview(previewData, contentType, tmpl, lv, cnt, req){
   aclAddAiMsg(previewHTML);
   setTimeout(()=>setAclInputState(true,'수정 요청을 입력하세요...'), 200);
 }
+
 
 // [이대로 진행] → 에디터로 이동 후 삽입
 // 미리보기에서 추가 수정 요청
@@ -3618,6 +4442,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   // 갤러리 카드 초기 렌더링
   lgRenderCards('lgCardsOfficial', lgOfficialContents);
   lgRenderCards('lgCardsTeacher', lgTeacherContents);
+  // 내 자료 카운트 초기화
+  lgUpdateMyCount();
   rpTab=0;
   checkSlideEmpty();
   renderHistory();
@@ -3639,31 +4465,59 @@ function setGenerating(on, text='AI가 콘텐츠를 생성하고 있어요...'){
 }
 
 async function landingCallAPI(hid, tmpl, lv, req, cnt){
+  // type 필드 포함한 예시 (insertQuestionBlock이 type으로 템플릿 결정)
   const tmplExamples={
-    '선택형':`[{"question":"35+47은 얼마입니까?","choices":["80","81","82","83","84"],"answer":3,"hint":"일의 자리부터 더하세요","explanation":"답은 82"}]`,
-    '단답형':`[{"question":"35+47=?","choices":[],"answer":"82","hint":"일의 자리부터","explanation":"답은 82"}]`,
-    'OX형':`[{"question":"35+47=82이다.","choices":["O","X"],"answer":1,"hint":"계산해보세요","explanation":"O"}]`,
-    'TF형':`[{"question":"35+47=82이다.","choices":["True","False"],"answer":1,"hint":"계산","explanation":"True"}]`,
-    '연결형':`[{"question":"결과를 연결하세요.","choices":["35+47=?:82"],"answer":"1-82","hint":"각각 계산","explanation":"82"}]`,
-    '서술형':`[{"question":"35+47을 설명하세요.","choices":[],"answer":"답은 82","hint":"자릿값","explanation":"받아올림"}]`,
+    '선택형':`[{"type":"선택형","question":"35+47은 얼마입니까?","choices":["80","81","82","83","84"],"answer":3,"hint":"일의 자리부터 더하세요","explanation":"답은 82"}]`,
+    '단답형':`[{"type":"단답형","question":"35+47=?","answer":"82","hint":"일의 자리부터","explanation":"답은 82"}]`,
+    'OX형':`[{"type":"OX형","question":"35+47=82이다.","choices":["O","X"],"answer":1,"hint":"계산해보세요","explanation":"O가 맞습니다"}]`,
+    'TF형':`[{"type":"TF형","question":"35+47=82이다.","choices":["35+47=82이다","35+47=72이다"],"answer":1,"hint":"계산","explanation":"True"}]`,
+    '연결형':`[{"type":"연결형","question":"식과 답을 연결하세요.","leftItems":["35+47","20+30"],"rightItems":["82","50"],"answer":"1-1,2-2","hint":"각각 계산","explanation":"82,50"}]`,
+    '서술형':`[{"type":"서술형","question":"35+47을 풀이 과정을 포함해 설명하세요.","answer":"일의 자리: 5+7=12, 받아올림 1. 십의 자리: 3+4+1=8. 정답: 82","hint":"자릿값 단위로 계산","explanation":"받아올림 원리 적용"}]`,
+    '순서입력형':`[{"type":"순서입력형","question":"덧셈 순서를 맞게 배열하세요.","choices":["일의 자리 계산","십의 자리 계산","받아올림 확인","최종 답 쓰기"],"answer":"1,3,2,4","hint":"일의 자리부터","explanation":"순서대로"}]`,
+    '순서조합형':`[{"type":"순서조합형","question":"보기를 올바른 순서로 조합하세요.","choices":["35","47","=","82"],"answer":"1,2,3,4","hint":"덧셈식 완성","explanation":"35+47=82"}]`,
   };
-  const example=tmplExamples[tmpl]||tmplExamples['선택형'];
-  const prompt=`당신은 초등학교 수학 교재 문제 출제 전문가입니다. JSON 배열만 출력하세요.\n[조건]\n- 유형: "${tmpl}"\n- 난이도: ${lv}\n- 문제 수: 정확히 ${cnt}개\n- 요청: ${req}\n[예시]\n${example}\n위 구조로 정확히 ${cnt}개를 JSON 배열로만 출력하세요.`;
+  const example = tmplExamples[tmpl] || tmplExamples['선택형'];
+  const unitInfo = (typeof lgCurrentUnit!=='undefined'&&lgCurrentUnit) ? lgCurrentUnit : '덧셈과 뺄셈';
+  const prompt = `당신은 초등학교 수학 교재 문제 출제 전문가입니다. JSON 배열만 출력하세요. 마크다운 금지.
+[조건]
+- 단원: ${unitInfo}
+- 유형: "${tmpl}" (반드시 type 필드에 "${tmpl}" 을 포함)
+- 난이도: ${lv}
+- 문제 수: 정확히 ${cnt}개
+- 요청: ${req}
+[출력 예시 구조]
+${example}
+위 구조로 정확히 ${cnt}개를 JSON 배열로만 출력하세요. type 필드는 반드시 "${tmpl}"으로 설정하세요.`;
+
   T(`✦ AI가 ${tmpl} 문제 ${cnt}개를 생성하고 있어요...`);
   setGenerating(true, `AI가 ${tmpl} 문제 ${cnt}개를 생성하고 있어요...`);
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})});
-    const data=await res.json();
-    const text=data.content?.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
-    const questions=JSON.parse(text);
-    const newIds=questions.map(q=>insertQuestionBlock(q));
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:prompt}]})
+    });
+    const data = await res.json();
+    const text = data.content?.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+    let questions = JSON.parse(text);
+    // type 필드 보정 (API가 누락할 경우)
+    questions = questions.map(q=>({...q, type: q.type||tmpl}));
+    const newIds = questions.map(q=>insertQuestionBlock(q));
     updateHistoryBlockIds(hid,newIds);
     setGenerating(false);
     T(`✅ ${tmpl} 문제 ${questions.length}개 생성 완료!`);
-  }catch(e){
-    const fallbacks={'선택형':(n)=>Array.from({length:n},(_,i)=>({question:`35+${40+i*7}는 얼마입니까?`,choices:['80','81','82','83','84'],answer:3,hint:'일의 자리부터',explanation:`답은 ${75+i*7}`})),'단답형':(n)=>Array.from({length:n},(_,i)=>({question:`${30+i*10}+47=?`,choices:[],answer:`${77+i*10}`,hint:'계산',explanation:`답은 ${77+i*10}`}))};
-    const fb=(fallbacks[tmpl]||fallbacks['선택형'])(parseInt(cnt)||3);
-    const newIds=fb.map(q=>insertQuestionBlock(q));
+  } catch(e){
+    console.warn('API 실패, fallback:', e);
+    // 타입별 fallback
+    const makeFb = (n, t) => Array.from({length:n},(_,i)=>({
+      type: t,
+      question: `${unitInfo} 예시 문제 ${i+1}번`,
+      choices: t==='선택형' ? ['보기 1','보기 2','보기 3','보기 4','보기 5'] : [],
+      answer: t==='선택형' ? 1 : '답을 입력하세요',
+      hint:'힌트를 입력하세요', explanation:'해설을 입력하세요'
+    }));
+    const fb = makeFb(parseInt(cnt)||3, tmpl);
+    const newIds = fb.map(q=>insertQuestionBlock(q));
     updateHistoryBlockIds(hid,newIds);
     setGenerating(false);
     T(`✅ ${tmpl} 문제 ${fb.length}개 생성 완료!`);
@@ -3765,13 +4619,17 @@ function insertBlock(type){
   el.onclick=function(){selBlock(this);};
   const ci=['①','②','③','④','⑤'];
   if(type==='question'){
+    // selectedTmplName으로 타입 결정 (quickAddTmpl, confirmTmpl에서 설정)
+    const qtype = selectedTmplName || '선택형';
+    const bodyHtml = buildChoicesHtml(qtype, {}, ci);
     el.innerHTML=`<div class="bctrl"><button onclick="event.stopPropagation();T('위로')">▲</button><button onclick="event.stopPropagation();T('아래로')">▼</button><button class="del" onclick="event.stopPropagation();rmBlock(this)">✕</button></div>
       <div class="q-head"><div class="q-num">${blkCnt-1}</div><div class="q-txt" contenteditable="true" data-ph="발문을 입력합니다." oninput="onBlockTextInput(this,'question','question')"></div></div>
-      <div class="q-choices">${ci.map(c=>`<div class="q-choice" onclick="event.stopPropagation();togC(this)"><div class="q-cnum">${c}</div><div class="q-ctxt" contenteditable="true" data-ph="선택지를 입력합니다."></div></div>`).join('')}</div>
+      ${bodyHtml}
       <div class="q-hint-area"><div class="qlabel hint">💡 힌트</div><div class="qsub" contenteditable="true" data-ph="힌트를 입력합니다."></div></div>
       <div class="q-sol-area"><div class="qlabel sol">📋 해설</div><div class="qsub" contenteditable="true" data-ph="해설을 입력합니다."></div></div>
-      <div class="ai-bar"><span class="ai-bar-lbl">✨ AI</span><button class="cai pur" onclick="event.stopPropagation();aiAct('발문 개선')">발문 개선</button><button class="cai out" onclick="event.stopPropagation();aiAct('선택지 재생성')">선택지 재생성</button></div>`;
-    T('✅ 문제 블록 추가됨');
+      <div class="ai-bar"></div>`;
+    el.dataset.tmpl = qtype;
+    T('✅ ' + qtype + ' 블록 추가됨');
   } else if(type==='image'){
     el.innerHTML=`<div class="bctrl"><button onclick="event.stopPropagation();T('위로')">▲</button><button onclick="event.stopPropagation();T('아래로')">▼</button><button class="del" onclick="event.stopPropagation();rmBlock(this)">✕</button></div>
       <div class="img-block"><div class="img-ph" onclick="event.stopPropagation();openImageUploadModal(this.closest('.cb'))"><svg width="36" height="36" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#C8CDD8" stroke-width="1.5"/><circle cx="8" cy="8" r="1.5" fill="#C8CDD8"/><path d="m21 15-5-5L5 21" stroke="#C8CDD8" stroke-width="1.5" stroke-linecap="round"/></svg><span>클릭하여 이미지 업로드</span></div><input class="img-cap" type="text" placeholder="캡션" onclick="event.stopPropagation()"></div>
@@ -4802,30 +5660,7 @@ function showContentCompleteSuggestion(h){
             </button>
           </div>
         </div>`).join('')}
-      <!-- 기타 추천 -->
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
-        <button onclick="rpAiQuick('similar')"
-          style="height:28px;padding:0 12px;border-radius:20px;border:1px solid #C7D2FF;
-                 background:white;font-size:10.5px;font-weight:700;color:#4B6EF5;cursor:pointer;
-                 font-family:'Noto Sans KR',sans-serif;transition:all .15s;"
-          onmouseover="this.style.background='#EEF1FF'" onmouseout="this.style.background='white'">
-          🔀 유사문항 추가
-        </button>
-        <button onclick="rpAiQuick('hint')"
-          style="height:28px;padding:0 12px;border-radius:20px;border:1px solid #C7D2FF;
-                 background:white;font-size:10.5px;font-weight:700;color:#4B6EF5;cursor:pointer;
-                 font-family:'Noto Sans KR',sans-serif;transition:all .15s;"
-          onmouseover="this.style.background='#EEF1FF'" onmouseout="this.style.background='white'">
-          💡 힌트·해설
-        </button>
-        <button onclick="rpAiQuick('level')"
-          style="height:28px;padding:0 12px;border-radius:20px;border:1px solid #C7D2FF;
-                 background:white;font-size:10.5px;font-weight:700;color:#4B6EF5;cursor:pointer;
-                 font-family:'Noto Sans KR',sans-serif;transition:all .15s;"
-          onmouseover="this.style.background='#EEF1FF'" onmouseout="this.style.background='white'">
-          📊 난이도 변경
-        </button>
-      </div>
+
     </div>`;
   addRpAiMsg('ai', html);
   msgs.scrollTop = msgs.scrollHeight;
@@ -5578,27 +6413,129 @@ function insertQuestionBlock(q){
   el.className='cb'; el.id='blk-question'+blkCnt; el.dataset.type='question';
   el.onclick=function(){selBlock(this);};
   const ci=['①','②','③','④','⑤'];
-  const hasChoices=Array.isArray(q.choices)&&q.choices.length>0;
-  const isMatching=hasChoices&&q.choices[0]?.includes(':');
-  let choicesHtml;
-  if(isMatching){
-    const pairs=q.choices.map(c=>c.split(':'));
-    choicesHtml=`<div style="padding:8px 20px 12px;"><div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;">${pairs.map(p=>`<div style="padding:9px 14px;border:1.5px solid var(--g2);border-radius:8px;font-size:13px;background:var(--g1);" contenteditable="true">${p[0]||''}</div><div style="font-size:18px;color:var(--g3);text-align:center;">↔</div><div style="padding:9px 14px;border:1.5px solid var(--blue);border-radius:8px;font-size:13px;background:var(--blue-lt);" contenteditable="true">${p[1]||''}</div>`).join('')}</div></div>`;
-  } else if(hasChoices){
-    choicesHtml=`<div class="q-choices">${q.choices.map((c,i)=>`<div class="q-choice${q.answer===i+1?' correct':''}" onclick="event.stopPropagation();togC(this)"><div class="q-cnum">${ci[i]||i+1}</div><div class="q-ctxt" contenteditable="true">${c}</div></div>`).join('')}</div>`;
-  } else {
-    choicesHtml=`<div style="padding:8px 20px 12px;"><div style="font-size:11px;font-weight:700;color:var(--g4);margin-bottom:5px;">정답</div><div contenteditable="true" style="min-height:36px;padding:8px 12px;border:1.5px solid var(--g2);border-radius:6px;font-size:13px;">${typeof q.answer==='string'?q.answer:''}</div></div>`;
-  }
+
+  // q.type으로 템플릿 결정 (없으면 choices로 폴백)
+  const qtype = q.type || (Array.isArray(q.choices)&&q.choices.length>0 ? '선택형' : '단답형');
+  let choicesHtml = buildChoicesHtml(qtype, q, ci);
+
   el.innerHTML=`<div class="bctrl"><button onclick="event.stopPropagation();T('위로')">▲</button><button onclick="event.stopPropagation();T('아래로')">▼</button><button class="del" onclick="event.stopPropagation();rmBlock(this)">✕</button></div>
-    <div class="q-head"><div class="q-num">${blkCnt-1}</div><div class="q-txt" contenteditable="true" oninput="onBlockTextInput(this,'question','question')">${q.question}</div></div>
+    <div class="q-head"><div class="q-num">${blkCnt-1}</div><div class="q-txt" contenteditable="true" oninput="onBlockTextInput(this,'question','question')">${q.question||''}</div></div>
     ${choicesHtml}
     <div class="q-hint-area"><div class="qlabel hint">💡 힌트</div><div class="qsub" contenteditable="true">${q.hint||''}</div></div>
-    <div class="q-sol-area"><div class="qlabel sol">📋 해설</div><div class="qsub" contenteditable="true">${q.explanation||''}</div></div>
-    <div class="ai-bar"><span class="ai-bar-lbl">✨ AI</span><button class="cai pur" onclick="event.stopPropagation();aiAct('발문 개선')">발문 개선</button><button class="cai out" onclick="event.stopPropagation();aiAct('선택지 재생성')">선택지 재생성</button></div>`;
+    <div class="q-sol-area"><div class="qlabel sol">📋 해설</div><div class="qsub" contenteditable="true">${q.explanation||q.solution||''}</div></div>
+    <div class="ai-bar"></div>`;
   slide.insertBefore(el,addArea);
   selBlock(el);
   checkSlideEmpty();
   return el.id;
+}
+
+// 타입별 선택지/입력 영역 HTML 생성
+function buildChoicesHtml(qtype, q, ci){
+  ci = ci||['①','②','③','④','⑤'];
+
+  if(qtype==='선택형'){
+    const choices = Array.isArray(q.choices)&&q.choices.length>0
+      ? q.choices
+      : ['선택지를 입력합니다.','선택지를 입력합니다.','선택지를 입력합니다.','선택지를 입력합니다.','선택지를 입력합니다.'];
+    return `<div class="q-choices">${choices.map((ch,i)=>`<div class="q-choice${q.answer===i+1?' correct':''}" onclick="event.stopPropagation();togC(this)"><div class="q-cnum">${ci[i]||i+1}</div><div class="q-ctxt" contenteditable="true">${ch}</div></div>`).join('')}</div>`;
+  }
+
+  if(qtype==='서술형'){
+    return `<div style="padding:12px 20px 14px;">
+      <div style="font-size:12px;color:var(--g5);margin-bottom:6px;"><strong>풀이 :</strong><span style="display:inline-block;width:200px;border-bottom:1.5px solid var(--g5);margin-left:6px;"></span></div>
+      <div style="font-size:12px;color:var(--g5);margin-bottom:10px;"><strong>답 :</strong><span style="display:inline-block;width:100px;border-bottom:1.5px solid var(--g5);margin-left:6px;"></span></div>
+      <div style="background:var(--g1);border-radius:8px;min-height:72px;border:1px solid var(--g2);padding:10px 12px;display:flex;align-items:flex-end;justify-content:space-between;">
+        <div class="qsub" contenteditable="true" data-ph="모범 답안을 입력합니다." style="flex:1;outline:none;min-height:40px;">${q.answer||''}</div>
+        <div style="display:flex;gap:5px;flex-shrink:0;padding-left:8px;">
+          <button style="height:26px;padding:0 10px;border-radius:6px;border:1.5px solid var(--g2);background:white;font-size:11px;color:var(--g5);cursor:default;font-family:'Noto Sans KR',sans-serif;">키보드</button>
+          <button style="height:26px;padding:0 10px;border-radius:6px;border:1.5px solid var(--g2);background:white;font-size:11px;color:var(--g5);cursor:default;font-family:'Noto Sans KR',sans-serif;">손글씨</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if(qtype==='단답형'){
+    return `<div style="padding:8px 20px 12px;">
+      <div style="height:40px;border-radius:8px;border:1.5px dashed var(--g3);background:var(--g1);display:flex;align-items:center;padding:0 14px;">
+        <div class="qsub" contenteditable="true" data-ph="선택지를 입력합니다." style="flex:1;outline:none;font-size:13px;">${q.answer||''}</div>
+      </div>
+    </div>`;
+  }
+
+  if(qtype==='OX형'){
+    return `<div style="padding:12px 20px 16px;display:flex;gap:24px;justify-content:center;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <div style="width:72px;height:72px;border-radius:50%;border:3px solid var(--g3);display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="this.style.borderColor='#4B6EF5'">
+          <svg width="44" height="44" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="16" stroke="var(--g3)" stroke-width="3.5"/></svg>
+        </div>
+        <div class="qsub" contenteditable="true" data-ph="힌트를 입력합니다." style="font-size:11px;color:var(--g4);outline:none;text-align:center;width:80px;">${(q.choices&&q.choices[0])||''}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <div style="width:72px;height:72px;border-radius:50%;border:3px solid var(--g3);display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="this.style.borderColor='#FF4F6A'">
+          <svg width="44" height="44" viewBox="0 0 48 48" fill="none"><path d="M14 14l20 20M34 14L14 34" stroke="var(--g3)" stroke-width="3.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="qsub" contenteditable="true" data-ph="힌트를 입력합니다." style="font-size:11px;color:var(--g4);outline:none;text-align:center;width:80px;">${(q.choices&&q.choices[1])||''}</div>
+      </div>
+    </div>`;
+  }
+
+  if(qtype==='TF형'){
+    const choices = q.choices||['선택지를 입력합니다.','선택지를 입력합니다.'];
+    return `<div style="padding:8px 20px 12px;display:flex;flex-direction:column;gap:6px;">
+      ${choices.map(ch=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;border:1px solid var(--g2);">
+        <span style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--g3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--g4);flex-shrink:0;">T</span>
+        <span style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--g3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--g4);flex-shrink:0;">F</span>
+        <div class="q-ctxt" contenteditable="true" style="flex:1;font-size:13px;outline:none;">${ch||'선택지를 입력합니다.'}</div>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  if(qtype==='순서입력형'){
+    const choices = q.choices||['선택지를 입력합니다.','선택지를 입력합니다.','선택지를 입력합니다.','선택지를 입력합니다.'];
+    return `<div style="padding:8px 20px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      ${choices.slice(0,4).map(ch=>`<div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+        <div class="q-ctxt" contenteditable="true" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--g2);background:var(--g1);text-align:center;font-size:12px;outline:none;">${ch||'선택지를 입력합니다.'}</div>
+        <div style="display:flex;align-items:center;gap:5px;">
+          <button style="width:24px;height:24px;border-radius:5px;background:#3B4168;color:white;border:none;font-size:10px;cursor:default;">◀</button>
+          <span style="font-size:11px;font-weight:600;color:var(--text);">선택</span>
+          <button style="width:24px;height:24px;border-radius:5px;background:#3B4168;color:white;border:none;font-size:10px;cursor:default;">▶</button>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  if(qtype==='순서조합형'){
+    const choices = q.choices||['선택지를 입력합니다.','선택지를 입력합니다.','선택지를 입력합니다.','선택지를 입력합니다.'];
+    return `<div style="padding:8px 20px 12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      ${choices.slice(0,4).map(ch=>`<div class="q-ctxt" contenteditable="true"
+        style="padding:10px;border-radius:8px;border:1.5px dashed var(--g2);background:var(--g1);
+               text-align:center;font-size:12px;cursor:grab;outline:none;">${ch||'선택지를 입력합니다.'}</div>`).join('')}
+    </div>`;
+  }
+
+  if(qtype==='연결형'){
+    const leftItems  = q.leftItems  || ['선택지를 입력합니다.','선택지를 입력합니다.'];
+    const rightItems = q.rightItems || ['선택지를 입력합니다.','선택지를 입력합니다.'];
+    const pairs = leftItems.map((_,i)=>[leftItems[i]||'',rightItems[i]||'']);
+    return `<div style="padding:8px 20px 12px;display:grid;grid-template-columns:1fr 20px 1fr;gap:6px;align-items:center;">
+      ${pairs.map(([l,r])=>`
+        <div class="q-ctxt" contenteditable="true" style="padding:7px 10px;border-radius:7px;border:1px solid var(--g2);background:var(--g1);font-size:12px;outline:none;">${l}</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
+          <div style="width:7px;height:7px;border-radius:50%;background:var(--g3);"></div>
+          <div style="width:1px;height:8px;background:var(--g3);"></div>
+          <div style="width:7px;height:7px;border-radius:50%;background:var(--g3);"></div>
+        </div>
+        <div class="q-ctxt" contenteditable="true" style="padding:7px 10px;border-radius:7px;border:1px solid var(--blue);background:var(--blue-lt);font-size:12px;outline:none;">${r}</div>`).join('')}
+    </div>`;
+  }
+
+  // 기본: 단답형 폴백
+  return `<div style="padding:8px 20px 12px;">
+    <div style="height:40px;border-radius:8px;border:1.5px dashed var(--g3);background:var(--g1);display:flex;align-items:center;padding:0 14px;">
+      <span style="font-size:13px;color:var(--g3);">답을 입력하세요</span>
+    </div>
+  </div>`;
 }
 
 function updateHistoryBlockIds(hid,ids){
@@ -5760,38 +6697,150 @@ function renderSaveStep(){
   const body=document.getElementById('saveBody');
   if(!body) return;
   if(saveStep===0){
-    // 성취기준 코드 생성 (단원 기반)
     const unitN = (typeof lgCurrentUnit!=='undefined'&&lgCurrentUnit)?lgCurrentUnit:'';
-    const gradeN = (typeof lgCurrentGrade!=='undefined'&&lgCurrentGrade)?lgCurrentGrade.label:'';
+    const gradeN = (typeof lgCurrentGrade!=='undefined'&&lgCurrentGrade)?lgCurrentGrade.label:'초등 수학 3-1';
     const achieveCodes = generateAchievementCodes(gradeN, unitN);
 
-    body.innerHTML=`<div class="save-field"><div class="save-label">콘텐츠 명 <span class="req">*</span></div><input class="save-inp" id="smeta-name" value="콘텐츠 1"></div>
-      <div class="save-field"><div class="save-label">난이도</div><div class="save-difficulty-row">${['상','중상','중','중하','하'].map(d=>`<button class="save-diff-btn${d==='중'?' on':''}" onclick="document.querySelectorAll('.save-diff-btn').forEach(b=>b.classList.remove('on'));this.classList.add('on')">${d}</button>`).join('')}</div></div>
-      <div class="save-field">
-        <div class="save-label" style="display:flex;align-items:center;gap:6px;">
-          핵심 성취기준
-          <span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;background:linear-gradient(135deg,#4B6EF5,#7C4DFF);color:white;">✦ AI 자동 추천</span>
+    // 콘텐츠 분석 → AI 자동 태깅
+    const blocks = [...document.querySelectorAll('#slide1 .cb')];
+    const qCount = blocks.filter(b=>b.dataset.type==='question').length;
+    const hasImg  = blocks.some(b=>b.dataset.type==='image');
+    const hasConcept = blocks.some(b=>b.dataset.type==='concept');
+    const unitShort = unitN.split(' · ')[1] || '덧셈과 뺄셈';
+    const autoTags = [gradeN, unitShort, qCount>0?`${qCount}문항`:'', hasConcept?'개념설명':'', hasImg?'이미지포함':''].filter(Boolean);
+
+    // 선택된 난이도 가져오기
+    const selDiff = document.querySelector('.save-diff-btn.on')?.textContent || '중';
+    // 콘텐츠 유형 분석
+    const contentTypeAuto = hasConcept ? (qCount>0?'개념+문항':'개념설명') : (qCount>0?'문항':'기타');
+    // 문항 유형
+    const firstQ = blocks.find(b=>b.dataset.type==='question');
+    const tmplAuto = firstQ ? (firstQ.querySelector('.q-choices')?'선택형':'서술형') : '-';
+
+    body.innerHTML=`
+      <div style="display:flex;flex-direction:column;gap:0;">
+
+        <!-- 콘텐츠 명 -->
+        <div class="save-field" style="display:grid;grid-template-columns:110px 1fr;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #F0F0F0;">
+          <div class="save-label" style="font-size:12px;font-weight:700;color:#374151;">콘텐츠 명 <span class="req">*</span></div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <input class="save-inp" id="smeta-name" style="flex:1;" value="${unitShort} 문항">
+            <span style="font-size:11px;color:#9CA3AF;white-space:nowrap;">Key : ${Math.floor(Math.random()*90000+10000)}</span>
+          </div>
         </div>
-        <div id="saveAchieveCodes" style="display:flex;flex-direction:column;gap:6px;margin-top:4px;">
-          ${achieveCodes.map(ac=>`
-            <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:9px;
-                        border:1.5px solid ${ac.on?'#4B6EF5':'#E5E7EB'};background:${ac.on?'#EEF1FF':'white'};
-                        cursor:pointer;transition:all .15s;"
-                 onclick="toggleAchieveCode(this)">
-              <div style="width:18px;height:18px;border-radius:5px;flex-shrink:0;border:1.5px solid ${ac.on?'#4B6EF5':'#D1D5DB'};background:${ac.on?'#4B6EF5':'white'};
-                          display:flex;align-items:center;justify-content:center;">
-                ${ac.on?'<svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>':''}
-              </div>
-              <div style="flex:1;">
-                <div style="font-size:11px;font-weight:800;color:#1C1F2E;">${ac.code}</div>
-                <div style="font-size:10px;color:#6B7280;">${ac.desc}</div>
-              </div>
-            </div>`).join('')}
+
+        <!-- 교과/비교과 -->
+        <div class="save-field" style="display:grid;grid-template-columns:110px 1fr;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #F0F0F0;">
+          <div class="save-label" style="font-size:12px;font-weight:700;color:#374151;">교과/비교과 <span class="req">*</span></div>
+          <div style="display:flex;gap:16px;">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:#374151;">
+              <input type="radio" name="saveSubjType" value="교과서" checked style="accent-color:#4B6EF5;"> 교과서 콘텐츠
+            </label>
+            <label style="display:flex;align-items:center;gap=6px;cursor:pointer;font-size:12px;color:#374151;">
+              <input type="radio" name="saveSubjType" value="비교과" style="accent-color:#4B6EF5;"> 비교과 콘텐츠
+            </label>
+          </div>
         </div>
+
+        <!-- 학습 맵 -->
+        <div class="save-field" style="display:grid;grid-template-columns:110px 1fr;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #F0F0F0;">
+          <div class="save-label" style="font-size:12px;font-weight:700;color:#374151;">학습 맵 <span class="req">*</span></div>
+          <div style="display:flex;gap:8px;">
+            <select style="height:34px;padding:0 10px;border-radius:8px;border:1.5px solid #E5E7EB;
+                           font-size:12px;font-family:'Noto Sans KR',sans-serif;color:#374151;outline:none;">
+              ${(typeof lgCurrentGrade!=='undefined'?lgCurrentGrade.units:[unitN]).map(u=>`<option${u===unitN?' selected':''}>${u}</option>`).join('')}
+            </select>
+            <select style="height:34px;padding:0 10px;border-radius:8px;border:1.5px solid #E5E7EB;
+                           font-size:12px;font-family:'Noto Sans KR',sans-serif;color:#374151;outline:none;">
+              <option>차시선택</option><option>1차시</option><option>2차시</option><option>3차시</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 핵심 성취기준 -->
+        <div class="save-field" style="display:grid;grid-template-columns:110px 1fr;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid #F0F0F0;">
+          <div style="font-size:12px;font-weight:700;color:#374151;padding-top:4px;">
+            교과 역량
+            <div style="font-size:9px;font-weight:700;margin-top:3px;padding:2px 6px;border-radius:6px;
+                        background:linear-gradient(135deg,#4B6EF5,#7C4DFF);color:white;display:inline-block;">✦ AI 추천</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            ${achieveCodes.map(ac=>`
+              <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;
+                          border:1.5px solid ${ac.on?'#4B6EF5':'#E5E7EB'};background:${ac.on?'#EEF1FF':'white'};
+                          cursor:pointer;transition:all .15s;" onclick="toggleAchieveCode(this)">
+                <div style="width:16px;height:16px;border-radius:4px;flex-shrink:0;
+                            border:1.5px solid ${ac.on?'#4B6EF5':'#D1D5DB'};background:${ac.on?'#4B6EF5':'white'};
+                            display:flex;align-items:center;justify-content:center;">
+                  ${ac.on?'<svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>':''}
+                </div>
+                <div style="flex:1;min-width:0;">
+                  <span style="font-size:11px;font-weight:800;color:#1C1F2E;">${ac.code}</span>
+                  <span style="font-size:10px;color:#6B7280;margin-left:6px;">${ac.desc}</span>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>
+
+        <!-- 해시태그 AI 자동 -->
+        <div class="save-field" style="display:grid;grid-template-columns:110px 1fr;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid #F0F0F0;">
+          <div style="font-size:12px;font-weight:700;color:#374151;padding-top:6px;">
+            해시태그
+            <div style="font-size:9px;font-weight:700;margin-top:3px;padding:2px 6px;border-radius:6px;
+                        background:#E8FFF5;color:#22C98B;display:inline-block;">✦ AI 자동</div>
+          </div>
+          <div class="save-tag-wrap" id="sTagWrap">
+            ${autoTags.map(t=>`<span class="save-tag">${t} <span class="rm" onclick="this.parentNode.remove()">✕</span></span>`).join('')}
+            <input class="save-tag-inp" id="sTagInput" placeholder="태그 입력 후 Enter" onkeydown="saveTagKeydown(event)">
+          </div>
+        </div>
+
+        <!-- 콘텐츠/문항유형/난이도 -->
+        <div class="save-field" style="display:grid;grid-template-columns:110px 1fr;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #F0F0F0;">
+          <div class="save-label" style="font-size:12px;font-weight:700;color:#374151;">콘텐츠</div>
+          <span style="font-size:13px;font-weight:600;color:#374151;">${contentTypeAuto}</span>
+        </div>
+        <div class="save-field" style="display:grid;grid-template-columns:110px 1fr;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #F0F0F0;">
+          <div class="save-label" style="font-size:12px;font-weight:700;color:#374151;">문항 유형</div>
+          <span style="font-size:13px;font-weight:600;color:#374151;">${tmplAuto}</span>
+        </div>
+
+        <!-- 평가 영역 -->
+        <div class="save-field" style="display:grid;grid-template-columns:110px 1fr;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #F0F0F0;">
+          <div class="save-label" style="font-size:12px;font-weight:700;color:#374151;">평가 영역 <span class="req">*</span></div>
+          <select style="height:34px;padding:0 10px;border-radius:8px;border:1.5px solid #E5E7EB;
+                         font-size:12px;font-family:'Noto Sans KR',sans-serif;color:#374151;outline:none;width:140px;">
+            <option>계산력</option><option>문제해결</option><option>추론</option><option>의사소통</option><option>정보처리</option>
+          </select>
+        </div>
+
+        <!-- 난이도 -->
+        <div class="save-field" style="display:grid;grid-template-columns:110px 1fr;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid #F0F0F0;">
+          <div class="save-label" style="font-size:12px;font-weight:700;color:#374151;">난이도 <span class="req">*</span></div>
+          <div style="display:flex;gap:12px;">
+            ${['상','중','하'].map(d=>`
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:#374151;">
+                <input type="radio" name="saveDiff" value="${d}" ${d==='중'?'checked':''} style="accent-color:#4B6EF5;"> ${d}
+              </label>`).join('')}
+          </div>
+        </div>
+
+        <!-- 출처 -->
+        <div class="save-field" style="display:grid;grid-template-columns:110px 1fr;align-items:center;gap:12px;padding:14px 0;">
+          <div class="save-label" style="font-size:12px;font-weight:700;color:#374151;">출처</div>
+          <input class="save-inp" placeholder="출처를 입력하여 주세요." style="width:100%;">
+        </div>
+
       </div>
-      <div class="save-field"><div class="save-label">해시태그 <span class="auto-badge">✦ AI 자동 태깅</span></div><div class="save-tag-wrap" id="sTagWrap"><span class="save-tag">초등 수학 3-1 <span class="rm" onclick="this.parentNode.remove()">✕</span></span><input class="save-tag-inp" id="sTagInput" placeholder="태그 입력 후 Enter" onkeydown="saveTagKeydown(event)"></div></div>`;
+      <div style="font-size:11px;color:#9CA3AF;text-align:center;margin-top:16px;padding-top:12px;border-top:1px solid #F0F0F0;">
+        필수 값을 모두 설정하시면 [다음 단계]로 이동할 수 있습니다.
+      </div>`;
   } else {
-    body.innerHTML=`<div style="text-align:center;padding:32px 0 24px;"><div style="font-size:40px;margin-bottom:12px;">✅</div><div style="font-size:16px;font-weight:800;color:var(--text);">저장 준비 완료!</div><div style="font-size:12px;color:var(--g4);line-height:1.8;margin-top:8px;">입력하신 메타 정보로 콘텐츠를 최종 저장합니다.</div></div>`;
+    body.innerHTML=`<div style="text-align:center;padding:32px 0 24px;">
+      <div style="font-size:40px;margin-bottom:12px;">✅</div>
+      <div style="font-size:16px;font-weight:800;color:var(--text);">저장 준비 완료!</div>
+      <div style="font-size:12px;color:var(--g4);line-height:1.8;margin-top:8px;">입력하신 메타 정보로 콘텐츠를 최종 저장합니다.</div>
+    </div>`;
   }
 }
 function saveTagKeydown(e){ if(e.key==='Enter'){e.preventDefault();const v=e.target.value.trim();if(!v)return;const w=document.getElementById('sTagWrap');const s=document.createElement('span');s.className='save-tag';s.innerHTML=`${v} <span class="rm" onclick="this.parentNode.remove()">✕</span>`;w.insertBefore(s,e.target);e.target.value='';} }
@@ -5806,6 +6855,139 @@ function saveNextStep(){
       setTimeout(()=>showAiChatLanding(), 300);
     }
   }
+}
+
+// ── 프로필 메뉴 ──
+const demoUser = { name:'홍길동 선생님', email:'hgd@teacher.com', initial:'홍' };
+
+function profileGoMyFolder(){ document.getElementById('profileMenu')?.remove(); openMyContentsPage(); }
+function profileGoPage(type){ document.getElementById('profileMenu')?.remove(); T(type==='account'?'내 계정 페이지는 준비 중이에요':'설정 페이지는 준비 중이에요'); }
+function profileGoAccount(){ document.getElementById('profileMenu')?.remove(); T('내 계정 페이지는 준비 중이에요'); }
+function profileGoSettings(){ document.getElementById('profileMenu')?.remove(); T('설정 페이지는 준비 중이에요'); }
+function profileGoLiked(){
+  document.getElementById('profileMenu')?.remove();
+  openMyContentsPage();
+  setTimeout(function(){
+    var tabs = document.querySelectorAll('.my-tab');
+    if(tabs[1]) myPageFilter('liked', tabs[1]);
+  }, 150);
+}
+function toggleProfileMenu(btn){
+  const existing = document.getElementById('profileMenu');
+  if(existing){ existing.remove(); return; }
+  // 알림 패널 닫기
+  document.getElementById('notifPanel')?.remove();
+
+  const menu = document.createElement('div');
+  menu.id = 'profileMenu';
+  menu.style.cssText = `position:absolute;top:62px;right:20px;z-index:3000;
+    width:240px;border-radius:16px;background:white;
+    box-shadow:0 8px 40px rgba(0,0,0,.15);overflow:hidden;
+    animation:fadeDown .18s ease;font-family:'Noto Sans KR',sans-serif;`;
+
+  menu.innerHTML = `
+    <!-- 프로필 헤더 -->
+    <div style="padding:16px 18px;border-bottom:1px solid #F0F0F0;display:flex;align-items:center;gap:12px;">
+      <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#4B6EF5,#7C4DFF);
+                  color:white;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        ${demoUser.initial}
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#1C1F2E;">${demoUser.name}</div>
+        <div style="font-size:11px;color:#9CA3AF;margin-top:1px;">${demoUser.email}</div>
+      </div>
+    </div>
+    <!-- 메뉴 항목 -->
+    <div style="padding:8px 0;">
+      ${[
+        { icon:'👤', label:'내 계정', action:'profileGoAccount()' },
+        { icon:'⚙️', label:'설정', action:'profileGoSettings()' },
+        { icon:'📂', label:'내 자료함', action:'profileGoMyFolder()' },
+        { icon:'❤️', label:'찜한 자료', action:'profileGoLiked()' },
+      ].map(item=>`
+        <button onclick="${item.action};document.getElementById('profileMenu')?.remove()"
+          style="width:100%;display:flex;align-items:center;gap:12px;padding:10px 18px;
+                 border:none;background:white;cursor:pointer;text-align:left;
+                 font-family:'Noto Sans KR',sans-serif;transition:background .12s;"
+          onmouseover="this.style.background='#F8F9FB'" onmouseout="this.style.background='white'">
+          <span style="font-size:18px;width:24px;text-align:center;">${item.icon}</span>
+          <span style="font-size:13px;font-weight:600;color:#374151;">${item.label}</span>
+        </button>`).join('')}
+    </div>
+    <!-- 구분선 + 로그아웃 -->
+    <div style="border-top:1px solid #F0F0F0;padding:6px 0 8px;">
+      <button onclick="T('로그아웃 되었습니다');document.getElementById('profileMenu')?.remove()"
+        style="width:100%;display:flex;align-items:center;gap:12px;padding:10px 18px;
+               border:none;background:white;cursor:pointer;text-align:left;
+               font-family:'Noto Sans KR',sans-serif;transition:background .12s;"
+        onmouseover="this.style.background='#FFF0F0'" onmouseout="this.style.background='white'">
+        <span style="font-size:18px;width:24px;text-align:center;">🚪</span>
+        <span style="font-size:13px;font-weight:600;color:#FF4F6A;">로그아웃</span>
+      </button>
+    </div>`;
+
+  // 랜딩 스크린에 append
+  const landing = document.getElementById('landingScreen');
+  if(landing){ landing.style.position='relative'; landing.appendChild(menu); }
+  setTimeout(()=>document.addEventListener('click', function close(e){
+    if(!menu.contains(e.target) && e.target!==btn){ menu.remove(); document.removeEventListener('click',close); }
+  }), 50);
+}
+
+// ── 알림 패널 ──
+const demoNotifs = [
+  { icon:'✅', title:'콘텐츠 검수 완료', desc:'덧셈과 뺄셈 1단원이 검수 완료됐어요', time:'방금 전' },
+  { icon:'💡', title:'AI 추천 도착', desc:'새로운 단원 관련 콘텐츠가 추천됐어요', time:'5분 전' },
+];
+
+function toggleNotifPanel(btn){
+  const existing = document.getElementById('notifPanel');
+  if(existing){ existing.remove(); return; }
+  document.getElementById('profileMenu')?.remove();
+
+  const panel = document.createElement('div');
+  panel.id = 'notifPanel';
+  panel.style.cssText = `position:absolute;top:62px;right:68px;z-index:3000;
+    width:300px;border-radius:16px;background:white;
+    box-shadow:0 8px 40px rgba(0,0,0,.15);overflow:hidden;
+    animation:fadeDown .18s ease;font-family:'Noto Sans KR',sans-serif;`;
+
+  panel.innerHTML = `
+    <div style="padding:14px 18px 10px;border-bottom:1px solid #F0F0F0;
+                display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-size:14px;font-weight:800;color:#1C1F2E;">알림</span>
+      <button onclick="document.getElementById('notifPanel')?.remove()"
+        style="border:none;background:none;cursor:pointer;color:#9CA3AF;font-size:14px;">✕</button>
+    </div>
+    ${demoNotifs.map(n=>`
+      <div style="padding:12px 18px;border-bottom:1px solid #F9FAFB;display:flex;gap:11px;">
+        <div style="width:34px;height:34px;border-radius:10px;background:#EEF1FF;
+                    display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">${n.icon}</div>
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:700;color:#1C1F2E;margin-bottom:2px;">${n.title}</div>
+          <div style="font-size:11px;color:#9CA3AF;">${n.desc}</div>
+        </div>
+        <div style="font-size:10px;color:#C0C4CC;white-space:nowrap;padding-top:2px;">${n.time}</div>
+      </div>`).join('')}
+    <div style="padding:10px;text-align:center;">
+      <button onclick="T('전체 알림 준비 중');document.getElementById('notifPanel')?.remove()"
+        style="font-size:12px;color:var(--blue);font-weight:700;border:none;background:none;cursor:pointer;
+               font-family:'Noto Sans KR',sans-serif;">전체 알림 보기</button>
+    </div>`;
+
+  const landing = document.getElementById('landingScreen');
+  if(landing) landing.appendChild(panel);
+  setTimeout(()=>document.addEventListener('click', function close(e){
+    if(!panel.contains(e.target) && e.target!==btn){ panel.remove(); document.removeEventListener('click',close); }
+  }), 50);
+}
+
+// fadeDown 애니메이션 CSS 주입
+if(!document.getElementById('fadeDownStyle')){
+  const s=document.createElement('style');
+  s.id='fadeDownStyle';
+  s.textContent='@keyframes fadeDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}';
+  document.head.appendChild(s);
 }
 
 // TOAST
