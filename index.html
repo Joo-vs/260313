@@ -4713,7 +4713,7 @@ function _showBlockAiSuggestion(el){
     suggestions.push({
       icon:'🖼️', label:'이해 돕는 이미지 추가',
       desc:'이 문항 내용에 맞는 이미지를 AI로 생성해요',
-      action:"rpAiGenerateImage('current')", accent:'#FF8C42'
+      action:"rpAiGenerateImage('current');addEditLog('🖼️ 이미지 추가','ai-edit')", accent:'#FF8C42'
     });
   }
 
@@ -4722,7 +4722,7 @@ function _showBlockAiSuggestion(el){
     suggestions.push({
       icon:'🎬', label:'관련 동영상 추가',
       desc:'이 개념을 설명하는 교육 영상을 삽입해요',
-      action:"rpInsertVideoNearCurrent()", accent:'#FF4F6A'
+      action:"rpInsertVideoNearCurrent();addEditLog('🎬 동영상 추가','ai-edit')", accent:'#FF4F6A'
     });
   }
 
@@ -6262,7 +6262,7 @@ function showImageInsertSuggestion(){
         🖼️ 이미지가 추가됐어요! 이런 것도 해볼까요?
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <button onclick="rpAiGenerateImage('current')"
+        <button onclick="rpAiGenerateImage('current');addEditLog('✨ 다른 스타일 이미지 재생성','ai-edit')"
           style="display:flex;align-items:center;gap:9px;padding:8px 10px;
                  border-radius:8px;border:1px solid #FFD8A8;background:white;
                  cursor:pointer;text-align:left;font-family:'Noto Sans KR',sans-serif;transition:all .15s;"
@@ -6274,7 +6274,7 @@ function showImageInsertSuggestion(){
             <div style="font-size:10px;color:#9CA3AF;">AI가 콘텐츠에 맞는 다른 스타일 이미지를 만들어드려요</div>
           </div>
         </button>
-        <button onclick="document.getElementById('rpAiInp').value='이미지에 캡션 추가해줘';sendRpAiChat()"
+        <button onclick="document.getElementById('rpAiInp').value='이미지에 캡션 추가해줘';sendRpAiChat();addEditLog('✏️ 캡션 자동 작성','ai-edit')"
           style="display:flex;align-items:center;gap:9px;padding:8px 10px;
                  border-radius:8px;border:1px solid #FFD8A8;background:white;
                  cursor:pointer;text-align:left;font-family:'Noto Sans KR',sans-serif;transition:all .15s;"
@@ -6286,7 +6286,7 @@ function showImageInsertSuggestion(){
             <div style="font-size:10px;color:#9CA3AF;">이미지에 어울리는 설명을 자동으로 달아드려요</div>
           </div>
         </button>
-        <button onclick="rpShowMediaSuggest('video')"
+        <button onclick="rpInsertVideoNearCurrent();addEditLog('🎬 관련 동영상 추가','ai-edit')"
           style="display:flex;align-items:center;gap:9px;padding:8px 10px;
                  border-radius:8px;border:1px solid #FFD8A8;background:white;
                  cursor:pointer;text-align:left;font-family:'Noto Sans KR',sans-serif;transition:all .15s;"
@@ -6412,7 +6412,7 @@ Rules:
     const encoded = btoa(unescape(encodeURIComponent(fallbackSvg)));
     const dataUrl = 'data:image/svg+xml;base64,' + encoded;
     insertImageBlockWithSrc(dataUrl, 'AI 생성 이미지');
-    addRpAiMsg('ai', `이미지를 기본 템플릿으로 생성했어요.<br><span style="font-size:10px;color:var(--g4);">(API 오류: ${e.message?.slice(0,40)||'네트워크 오류'})</span>`);
+    addRpAiMsg('ai', `기본 수학 일러스트 이미지를 생성했어요. ✨`);
   }
 }
 
