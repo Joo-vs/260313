@@ -1866,7 +1866,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       <div class="save-body" id="saveBody"></div>
       <div class="save-footer">
         <button class="save-btn-cancel" onclick="closeSaveModal()">취소</button>
-        <button class="save-btn-temp" onclick="T('✅ 임시 저장 완료')">임시 저장</button>
+
         <button class="save-btn-next" id="saveBtnNext" onclick="saveNextStep()">다음 단계</button>
       </div>
     </div>
@@ -4707,8 +4707,9 @@ function _showBlockAiSuggestion(el){
     });
   }
 
-  // 2) 발문 있고 이미지 없으면 → 이미지 제안
-  if(qText && !hasImage){
+  // 2) 완성된 콘텐츠(발문+힌트+해설 모두 입력)에만 이미지 제안
+  const isComplete = qText && hasHint && hasSol;
+  if(isComplete && !hasImage){
     suggestions.push({
       icon:'🖼️', label:'이해 돕는 이미지 추가',
       desc:'이 문항 내용에 맞는 이미지를 AI로 생성해요',
@@ -4716,8 +4717,8 @@ function _showBlockAiSuggestion(el){
     });
   }
 
-  // 3) 동영상 없으면 → 동영상 제안
-  if(!hasVideoBlock && qText){
+  // 3) 완성된 콘텐츠에만 동영상 제안
+  if(isComplete && !hasVideoBlock){
     suggestions.push({
       icon:'🎬', label:'관련 동영상 추가',
       desc:'이 개념을 설명하는 교육 영상을 삽입해요',
@@ -5936,26 +5937,39 @@ function forceOpenAiTab(){
 }
 
 function onBlockTextInput(el, blockType, fieldType){
-  // 현재 블록을 DOM에서 직접 찾기 (curBlock null 방지)
   const block = el.closest('.cb');
   if(block && block !== curBlock){ selBlock(block); }
 
   clearTimeout(_inputSuggestTimer);
   _inputSuggestTimer = setTimeout(()=>{
     const text = el.textContent.trim();
-    if(text.length < 2) return; // 최소 2글자 이상
-    // 이전과 완전히 동일한 내용이면 스킵
-    const key = blockType + ':' + text.slice(0,20);
+    if(text.length < 2) return;
+    // 블록 ID + 텍스트 앞 20자로 중복 체크 (블록 바뀌면 다시 제안)
+    const blockId = block ? block.id : '';
+    const key = blockId + ':' + text.slice(0,20);
     if(_lastSuggestType === key) return;
     _lastSuggestType = key;
+
+    // AI탭 강제 열기 + 초기화 보장
     forceOpenAiTab();
+    if(!rpAiInited){ initRpAiChat(); }
+    setRpAiContentVisible(true);
+
     showAiEditSuggestion(text, blockType);
-  }, 2000); // 2초 정지 시 발동
+  }, 2000);
 }
 
 function showAiEditSuggestion(text, blockType){
+  // rpAiPane 강제 표시
+  const rpAiPane = document.getElementById('rpAiPane');
+  if(rpAiPane) rpAiPane.style.display = 'flex';
+  // msgs 강제 표시
   const msgs = document.getElementById('rpAiMsgs');
   if(!msgs) return;
+  msgs.style.display = 'flex';
+  // 빈 상태 숨기기
+  const emptyEl = document.getElementById('rpAiEmpty');
+  if(emptyEl) emptyEl.style.display = 'none';
 
   // 현재 단원 정보
   const gradeName = (typeof lgCurrentGrade !== 'undefined' && lgCurrentGrade)
@@ -6624,7 +6638,7 @@ function buildChoicesHtml(qtype, q, ci){
     const choices = Array.isArray(q.choices)&&q.choices.length>0
       ? q.choices
       : ['선택지를 입력합니다.','선택지를 입력합니다.','선택지를 입력합니다.','선택지를 입력합니다.','선택지를 입력합니다.'];
-    return `<div class="q-choices">${choices.map((ch,i)=>`<div class="q-choice${q.answer===i+1?' correct':''}" onclick="event.stopPropagation();togC(this)"><div class="q-cnum">${ci[i]||i+1}</div><div class="q-ctxt" contenteditable="true">${ch}</div></div>`).join('')}</div>`;
+    return `<div class="q-choices">${choices.map((ch,i)=>`<div class="q-choice${q.answer===i+1?' correct':''}" onclick="event.stopPropagation();togC(this)"><div class="q-cnum">${ci[i]||i+1}</div><div class="q-ctxt" contenteditable="true" oninput="onBlockTextInput(this,'question','choice')">${ch}</div></div>`).join('')}</div>`;
   }
 
   if(qtype==='서술형'){
