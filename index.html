@@ -100,7 +100,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   padding:72px 24px 48px;
   width:100%;
 }
-.landing-gallery{
+.landing-gallery{margin-top:8px;
   width:100%;max-width:1100px;
   margin:0 auto;padding:0 32px;
 }
@@ -1296,6 +1296,26 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       <button class="lg-tab" onclick="lgSwitchTab('teacher',this)">교사 공유 콘텐츠</button>
     </div>
 
+    <!-- 단원 필터 -->
+    <div id="lgUnitFilter"
+      style="display:flex;align-items:center;gap:8px;padding:6px 16px 14px;
+             background:white;border-radius:14px;margin-bottom:20px;
+             border:1.5px solid #EFEFEF;box-shadow:0 2px 8px rgba(0,0,0,.04);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;">
+        <path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <select id="lgFilterGrade" onchange="lgFilterByGrade(this)"
+        style="border:none;outline:none;font-size:13px;font-weight:700;color:#374151;
+               background:transparent;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">
+      </select>
+      <span style="color:#D1D5DB;font-size:14px;">›</span>
+      <select id="lgFilterUnit" onchange="lgFilterByUnit(this)"
+        style="border:none;outline:none;font-size:13px;font-weight:600;color:#4B6EF5;
+               background:transparent;cursor:pointer;font-family:'Noto Sans KR',sans-serif;flex:1;">
+      </select>
+
+    </div>
+
     <!-- 공식 제공 콘텐츠 -->
     <div class="lg-section" id="lgSectionOfficial">
       <div class="lg-section-header">
@@ -1385,7 +1405,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <div class="acl-sidebar">
     <div class="acl-sb-header">
       <div class="acl-sb-title">대화 기록</div>
-      <button class="acl-sb-close" onclick="closeAiChatLanding()">✕</button>
+      <button class="acl-sb-close" onclick="toggleAclSidebar()" id="aclSbClose" title="대화 기록 숨기기">✕</button>
     </div>
     <button class="acl-new-btn" onclick="aclNewChat()">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
@@ -1411,6 +1431,14 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <div class="acl-main">
     <!-- 상단 바 -->
     <div class="acl-topbar">
+      <button id="aclSidebarShowBtn" onclick="toggleAclSidebar()"
+        style="display:none;width:30px;height:30px;border-radius:7px;
+               border:1.5px solid #E5E7EB;background:white;
+               color:#374151;cursor:pointer;font-size:14px;margin-right:6px;
+               align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;"
+        onmouseover="this.style.borderColor='#1C1F2E';this.style.color='#1C1F2E'"
+        onmouseout="this.style.borderColor='#E5E7EB';this.style.color='#374151'"
+        title="대화 기록 보기">☰</button>
       <div class="acl-topbar-logo">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="white"/></svg>
       </div>
@@ -1951,6 +1979,68 @@ const lgTeacherContents = [
     icon:'💪', author:'오민수 교사', desc:'받아올림 반복 연습 20문항' },
 ];
 
+// ── 갤러리 단원 필터 ──
+let lgFilterGradeIdx = 0;
+let lgFilterUnitIdx  = 0; // 0 = 전체
+
+function lgInitFilter(){
+  const gradeEl = document.getElementById('lgFilterGrade');
+  const unitEl  = document.getElementById('lgFilterUnit');
+  if(!gradeEl||!unitEl) return;
+  gradeEl.innerHTML = lgGrades.map((g,i)=>`<option value="${i}">${g.label}</option>`).join('');
+  lgFilterGradeIdx = 0;
+  lgFilterUnitIdx  = -1; // 전체 단원 기본
+  lgUpdateUnitSelect();
+  lgApplyFilter();
+}
+
+function lgUpdateUnitSelect(){
+  const unitEl = document.getElementById('lgFilterUnit');
+  if(!unitEl) return;
+  const grade = lgGrades[lgFilterGradeIdx];
+  unitEl.innerHTML = `<option value="-1">전체 단원</option>` +
+    (grade?.units||[]).map((u,i)=>`<option value="${i}">${u}</option>`).join('');
+  unitEl.value = lgFilterUnitIdx;
+}
+
+function lgFilterByGrade(sel){
+  lgFilterGradeIdx = parseInt(sel.value);
+  lgFilterUnitIdx  = -1;
+  lgUpdateUnitSelect();
+  lgApplyFilter();
+}
+
+function lgFilterByUnit(sel){
+  lgFilterUnitIdx = parseInt(sel.value);
+  lgApplyFilter();
+}
+
+function lgApplyFilter(){
+  const grade = lgGrades[lgFilterGradeIdx];
+  const unitName = lgFilterUnitIdx >= 0 ? grade?.units[lgFilterUnitIdx] : null;
+
+  const filterItem = (item) => {
+    if(item.grade !== grade?.grade && item.grade !== grade?.label) return false;
+    if(unitName && !item.title.includes(unitName.split(' · ')[1]||'') &&
+       !item.subject.includes(unitName.split(' · ')[1]||'') &&
+       item.unit !== unitName) return true; // 단원 필드 없으면 허용
+    return true;
+  };
+
+  const filteredOff = unitName
+    ? lgOfficialContents.filter(i=>filterItem(i))
+    : lgOfficialContents;
+  const filteredTea = unitName
+    ? lgTeacherContents.filter(i=>filterItem(i))
+    : lgTeacherContents;
+
+  lgRenderCards('lgCardsOfficial', filteredOff);
+  lgRenderCards('lgCardsTeacher', filteredTea);
+
+  const cnt = filteredOff.length + filteredTea.length;
+
+}
+
 const lgSelectedIds = new Set(); // 체크된 카드 ID
 const lgLikedIds = new Set(JSON.parse(sessionStorage.getItem('lgLikedIds')||'[]')); // 찜 목록
 
@@ -2135,22 +2225,44 @@ function lgPreview(id){
                  background:white;cursor:pointer;font-size:14px;color:var(--g4);">✕</button>
       </div>
       <div style="flex:1;overflow-y:auto;padding:20px 24px;">
-        <div style="font-size:12px;font-weight:700;color:var(--g4);margin-bottom:12px;">콘텐츠 미리보기</div>
-        <div style="border:1.5px solid var(--g2);border-radius:12px;overflow:hidden;">
-          <div style="padding:16px 20px;background:${item.color}20;">
-            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px;">${item.title}</div>
-            <div style="font-size:12px;color:var(--g5);line-height:1.7;">${item.desc}</div>
+        <!-- 실제 교재 스타일 미리보기 -->
+        <div style="background:white;border:1.5px solid var(--g2);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);">
+          <!-- 단원 헤더 -->
+          <div style="padding:14px 20px;background:${item.color};border-bottom:1.5px solid ${item.accent}20;">
+            <div style="font-size:10px;font-weight:700;color:${item.accent};margin-bottom:3px;">${item.grade} · ${item.subject} · ${item.type}</div>
+            <div style="font-size:15px;font-weight:800;color:#1C1F2E;">${item.title}</div>
           </div>
-          <div style="border-top:1px solid var(--g2);padding:14px 20px;">
-            <div style="font-size:11px;font-weight:700;color:var(--g4);margin-bottom:8px;">샘플 문항</div>
-            <div style="display:flex;align-items:flex-start;gap:8px;">
-              <div style="width:24px;height:24px;border-radius:6px;background:#3B4168;color:white;
-                          font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
-              <div style="font-size:13px;color:var(--text);font-weight:500;line-height:1.5;">[${item.title}] ${item.desc}</div>
+          <!-- 본문 미리보기 -->
+          <div style="padding:18px 20px;">
+            ${item.type.includes('개념')?`
+              <div style="padding:12px 16px;background:#F5F3FF;border-radius:10px;border-left:4px solid ${item.accent};margin-bottom:14px;">
+                <div style="font-size:10px;font-weight:800;color:${item.accent};margin-bottom:5px;">📖 개념 설명</div>
+                <div style="font-size:13px;color:#374151;line-height:1.7;">${item.desc}</div>
+              </div>`:''}
+            <!-- 샘플 문항 -->
+            <div>
+              <div style="font-size:10px;font-weight:700;color:var(--g4);margin-bottom:10px;letter-spacing:.04em;">문항 미리보기</div>
+              ${[
+                {q:`${item.title}에 관한 문항 1`, choices:['보기 ①','보기 ②','보기 ③','보기 ④','보기 ⑤'], ans:2},
+                {q:`${item.title}에 관한 문항 2`, choices:[], ans:null},
+              ].map((qItem,qi)=>`
+                <div style="margin-bottom:12px;">
+                  <div style="display:flex;align-items:flex-start;gap:9px;margin-bottom:8px;">
+                    <div style="min-width:24px;height:24px;border-radius:6px;background:#3B4168;color:white;
+                                font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${qi+1}</div>
+                    <div style="font-size:13px;color:#1C1F2E;font-weight:600;line-height:1.5;">${qItem.q}</div>
+                  </div>
+                  ${qItem.choices.length>0?`<div style="display:flex;flex-direction:column;gap:4px;padding-left:33px;">
+                    ${qItem.choices.map((ch,ci)=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 9px;border-radius:7px;border:1px solid ${ci===qItem.ans?'#4B9EFF':'#EFEFEF'};background:${ci===qItem.ans?'#E8F4FF':'white'};">
+                      <span style="width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;border:1.5px solid ${ci===qItem.ans?'#4B9EFF':'#D1D5DB'};background:${ci===qItem.ans?'#4B9EFF':'white'};color:${ci===qItem.ans?'white':'#9CA3AF'};">${['①','②','③','④','⑤'][ci]}</span>
+                      <span style="font-size:12px;color:${ci===qItem.ans?'#1C1F2E':'#9CA3AF'};">${ch}</span>
+                    </div>`).join('')}
+                  </div>`:`<div style="padding-left:33px;"><div style="height:32px;border-radius:7px;border:1.5px dashed #C0C4CC;background:#FAFAFA;display:flex;align-items:center;padding:0 11px;"><span style="font-size:11px;color:#D1D5DB;">답을 입력하세요</span></div></div>`}
+                </div>`).join('')}
             </div>
           </div>
         </div>
-        ${item.author?`<div style="margin-top:12px;font-size:11px;color:var(--g4);">제작: ${item.author}</div>`:''}
+        ${item.author?`<div style="margin-top:10px;font-size:11px;color:var(--g4);">제작: ${item.author}</div>`:''}
       </div>
       <div style="padding:16px 24px;border-top:1px solid var(--g2);display:flex;gap:8px;">
         <button onclick="lgInsertContent('${id}');this.closest('#lgPreviewModal').remove()"
@@ -2630,6 +2742,21 @@ function showAiChatLanding(){
   }
 }
 
+function toggleAclSidebar(){
+  const sidebar = document.querySelector('.acl-sidebar');
+  const showBtn = document.getElementById('aclSidebarShowBtn');
+  const topbar  = document.querySelector('.acl-topbar');
+  if(!sidebar) return;
+  const isHidden = sidebar.style.display === 'none';
+  if(isHidden){
+    sidebar.style.display = '';
+    if(showBtn){ showBtn.style.display = 'none'; }
+  } else {
+    sidebar.style.display = 'none';
+    if(showBtn){ showBtn.style.display='flex'; showBtn.style.alignItems='center'; showBtn.style.justifyContent='center'; }
+  }
+}
+
 function closeAiChatLanding(){
   const acl = document.getElementById('aiChatLanding');
   acl.classList.add('out');
@@ -2797,21 +2924,103 @@ function setAclInputState(enabled, placeholder='메시지를 입력하세요...'
 
 // ── STEP 0: 웰컴 메시지 + 이대로/변경 버튼 ──
 function aclShowWelcome(){
-  setAclInputState(false, '위 선택지를 먼저 선택해 주세요');
+  setAclInputState(false, '단원을 먼저 선택해 주세요');
   const tid = showTyping();
   setTimeout(()=>{
     removeTyping(tid);
+    const grade = lgCurrentGrade || lgGrades[0];
     aclAddAiMsg(`
       <p>안녕하세요 :)</p>
-      <p>초등3-1 수학 <strong>덧셈과 뺄셈</strong>에 대한 자료를 만들어 드릴게요.</p>
-      <p>단원 변경을 원하신다면 아래 버튼을 눌러주세요.</p>
-      <div class="acl-inline-btns">
-        <button class="acl-inline-btn prim" onclick="aclConfirmInfo()">이대로 진행할게요</button>
-        <button class="acl-inline-btn" onclick="aclChangeInfo()">변경할게요</button>
+      <p>초등3-1 수학에 대한 자료를 만들어 드릴게요.</p>
+      <p>단원을 선택해주세요.</p>
+      <div style="display:flex;align-items:center;gap:6px;margin:6px 0 10px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#9CA3AF" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
+        <span style="font-size:11px;color:#9CA3AF;">선택 후에도 다른 단원으로 변경할 수 있어요</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;" id="aclUnitChoices">
+        ${grade.units.map((u,i)=>`
+          <button onclick="aclPickUnit('${u}',this)"
+            style="display:flex;align-items:center;gap:10px;padding:10px 14px;
+                   border-radius:10px;border:1.5px solid #E5E7EB;background:white;
+                   cursor:pointer;text-align:left;transition:all .15s;
+                   font-family:'Noto Sans KR',sans-serif;"
+            onmouseover="this.style.borderColor='#4B6EF5';this.style.background='#F8F9FF'"
+            onmouseout="this.style.borderColor='#E5E7EB';this.style.background='white'">
+            <span style="width:22px;height:22px;border-radius:6px;background:#EEF1FF;
+                         color:#4B6EF5;font-size:10px;font-weight:800;display:flex;
+                         align-items:center;justify-content:center;flex-shrink:0;">${i+1}</span>
+            <span style="font-size:12px;font-weight:600;color:#1C1F2E;">${u}</span>
+          </button>`).join('')}
       </div>
     `);
-    aclStep = 1;
-  }, 900);
+    aclStep = 0;
+  }, 700);
+}
+
+function aclResetToConceptStyleStep(){
+  const msgs = document.getElementById('aclMsgs');
+  if(!msgs) return;
+  const allMsgs = [...msgs.querySelectorAll('.acl-msg-ai, .acl-msg-user')];
+  allMsgs.slice(4).forEach(m=>m.remove()); // 단원+유형 메시지 유지
+  aclConceptStyle=''; aclSelectedTmpl='';
+  aclStep=1;
+  aclShowConceptStyleStep(aclContentType);
+}
+function aclResetToEvalTypeStep(){
+  const msgs = document.getElementById('aclMsgs');
+  if(!msgs) return;
+  const allMsgs = [...msgs.querySelectorAll('.acl-msg-ai, .acl-msg-user')];
+  allMsgs.slice(4).forEach(m=>m.remove());
+  aclSelectedEvalType=''; aclSelectedTmpl='';
+  aclStep=1;
+  aclShowTmplStep(aclContentType);
+}
+function aclResetToUnitStep(){
+  const msgs = document.getElementById('aclMsgs');
+  if(!msgs) return;
+  // 모든 메시지 초기화 후 단원 선택 재표시
+  msgs.innerHTML = '';
+  aclStep = 0;
+  aclContentType=''; aclSelectedTmpl=''; aclConceptStyle='';
+  lgCurrentUnit = '';
+  aclShowWelcome();
+}
+
+function aclPickUnit(unitName, btn){
+  if(aclStep > 0 && lgCurrentUnit !== unitName){
+    const msgs = document.getElementById('aclMsgs');
+    if(msgs){
+      const allMsgs = [...msgs.querySelectorAll('.acl-msg-ai, .acl-msg-user')];
+      allMsgs.slice(1).forEach(m=>m.remove());
+    }
+    aclContentType=''; aclSelectedTmpl=''; aclConceptStyle=''; aclStep=0;
+  }
+
+  document.querySelectorAll('#aclUnitChoices button').forEach(b=>{
+    b.style.opacity='1'; b.style.pointerEvents='auto';
+    b.style.outline='none'; b.style.background='white'; b.style.fontWeight='400';
+    const ns=b.querySelector('span'); if(ns){ns.style.background='#EEF1FF';ns.style.color='#4B6EF5';}
+    const ht=b.querySelector('.unit-change-badge'); if(ht) ht.remove();
+  });
+
+  // 선택된 버튼 강조 + "변경 가능" 배지
+  btn.style.outline='2px solid #4B6EF5'; btn.style.background='#F0F4FF'; btn.style.fontWeight='700';
+  const numEl=btn.querySelector('span');
+  if(numEl){numEl.style.background='#4B6EF5'; numEl.style.color='white';}
+  if(!btn.querySelector('.unit-change-badge')){
+    const badge=document.createElement('span');
+    badge.className='unit-change-badge';
+    badge.textContent='✏️ 변경 가능';
+    badge.style.cssText='margin-left:auto;font-size:9.5px;font-weight:600;color:#4B6EF5;'+
+      'background:#EEF1FF;padding:2px 8px;border-radius:8px;flex-shrink:0;';
+    btn.style.display='flex'; btn.style.alignItems='center';
+    btn.appendChild(badge);
+  }
+
+  lgCurrentUnit = unitName;
+  aclAddUserMsg(unitName);
+  const tid = showTyping();
+  setTimeout(()=>{ removeTyping(tid); aclShowContentTypeStep(); }, 600);
 }
 
 // ── 전체 단원 일괄 생성 ──
@@ -3197,6 +3406,10 @@ function aclConfirmInfo2(){
 function aclShowContentTypeStep(){
   aclAddAiMsg(`
     <p>어떤 콘텐츠를 생성하고 싶으신가요?<br>아래에서 원하는 유형을 선택해주세요.</p>
+    <div style="display:flex;align-items:center;gap:6px;margin:4px 0 8px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#9CA3AF" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
+      <span style="font-size:11px;color:#9CA3AF;">선택 후에도 다른 유형으로 변경할 수 있어요</span>
+    </div>
     <div class="acl-choices" id="aclContentChoices">
       <button class="acl-choice-btn" onclick="aclPickContentType('개념설명+문항',this)">
         <div class="acl-choice-icon">📖</div>
@@ -3227,26 +3440,57 @@ function aclShowContentTypeStep(){
 // 콘텐츠 유형 선택
 let aclSelectedTmpl = ''; // 선택된 문항 템플릿
 
+function aclResetToContentTypeStep(){
+  const msgs = document.getElementById('aclMsgs');
+  if(!msgs) return;
+  // 콘텐츠 유형 선택 이후 메시지만 제거 (단원 선택은 유지)
+  const allMsgs = [...msgs.querySelectorAll('.acl-msg-ai, .acl-msg-user')];
+  // 단원 선택 메시지(2개) 이후를 모두 제거
+  allMsgs.slice(2).forEach(m=>m.remove());
+  aclContentType = '';
+  aclSelectedTmpl = '';
+  aclConceptStyle = '';
+  aclStep = 1;
+  aclShowContentTypeStep();
+}
+
 function aclPickContentType(type, btn){
+  if(aclContentType && aclContentType !== type){
+    const msgs = document.getElementById('aclMsgs');
+    if(msgs){
+      const allMsgs = [...msgs.querySelectorAll('.acl-msg-ai, .acl-msg-user')];
+      allMsgs.slice(3).forEach(m=>m.remove());
+    }
+    aclSelectedTmpl=''; aclConceptStyle=''; aclStep=1;
+  }
+
   document.querySelectorAll('#aclContentChoices .acl-choice-btn').forEach(b=>{
-    b.classList.add('disabled'); b.classList.remove('selected');
+    b.classList.remove('disabled','selected');
+    b.style.opacity='1'; b.style.pointerEvents='auto';
+    b.style.border=''; b.style.background='';
+    const ht=b.querySelector('.content-change-badge'); if(ht) ht.remove();
   });
-  btn.classList.remove('disabled');
+
+  // 선택된 버튼 강조 + "변경 가능" 배지
   btn.classList.add('selected');
+  btn.style.border='2px solid #1C1F2E'; btn.style.background='#F9FAFB';
+  if(!btn.querySelector('.content-change-badge')){
+    const badge2=document.createElement('div');
+    badge2.className='content-change-badge';
+    badge2.textContent='✏️ 다른 유형으로 변경 가능해요';
+    badge2.style.cssText='font-size:10px;font-weight:600;color:#4B6EF5;'+
+      'background:#EEF1FF;padding:3px 10px;border-radius:6px;margin-top:6px;display:inline-block;';
+    btn.appendChild(badge2);
+  }
+
   aclContentType = type;
   aclAddUserMsg(type);
-
   const tid = showTyping();
   setTimeout(()=>{
     removeTyping(tid);
-    // '문항' 단독만 평가유형 선택 → 개념설명+문항은 바로 상세입력
-    if(type === '문항'){
-      aclShowTmplStep(type);
-    } else if(type === '개념설명+문항' || type === '개념설명+활동'){
-      aclShowConceptStyleStep(type); // 개념 스타일 먼저 선택
-    } else {
-      aclShowDetailStep(type);
-    }
+    if(type === '문항'){ aclShowTmplStep(type); }
+    else if(type === '개념설명+문항' || type === '개념설명+활동'){ aclShowConceptStyleStep(type); }
+    else { aclShowDetailStep(type); }
   }, 800);
 }
 
@@ -3259,7 +3503,11 @@ let aclConceptStyle = ''; // 'story' | 'intuitive'
 function aclShowConceptStyleStep(type){
   aclAddAiMsg(`
     <p>개념 설명 스타일을 선택해주세요.</p>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;" id="aclStyleChoices">
+    <div style="display:flex;align-items:center;gap:6px;margin:4px 0 10px;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#9CA3AF" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
+      <span style="font-size:11px;color:#9CA3AF;">선택 후에도 다른 스타일로 변경할 수 있어요</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;" id="aclStyleChoices">
 
       <button onclick="aclPickConceptStyle('story','${type}',this)"
         style="display:flex;align-items:flex-start;gap:14px;padding:16px 18px;
@@ -3301,21 +3549,36 @@ function aclShowConceptStyleStep(type){
 }
 
 function aclPickConceptStyle(style, type, btn){
-  aclConceptStyle = style;
+  // 다른 스타일 클릭 시 이후 메시지 제거
+  if(aclConceptStyle && aclConceptStyle !== style){
+    const msgs=document.getElementById('aclMsgs');
+    // slice(5): 웰컴+단원+유형+사용자유형+스타일선택AI 유지, 그 이후(사용자 선택값~)만 제거
+    if(msgs)[...msgs.querySelectorAll('.acl-msg-ai,.acl-msg-user')].slice(5).forEach(m=>m.remove());
+  }
+  // 모든 버튼 활성 + 강조 초기화
   document.querySelectorAll('#aclStyleChoices button').forEach(b=>{
-    b.style.opacity='.4'; b.style.pointerEvents='none';
+    b.style.opacity='1'; b.style.pointerEvents='auto';
+    b.style.borderColor='#E5E7EB'; b.style.background='white';
+    b.style.outline='none';
+    const ht=b.querySelector('.chg-hint'); if(ht) ht.remove();
   });
-  btn.style.opacity='1'; btn.style.pointerEvents='auto';
+  // 선택된 버튼 강조
+  btn.style.borderColor=style==='story'?'#4B6EF5':'#22C98B';
+  btn.style.background=style==='story'?'#F0F4FF':'#F0FFF8';
   btn.style.outline='2px solid '+(style==='story'?'#4B6EF5':'#22C98B');
-
+  if(!btn.querySelector('.chg-hint')){
+    const hint=document.createElement('div');
+    hint.className='chg-hint';
+    hint.innerHTML=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#9CA3AF" stroke-width="1.8"/><path d="M12 8v4M12 16h.01" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg><span style="font-size:10px;color:#9CA3AF;">다른 스타일로 변경 가능해요</span>`;
+    hint.style.cssText='display:flex;align-items:center;gap:4px;margin-top:8px;';
+    btn.appendChild(hint);
+  }
+  aclConceptStyle = style;
   const label = style==='story' ? '📖 스토리형' : '⚡ 직관형';
   aclAddUserMsg(label);
-
   const tid = showTyping();
   setTimeout(()=>{
     removeTyping(tid);
-    // 개념+활동이면 서술형 바로 → 상세 입력
-    // 개념+문항이면 바로 상세 입력
     aclSelectedTmpl = type.includes('활동') ? '서술형' : '선택형';
     aclShowDetailStep(type);
   }, 600);
@@ -3355,6 +3618,7 @@ function aclShowTmplStep(type){
 
   aclAddAiMsg(`
     <p>어떤 <strong>평가 유형</strong>으로 만들까요?</p>
+    <div style="display:flex;align-items:center;gap:5px;margin:4px 0 8px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#9CA3AF" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg><span style="font-size:11px;color:#9CA3AF;">선택 후에도 다른 유형으로 변경할 수 있어요</span></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;" id="aclTmplChoices">
       ${evalTypes.map(t=>`
         <button onclick="aclPickEvalType('${t.id}','${type}',this)"
@@ -3375,24 +3639,36 @@ function aclShowTmplStep(type){
 }
 
 function aclPickEvalType(evalType, contentType, btn){
+  // 다른 평가 유형 클릭 시 이후 메시지 제거
+  if(aclSelectedEvalType && aclSelectedEvalType !== evalType){
+    const msgs=document.getElementById('aclMsgs');
+    if(msgs)[...msgs.querySelectorAll('.acl-msg-ai,.acl-msg-user')].slice(5).forEach(m=>m.remove());
+  }
+  // 모든 버튼 활성 + 강조 초기화
   document.querySelectorAll('#aclTmplChoices button').forEach(b=>{
-    b.style.opacity='.45'; b.style.pointerEvents='none';
+    b.style.opacity='1'; b.style.pointerEvents='auto';
+    b.style.outline='none'; b.style.borderColor='#E5E7EB'; b.style.background='white';
+    const ht=b.querySelector('.chg-hint'); if(ht) ht.remove();
   });
-  btn.style.opacity='1'; btn.style.pointerEvents='auto';
-  btn.style.outline='2px solid #4B6EF5';
+  // 선택된 버튼 강조
+  btn.style.outline='2px solid #4B6EF5'; btn.style.borderColor='#4B6EF5'; btn.style.background='#F0F4FF';
+  if(!btn.querySelector('.chg-hint')){
+    const hint=document.createElement('div');
+    hint.className='chg-hint';
+    hint.innerHTML=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#9CA3AF" stroke-width="1.8"/><path d="M12 8v4M12 16h.01" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg><span style="font-size:10px;color:#9CA3AF;">다른 평가 유형으로 변경 가능해요</span>`;
+    hint.style.cssText='display:flex;align-items:center;gap:4px;margin-top:6px;';
+    btn.appendChild(hint);
+  }
   aclSelectedEvalType = evalType;
   aclAddUserMsg(evalType);
-
   const tid = showTyping();
   setTimeout(()=>{
     removeTyping(tid);
     if(evalType === '기타'){
       aclShowMultiTmplStep(contentType);
     } else if(evalType === '총괄평가'){
-      // 총괄평가: 단원 범위 선택 (현재 단원 or 전체 단원)
       aclShowTotalEvalRangeStep(contentType);
     } else {
-      // 진단/형성: 바로 문항 수 입력
       const evalDescMap = {
         '진단평가': '학생의 현재 수준을 파악하기 위해 선택형·단답형·서술형을 균형 있게 배합한 진단 평가지를 만들어드릴게요.',
         '형성평가': '학습 중 이해도를 확인하는 형성 평가지를 선택형·단답형·서술형 균형 있게 만들어드릴게요.',
@@ -3492,17 +3768,28 @@ function aclConfirmMultiTmpl(contentType){
 }
 
 function aclPickTmpl(tmplId, contentType, btn){
-  // 선택지 비활성화
+  // 다른 템플릿 클릭 시 이후 메시지 제거
+  if(aclSelectedTmpl && aclSelectedTmpl !== tmplId){
+    const msgs=document.getElementById('aclMsgs');
+    if(msgs)[...msgs.querySelectorAll('.acl-msg-ai,.acl-msg-user')].slice(6).forEach(m=>m.remove());
+  }
+  // 모든 버튼 활성 + 강조 초기화
   document.querySelectorAll('#aclTmplChoices button').forEach(b=>{
-    b.style.opacity = '.45'; b.style.pointerEvents = 'none';
+    b.style.opacity='1'; b.style.pointerEvents='auto';
+    b.style.outline='none'; b.style.borderColor='#E5E7EB';
+    const ht=b.querySelector('.chg-hint'); if(ht) ht.remove();
   });
-  btn.style.opacity = '1';
-  btn.style.pointerEvents = 'auto';
-  btn.style.outline = '2px solid #4B6EF5';
-
+  // 선택된 버튼 강조
+  btn.style.outline='2px solid #4B6EF5'; btn.style.borderColor='#4B6EF5';
+  if(!btn.querySelector('.chg-hint')){
+    const hint=document.createElement('div');
+    hint.className='chg-hint';
+    hint.innerHTML=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#9CA3AF" stroke-width="1.8"/><path d="M12 8v4M12 16h.01" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg><span style="font-size:10px;color:#9CA3AF;">다른 유형으로 변경 가능해요</span>`;
+    hint.style.cssText='display:flex;align-items:center;gap:4px;margin-top:6px;';
+    btn.appendChild(hint);
+  }
   aclSelectedTmpl = tmplId;
   aclAddUserMsg(tmplId);
-
   const tid = showTyping();
   setTimeout(()=>{ removeTyping(tid); aclShowDetailStep(contentType); }, 700);
 }
@@ -4510,6 +4797,7 @@ function checkSlideEmpty(){
 
 window.addEventListener('DOMContentLoaded',()=>{
   // 갤러리 카드 초기 렌더링
+  lgInitFilter();
   lgRenderCards('lgCardsOfficial', lgOfficialContents);
   lgRenderCards('lgCardsTeacher', lgTeacherContents);
   // 내 자료 카운트 초기화
