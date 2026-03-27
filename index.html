@@ -32,14 +32,14 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .landing-logo-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#4B6EF5,#7C4DFF);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(124,77,255,.3);}
 .landing-title{font-size:28px;font-weight:900;color:var(--text);letter-spacing:-.5px;}
 .landing-title span{color:var(--ai);}
-.landing-sub{font-size:13px;color:var(--g4);margin-bottom:52px;text-align:center;line-height:1.7;}
+.landing-sub{font-size:13px;color:var(--g4);margin-bottom:44px;text-align:center;line-height:1.7;}
 
 /* 메인 버튼 2개 */
-.landing-main-btns{display:flex;gap:16px;align-items:stretch;}
+.landing-main-btns{display:flex;gap:20px;align-items:stretch;}
 
 .landing-main-btn{
-  width:240px;border-radius:20px;padding:32px 24px;
-  display:flex;flex-direction:column;align-items:center;gap:14px;
+  width:280px;border-radius:24px;padding:40px 28px;
+  display:flex;flex-direction:column;align-items:center;gap:16px;
   cursor:pointer;transition:all .22s cubic-bezier(.34,1.56,.64,1);
   text-align:center;border:2px solid transparent;
   position:relative;overflow:hidden;
@@ -49,7 +49,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   transition:opacity .2s;
   background:radial-gradient(ellipse at center,rgba(255,255,255,.25) 0%,transparent 70%);
 }
-.landing-main-btn:hover{transform:translateY(-4px);}
+.landing-main-btn:hover{transform:translateY(-6px);}
 .landing-main-btn:hover::after{opacity:1;}
 
 .lmb-direct{
@@ -66,35 +66,30 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .lmb-ai:hover{box-shadow:0 16px 48px rgba(124,77,255,.5);}
 
 .lmb-icon{
-  width:64px;height:64px;border-radius:16px;
+  width:72px;height:72px;border-radius:18px;
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;
 }
 .lmb-direct .lmb-icon{background:var(--blue-lt);}
 .lmb-ai .lmb-icon{background:rgba(255,255,255,.2);}
 
-.lmb-title{font-size:16px;font-weight:800;line-height:1.3;}
+.lmb-title{font-size:18px;font-weight:800;line-height:1.3;}
 .lmb-direct .lmb-title{color:var(--text);}
 .lmb-ai .lmb-title{color:white;}
 
-.lmb-desc{font-size:11px;line-height:1.6;}
+.lmb-desc{font-size:12px;line-height:1.7;}
 .lmb-direct .lmb-desc{color:var(--g4);}
 .lmb-ai .lmb-desc{color:rgba(255,255,255,.7);}
 
 .lmb-arrow{
-  width:32px;height:32px;border-radius:50%;
+  width:36px;height:36px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  margin-top:4px;
+  margin-top:6px;
 }
 .lmb-direct .lmb-arrow{background:var(--blue-lt);color:var(--blue);}
 .lmb-ai .lmb-arrow{background:rgba(255,255,255,.2);color:white;}
 
 /* 랜딩 갤러리 섹션 */
-.landing-screen{
-  overflow-y:auto;
-  justify-content:flex-start;
-  padding-bottom:60px;
-}
 .landing-hero{
   display:flex;flex-direction:column;align-items:center;
   padding:72px 24px 48px;
@@ -1333,69 +1328,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>
       </div>
-    </div>
+    </div><!-- end landing-main-btns -->
   </div>
 
   <!-- 구분선 -->
-  <div class="landing-divider"><hr></div>
 
-  <!-- 콘텐츠 갤러리 -->
-  <div class="landing-gallery">
-
-    <!-- 탭 필터 -->
-    <div class="lg-tabs" id="lgTabs">
-      <button class="lg-tab on" onclick="lgSwitchTab('all',this)">전체</button>
-      <button class="lg-tab" onclick="lgSwitchTab('official',this)">공식 제공 콘텐츠</button>
-      <button class="lg-tab" onclick="lgSwitchTab('teacher',this)">교사 공유 콘텐츠</button>
-    </div>
-
-    <!-- 단원 필터 -->
-    <div id="lgUnitFilter"
-      style="display:flex;align-items:center;gap:8px;padding:6px 16px 14px;
-             background:white;border-radius:14px;margin-bottom:20px;
-             border:1.5px solid #EFEFEF;box-shadow:0 2px 8px rgba(0,0,0,.04);">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;">
-        <path d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      <select id="lgFilterGrade" onchange="lgFilterByGrade(this)"
-        style="border:none;outline:none;font-size:13px;font-weight:700;color:#374151;
-               background:transparent;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">
-      </select>
-      <span style="color:#D1D5DB;font-size:14px;">›</span>
-      <select id="lgFilterUnit" onchange="lgFilterByUnit(this)"
-        style="border:none;outline:none;font-size:13px;font-weight:600;color:#4B6EF5;
-               background:transparent;cursor:pointer;font-family:'Noto Sans KR',sans-serif;flex:1;">
-      </select>
-
-    </div>
-
-    <!-- 공식 제공 콘텐츠 -->
-    <div class="lg-section" id="lgSectionOfficial">
-      <div class="lg-section-header">
-        <div class="lg-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="#4B6EF5"/></svg>
-          공식 제공 콘텐츠
-          <span class="lg-section-badge official">검수 완료</span>
-        </div>
-        <div class="lg-section-more" onclick="lgShowAll('official')">모두 보기 <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
-      </div>
-      <div class="lg-cards" id="lgCardsOfficial"></div>
-    </div>
-
-    <!-- 교사 공유 콘텐츠 -->
-    <div class="lg-section" id="lgSectionTeacher">
-      <div class="lg-section-header">
-        <div class="lg-section-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="#22C98B" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="#22C98B" stroke-width="2"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#22C98B" stroke-width="2" stroke-linecap="round"/></svg>
-          교사 공유 콘텐츠
-          <span class="lg-section-badge teacher">커뮤니티</span>
-        </div>
-        <div class="lg-section-more" onclick="lgShowAll('teacher')">모두 보기 <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
-      </div>
-      <div class="lg-cards" id="lgCardsTeacher"></div>
-    </div>
-
-  </div>
 </div>
 
 <!-- ★ 내 자료 페이지 ★ -->
