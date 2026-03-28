@@ -695,11 +695,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 /* 동적 컨텍스트 툴바 */
 .toolbar-ctx{
   height:0;overflow:hidden;
-  display:flex;align-items:center;padding:0 14px;gap:2px;
+  display:flex;flex-direction:column;align-items:flex-start;padding:0;
   background:#F5F7FF;border-top:1px solid #D6DCFF;
   transition:height .18s ease;flex-shrink:0;
 }
-.toolbar-ctx.visible{height:40px;overflow:visible;}
+.toolbar-ctx.visible{height:auto;overflow:visible;min-height:44px;}
 .ctx-tag-pill{
   font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;
   background:var(--blue);color:#fff;margin-right:5px;flex-shrink:0;white-space:nowrap;
@@ -714,6 +714,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .tctx-btn.danger{color:var(--red);}
 .tctx-btn.danger:hover{background:#FFF0F0;border-color:#FFCDD2;}
 .tctx-sep{width:1px;height:16px;background:#C7D2FF;margin:0 4px;flex-shrink:0;}
+.tctx-sel{height:24px;border:1px solid var(--g2);border-radius:4px;font-size:11px;font-family:'Noto Sans KR',sans-serif;color:var(--g5);background:white;padding:0 4px;cursor:pointer;}
+.tctx-num{height:24px;width:44px;border:1px solid var(--g2);border-radius:4px;font-size:11px;font-family:'Noto Sans KR',sans-serif;color:var(--g5);text-align:center;outline:none;background:white;}
+.tctx-num:focus{border-color:var(--blue);}
 .tool-group{display:flex;flex-direction:column;align-items:center;padding:0 6px;border-right:1px solid var(--g2);height:100%;justify-content:center;gap:2px;}
 .tool-group:last-child{border-right:none;}
 .tool-group:first-child{padding-left:0;}
@@ -963,6 +966,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .rp-sel:focus{border-color:var(--blue);}
 .rp-toggle-row{display:flex;gap:4px;}
 .rp-toggle{flex:1;height:26px;border-radius:4px;border:1px solid var(--g2);background:white;font-size:10px;font-weight:600;color:var(--g5);cursor:pointer;transition:all .15s;font-family:'Noto Sans KR',sans-serif;}
+.rp-fmt-btn{min-width:28px;height:26px;border-radius:4px;border:1px solid var(--g2);background:white;font-size:11px;font-weight:700;color:var(--g5);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0 5px;transition:all .12s;font-family:'Noto Sans KR',sans-serif;}
+.rp-fmt-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-lt);}
+.rp-fmt-btn.on{border-color:var(--blue);background:var(--blue-lt);color:var(--blue);}
+.text-blk-body:empty::before{content:attr(data-ph);color:var(--g3);pointer-events:none;}
 .rp-toggle:hover{border-color:var(--blue);color:var(--blue);}
 .rp-toggle.on{background:var(--blue-lt);border-color:var(--blue);color:var(--blue);}
 .rp-divider{height:1px;background:var(--g2);margin:4px 0 10px;}
@@ -1509,25 +1516,98 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     </div>
     <div class="csep" style="height:18px;margin:0 6px;"></div>
     <div style="display:flex;align-items:center;gap:1px;">
+      <!-- 텍스트 -->
+      <button class="tico" onclick="insertTextBlock()" title="텍스트">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 3h10M8 3v10M5 13h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <span class="ico-lbl">텍스트</span>
+      </button>
+      <!-- 이미지 -->
       <button class="tico" onclick="openImageUploadModal()" title="이미지">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="2.5" width="13" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="5.5" cy="6" r="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M1.5 11l3.5-3 3 3 2-2 4 4" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
         <span class="ico-lbl">이미지</span>
       </button>
-      <button class="tico" id="ctx-btn-video" onclick="insertBlock('video')" title="동영상">
+      <!-- 동영상 — 이미지처럼 파일 삽입 -->
+      <button class="tico" id="ctx-btn-video" onclick="openMediaUploadModal('video')" title="동영상">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3" width="9" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 6l4-2v8l-4-2V6z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
         <span class="ico-lbl">동영상</span>
       </button>
+      <!-- 오디오 — 이미지처럼 파일 삽입 -->
+      <button class="tico" onclick="openMediaUploadModal('audio')" title="오디오">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="5" y="1.5" width="6" height="9" rx="3" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 9A5.5 5.5 0 0013.5 9M8 14.5v-2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span class="ico-lbl">오디오</span>
+      </button>
+      <!-- 수식 -->
       <button class="tico" onclick="insertBlock('formula')" title="수식">
         <svg width="15" height="15" viewBox="0 0 16 16"><text x="2" y="13" font-size="13" font-weight="600" fill="currentColor" font-family="serif">&#x2211;</text></svg>
         <span class="ico-lbl">수식</span>
       </button>
-      <button class="tico" onclick="insertBlock('table')" title="표">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1.5" stroke="currentColor" stroke-width="1.3"/><line x1="1.5" y1="6" x2="14.5" y2="6" stroke="currentColor" stroke-width="1.1"/><line x1="1.5" y1="10.5" x2="14.5" y2="10.5" stroke="currentColor" stroke-width="1.1"/><line x1="6" y1="6" x2="6" y2="14.5" stroke="currentColor" stroke-width="1.1"/><line x1="10.5" y1="6" x2="10.5" y2="14.5" stroke="currentColor" stroke-width="1.1"/></svg>
-        <span class="ico-lbl">표</span>
+      <!-- 표 -->
+      <div style="position:relative;display:inline-block;" id="tablePickerWrap">
+        <button class="tico" onclick="toggleTablePicker()" title="표">
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1.5" stroke="currentColor" stroke-width="1.3"/><line x1="1.5" y1="6" x2="14.5" y2="6" stroke="currentColor" stroke-width="1.1"/><line x1="1.5" y1="10.5" x2="14.5" y2="10.5" stroke="currentColor" stroke-width="1.1"/><line x1="6" y1="6" x2="6" y2="14.5" stroke="currentColor" stroke-width="1.1"/><line x1="10.5" y1="6" x2="10.5" y2="14.5" stroke="currentColor" stroke-width="1.1"/></svg>
+          <span class="ico-lbl">표</span>
+        </button>
+        <!-- 표 크기 선택 팝오버 -->
+        <div id="tablePickerPopover" style="display:none;position:absolute;top:calc(100% + 4px);left:0;z-index:999;
+             background:white;border:1px solid var(--g2);border-radius:10px;padding:10px;
+             box-shadow:0 4px 16px rgba(0,0,0,.12);">
+          <div style="font-size:10px;color:var(--g4);margin-bottom:6px;text-align:center;" id="tablePickerLabel">표 삽입</div>
+          <div id="tableGrid" style="display:grid;grid-template-columns:repeat(10,18px);gap:2px;"
+            onmouseleave="resetTableGrid()"></div>
+          <script>
+            (function(){
+              const rows=10, cols=10;
+              const grid = document.getElementById('tableGrid');
+              for(let r=1;r<=rows;r++){
+                for(let c=1;c<=cols;c++){
+                  const cell = document.createElement('div');
+                  cell.style.cssText='width:18px;height:18px;border:1px solid #D1D5DB;border-radius:2px;background:white;cursor:pointer;transition:all .1s;';
+                  cell.dataset.r=r; cell.dataset.c=c;
+                  cell.onmouseenter=function(){
+                    const tr=+this.dataset.r, tc=+this.dataset.c;
+                    document.getElementById('tablePickerLabel').textContent=tr+'×'+tc;
+                    document.querySelectorAll('#tableGrid div').forEach(d=>{
+                      const dr=+d.dataset.r, dc=+d.dataset.c;
+                      d.style.background=(dr<=tr&&dc<=tc)?'#DBEAFE':'white';
+                      d.style.borderColor=(dr<=tr&&dc<=tc)?'#3B82F6':'#D1D5DB';
+                    });
+                  };
+                  cell.onclick=function(){
+                    insertTableBlock(+this.dataset.r, +this.dataset.c);
+                    document.getElementById('tablePickerPopover').style.display='none';
+                  };
+                  grid.appendChild(cell);
+                }
+              }
+            })();
+          </script>
+        </div>
+      </div>
+      <!-- 링크 -->
+      <button class="tico" onclick="ctxShowPanel('link')" title="링크">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M6 9a3.5 3.5 0 005 0l2-2a3.5 3.5 0 00-5-5L7 3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M10 7a3.5 3.5 0 00-5 0L3 9a3.5 3.5 0 005 5l1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span class="ico-lbl">링크</span>
       </button>
-      <button class="tico" onclick="insertBlock('shape')" title="도형">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2.5" stroke="currentColor" stroke-width="1.3"/></svg>
-        <span class="ico-lbl">도형</span>
+      <!-- 사각박스 (링크-리스트 사이) -->
+      <button class="tico" onclick="T('사각박스 삽입')" title="사각박스">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+          <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/>
+          <line x1="8" y1="2" x2="8" y2="4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <line x1="8" y1="11.5" x2="8" y2="14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <line x1="2" y1="8" x2="4.5" y2="8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <line x1="11.5" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <span class="ico-lbl">박스</span>
+      </button>
+      <!-- 리스트 -->
+      <button class="tico" onclick="ctxShowPanel('link')" title="리스트">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="4.5" r="1.2" fill="currentColor"/><circle cx="3" cy="8" r="1.2" fill="currentColor"/><circle cx="3" cy="11.5" r="1.2" fill="currentColor"/><line x1="6" y1="4.5" x2="14" y2="4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="6" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="6" y1="11.5" x2="14" y2="11.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span class="ico-lbl">리스트</span>
+      </button>
+      <!-- 특수문자 -->
+      <button class="tico" onclick="ctxShowPanel('link')" title="특수문자">
+        <svg width="15" height="15" viewBox="0 0 16 16"><text x="1" y="13" font-size="12" font-weight="600" fill="currentColor" font-family="serif">Ω</text></svg>
+        <span class="ico-lbl">특수문자</span>
       </button>
     </div>
     <div class="csep" style="height:18px;margin:0 6px;"></div>
@@ -1545,58 +1625,324 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   </div>
   <div class="tb-row2 s-none" id="ctxBar" style="display:none;"></div>
 
+  <!-- 텍스트 컨텍스트 패널 — 2줄 -->
+  <div class="toolbar-ctx" id="ctx-text">
+    <!-- 줄1: 폰트 크기 | B I U 취소선 | X² X₂ A 형광펜 Ah | ≡≡≡≡ | 줄간격 | 자간 | 🧹 -->
+    <div style="display:flex;align-items:center;gap:3px;padding:0 8px;min-height:44px;flex-shrink:0;flex-wrap:nowrap;">
+      <select class="tctx-sel" style="width:72px;" onchange="execTxtFmt('fontName',this.value)">
+        <option value="'Noto Sans KR',sans-serif">고딕</option>
+        <option value="'Nanum Myeongjo',serif">명조</option>
+        <option value="'Courier New',monospace">코드</option>
+      </select>
+      <input type="number" class="tctx-num" value="16" min="6" max="72" style="width:48px;" onchange="execTxtFmt('fontSize',this.value+'px')" title="크기">
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" onclick="execTxtFmt('bold')" title="굵게"><b>B</b></button>
+      <button class="tctx-btn" onclick="execTxtFmt('italic')" title="기울기"><i style="font-family:serif;">I</i></button>
+      <button class="tctx-btn" onclick="execTxtFmt('underline')" title="밑줄"><u>U</u></button>
+      <button class="tctx-btn" onclick="execTxtFmt('strikeThrough')" title="취소선"><s>취</s></button>
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" onclick="execTxtFmt('superscript')" title="위첨자" style="font-size:10px;">X²</button>
+      <button class="tctx-btn" onclick="execTxtFmt('subscript')" title="아래첨자" style="font-size:10px;">X₂</button>
+      <label class="tctx-btn" title="글자색" style="cursor:pointer;position:relative;">
+        <span style="font-weight:700;border-bottom:2px solid #E24B4A;">A</span>
+        <input type="color" value="#E24B4A" style="width:0;height:0;opacity:0;position:absolute;" onchange="execTxtFmt('foreColor',this.value)">
+      </label>
+      <label class="tctx-btn" title="형광펜" style="cursor:pointer;position:relative;">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M10 2l4 4-7 7H3v-4L10 2z" stroke="#22C98B" stroke-width="1.4" stroke-linejoin="round" fill="#22C98B" fill-opacity=".3"/></svg>
+        <input type="color" value="#22C98B" style="width:0;height:0;opacity:0;position:absolute;" onchange="execTxtFmt('hiliteColor',this.value)">
+      </label>
+      <label class="tctx-btn" title="배경색" style="cursor:pointer;position:relative;font-size:10px;font-weight:700;">
+        Ah<input type="color" value="#FFFF00" style="width:0;height:0;opacity:0;position:absolute;" onchange="execTxtFmt('hiliteColor',this.value)">
+      </label>
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" onclick="execTxtFmt('justifyLeft')" title="왼쪽 정렬"><svg width="12" height="10" viewBox="0 0 14 12"><line x1="0" y1="1" x2="14" y2="1" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="5" x2="9" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="9" x2="11" y2="9" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <button class="tctx-btn" onclick="execTxtFmt('justifyCenter')" title="가운데 정렬"><svg width="12" height="10" viewBox="0 0 14 12"><line x1="0" y1="1" x2="14" y2="1" stroke="currentColor" stroke-width="1.5"/><line x1="2" y1="5" x2="12" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="1" y1="9" x2="13" y2="9" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <button class="tctx-btn" onclick="execTxtFmt('justifyRight')" title="오른쪽 정렬"><svg width="12" height="10" viewBox="0 0 14 12"><line x1="0" y1="1" x2="14" y2="1" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="5" x2="14" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="3" y1="9" x2="14" y2="9" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <button class="tctx-btn" onclick="execTxtFmt('justifyFull')" title="양쪽 정렬"><svg width="12" height="10" viewBox="0 0 14 12"><line x1="0" y1="1" x2="14" y2="1" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="5" x2="14" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="9" x2="14" y2="9" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <div class="tctx-sep"></div>
+      <span style="font-size:10px;color:var(--g4);">줄간격</span>
+      <input type="number" class="tctx-num" value="2.2" min="1" max="4" step="0.1" style="width:48px;" onchange="applyLineHeightCtx(this.value)">
+      <div class="tctx-sep"></div>
+      <span style="font-size:10px;color:var(--g4);">자간</span>
+      <input type="number" class="tctx-num" value="-0.5" min="-5" max="20" step="0.1" style="width:48px;" onchange="applyLetterSpacingCtx(this.value)">
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" onclick="execTxtFmt('removeFormat')" title="서식 지우기">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 14l4-4M8 2l6 6-5 5H5l-3-3 6-6z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <!-- 줄2 (이미지1): 🔲▼[5] | 🔳▼[5] | □▼[0.2]px -----▼ 🖊 | 좌상▼ [12] -->
+    <div style="display:flex;align-items:center;gap:3px;padding:0 8px;min-height:38px;flex-shrink:0;border-top:0.5px solid var(--g2);flex-wrap:nowrap;">
+      <!-- 열 너비 -->
+      <button class="tctx-btn" style="padding:0 4px;gap:2px;" title="열 너비" onclick="T('열너비')">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="1" x2="6" y2="15" stroke="currentColor" stroke-width="1"/><line x1="10" y1="1" x2="10" y2="15" stroke="currentColor" stroke-width="1"/></svg>
+        <svg width="7" height="7" viewBox="0 0 8 8"><path d="M1 2l3 4 3-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>
+      </button>
+      <input type="number" class="tctx-num" value="5" min="0" style="width:44px;" onchange="T('열너비값: '+this.value)">
+      <div class="tctx-sep"></div>
+      <!-- 행 높이 -->
+      <button class="tctx-btn" style="padding:0 4px;gap:2px;" title="행 높이" onclick="T('행높이')">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.2" stroke-dasharray="1 0"/><line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" stroke-width="1"/><line x1="1" y1="10" x2="15" y2="10" stroke="currentColor" stroke-width="1"/></svg>
+        <svg width="7" height="7" viewBox="0 0 8 8"><path d="M1 2l3 4 3-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>
+      </button>
+      <input type="number" class="tctx-num" value="5" min="0" style="width:44px;" onchange="T('행높이값: '+this.value)">
+      <div class="tctx-sep"></div>
+      <!-- 테두리 -->
+      <button class="tctx-btn" style="padding:0 4px;gap:2px;" title="테두리" onclick="T('테두리')">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2 1.5"/></svg>
+        <svg width="7" height="7" viewBox="0 0 8 8"><path d="M1 2l3 4 3-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>
+      </button>
+      <input type="number" class="tctx-num" value="0.2" min="0" max="10" step="0.1" style="width:44px;" onchange="T('테두리굵기: '+this.value)">
+      <span style="font-size:10px;color:var(--g4);">px</span>
+      <select class="tctx-sel" style="width:76px;" onchange="T('테두리선: '+this.value)">
+        <option value="solid">──────</option>
+        <option value="dashed">- - - - -</option>
+        <option value="dotted">· · · · ·</option>
+        <option value="double">══════</option>
+      </select>
+      <!-- 테두리 편집 -->
+      <button class="tctx-btn" title="테두리 편집" onclick="T('테두리편집')">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M10.5 2.5l3 3L5 14H2v-3L10.5 2.5z" stroke="#4B6EF5" stroke-width="1.4" stroke-linejoin="round"/><line x1="2" y1="14" x2="14" y2="14" stroke="#22C98B" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+      <div class="tctx-sep"></div>
+      <!-- 위치 -->
+      <select class="tctx-sel" style="width:54px;" onchange="T('위치: '+this.value)" title="텍스트 위치">
+        <option>좌상</option><option>중상</option><option>우상</option>
+        <option>좌중</option><option>중앙</option><option>우중</option>
+        <option>좌하</option><option>중하</option><option>우하</option>
+      </select>
+      <input type="number" class="tctx-num" value="12" min="0" max="100" style="width:44px;" onchange="T('여백: '+this.value)" title="여백">
+    </div>
+  </div>
+
   <!-- 이미지 컨텍스트 패널 -->
   <div class="toolbar-ctx" id="ctx-image">
-    <span class="ctx-tag-pill">이미지</span>
-    <button class="tctx-btn" title="선" onclick="T('선')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><line x1="2" y1="14" x2="14" y2="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
-    <button class="tctx-btn" title="사각형" onclick="T('사각형')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="2.5" width="11" height="11" stroke="currentColor" stroke-width="1.5"/></svg></button>
-    <button class="tctx-btn" title="원" onclick="T('원')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5"/></svg></button>
-    <button class="tctx-btn" title="펜" onclick="T('펜')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10.5 2.5l3 3L5 14H2v-3L10.5 2.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
-    <div class="tctx-sep"></div>
-    <select style="height:24px;border:1px solid var(--g2);border-radius:4px;font-size:11px;font-family:'Noto Sans KR',sans-serif;color:var(--g5);background:white;padding:0 4px;cursor:pointer;" onchange="T('선 색: '+this.value)"><option>선 색</option><option>없음</option><option>검정</option><option>흰색</option><option>파랑</option><option>빨강</option></select>
-    <select style="height:24px;border:1px solid var(--g2);border-radius:4px;font-size:11px;font-family:'Noto Sans KR',sans-serif;color:var(--g5);background:white;padding:0 4px;cursor:pointer;" onchange="T('채우기: '+this.value)"><option>채우기</option><option>없음</option><option>흰색</option><option>검정</option><option>파랑</option></select>
-    <div class="tctx-sep"></div>
-    <button class="tctx-btn" title="왼쪽 맞춤" onclick="T('왼쪽 맞춤')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><line x1="1" y1="1" x2="1" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="2" y="4" width="9" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/></svg></button>
-    <button class="tctx-btn" title="가운데 맞춤" onclick="T('가운데 맞춤')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><line x1="8" y1="1" x2="8" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="3" y="4" width="10" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/></svg></button>
-    <button class="tctx-btn" title="오른쪽 맞춤" onclick="T('오른쪽 맞춤')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><line x1="15" y1="1" x2="15" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="4" y="4" width="10" height="8" rx="1" stroke="currentColor" stroke-width="1.2"/></svg></button>
-    <div class="tctx-sep"></div>
-    <button class="tctx-btn danger" onclick="ctxRemoveBlock('image')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><polyline points="2,4 14,4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5 4V2.5h6V4M6 7v5M10 7v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="3" y="4" width="10" height="10" rx="1" stroke="currentColor" stroke-width="1.3"/></svg> 삭제</button>
+    <!-- 고정 줄: \ ㅁ ⌒ □ ○ 🖊 ◈ | [2]px | 🔲▼[5] | 🔳▼[5] | □▼[0.2]px ---▼ 🖊 | 좌상▼[12] | 정렬 -->
+    <div style="display:flex;align-items:center;gap:3px;padding:0 8px;min-height:44px;flex-shrink:0;flex-wrap:nowrap;">
+      <!-- 선 도구들 — 클릭 시 imgToolRow 노출 -->
+      <button class="tctx-btn img-tool-btn" id="imgTool-line" title="선" onclick="selectImgTool('line',this)"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><line x1="2" y1="14" x2="14" y2="2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <button class="tctx-btn img-tool-btn" id="imgTool-rect-line" title="직각선" onclick="selectImgTool('line',this)"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 13V4h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="tctx-btn img-tool-btn" id="imgTool-curve" title="곡선" onclick="selectImgTool('line',this)"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 13c4-4 8-10 12-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <!-- 도형 도구들 — 클릭 시 imgShapeRow 노출 -->
+      <button class="tctx-btn img-tool-btn" id="imgTool-rect" title="사각형" onclick="selectImgTool('shape',this)"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2.5" y="2.5" width="11" height="11" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <button class="tctx-btn img-tool-btn" id="imgTool-circle" title="원" onclick="selectImgTool('shape',this)"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <!-- 펜 — 선 도구 -->
+      <button class="tctx-btn img-tool-btn" id="imgTool-pen" title="펜" onclick="selectImgTool('line',this)"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M10.5 2.5l3 3L5 14H2v-3L10.5 2.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+      <!-- 투명 -->
+      <button class="tctx-btn" title="투명 채우기" onclick="T('투명채우기')" style="opacity:.55;">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2 1.5"/><line x1="2" y1="14" x2="14" y2="2" stroke="currentColor" stroke-width="1" stroke-dasharray="2 1.5"/></svg>
+      </button>
+      <div class="tctx-sep"></div>
+      <!-- 선 굵기 (고정) -->
+      <input type="number" class="tctx-num" value="2" min="0.5" max="20" step="0.5" style="width:44px;" onchange="T('선굵기: '+this.value+'px')" title="선 굵기">
+      <span style="font-size:10px;color:var(--g4);">px</span>
+      <div class="tctx-sep"></div>
+      <!-- 열 너비 -->
+      <button class="tctx-btn" style="padding:0 4px;gap:2px;" onclick="T('열너비')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="1" x2="6" y2="15" stroke="currentColor" stroke-width="1"/><line x1="10" y1="1" x2="10" y2="15" stroke="currentColor" stroke-width="1"/></svg><svg width="6" height="6" viewBox="0 0 8 8"><path d="M1 2l3 4 3-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></button>
+      <input type="number" class="tctx-num" value="5" min="0" style="width:40px;" onchange="T('열너비값: '+this.value)">
+      <div class="tctx-sep"></div>
+      <!-- 행 높이 -->
+      <button class="tctx-btn" style="padding:0 4px;gap:2px;" onclick="T('행높이')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 1"/><line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" stroke-width="1"/><line x1="1" y1="10" x2="15" y2="10" stroke="currentColor" stroke-width="1"/></svg><svg width="6" height="6" viewBox="0 0 8 8"><path d="M1 2l3 4 3-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></button>
+      <input type="number" class="tctx-num" value="5" min="0" style="width:40px;" onchange="T('행높이값: '+this.value)">
+      <div class="tctx-sep"></div>
+      <!-- 테두리 -->
+      <button class="tctx-btn" style="padding:0 4px;gap:2px;" onclick="T('테두리')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2 1.5"/></svg><svg width="6" height="6" viewBox="0 0 8 8"><path d="M1 2l3 4 3-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></button>
+      <input type="number" class="tctx-num" value="0.2" min="0" max="10" step="0.1" style="width:40px;" onchange="T('테두리굵기: '+this.value)">
+      <span style="font-size:10px;color:var(--g4);">px</span>
+      <select class="tctx-sel" style="width:72px;" onchange="T('테두리선: '+this.value)">
+        <option value="solid">──────</option><option value="dashed">- - - - -</option><option value="dotted">· · · · ·</option>
+      </select>
+      <button class="tctx-btn" onclick="T('테두리편집')" title="테두리 편집"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M10.5 2.5l3 3L5 14H2v-3L10.5 2.5z" stroke="#4B6EF5" stroke-width="1.4" stroke-linejoin="round"/><line x1="2" y1="14" x2="14" y2="14" stroke="#22C98B" stroke-width="2.5" stroke-linecap="round"/></svg></button>
+      <div class="tctx-sep"></div>
+      <!-- 위치 -->
+      <select class="tctx-sel" style="width:52px;" onchange="T('위치: '+this.value)">
+        <option>좌상</option><option>중상</option><option>우상</option><option>좌중</option><option>중앙</option><option>우중</option><option>좌하</option><option>중하</option><option>우하</option>
+      </select>
+      <input type="number" class="tctx-num" value="12" min="0" style="width:40px;" onchange="T('여백: '+this.value)">
+      <div class="tctx-sep"></div>
+      <!-- 정렬 -->
+      <button class="tctx-btn" onclick="T('좌측붙이기')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><line x1="1" y1="2" x2="1" y2="14" stroke="#4B6EF5" stroke-width="2.5" stroke-linecap="round"/><rect x="3" y="4" width="8" height="8" rx="1" fill="currentColor" opacity=".2" stroke="currentColor" stroke-width="1.1"/></svg></button>
+      <button class="tctx-btn" onclick="T('가운데붙이기')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><line x1="8" y1="1" x2="8" y2="15" stroke="#4B6EF5" stroke-width="2.5" stroke-linecap="round"/><rect x="4" y="4" width="8" height="8" rx="1" fill="currentColor" opacity=".2" stroke="currentColor" stroke-width="1.1"/></svg></button>
+      <button class="tctx-btn" onclick="T('우측붙이기')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><line x1="15" y1="2" x2="15" y2="14" stroke="#4B6EF5" stroke-width="2.5" stroke-linecap="round"/><rect x="5" y="4" width="8" height="8" rx="1" fill="currentColor" opacity=".2" stroke="currentColor" stroke-width="1.1"/></svg></button>
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" onclick="T('세로왼쪽')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><line x1="1" y1="2" x2="1" y2="14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/><line x1="4" y1="4" x2="4" y2="12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="8" y1="6" x2="8" y2="10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+      <button class="tctx-btn" onclick="T('세로가운데')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><line x1="8" y1="1" x2="8" y2="15" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/><line x1="4" y1="3" x2="4" y2="13" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="11" y1="5" x2="11" y2="11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+      <button class="tctx-btn" onclick="T('세로오른쪽')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><line x1="15" y1="2" x2="15" y2="14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/><line x1="4" y1="6" x2="4" y2="10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="11" y1="4" x2="11" y2="12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+      <button class="tctx-btn" onclick="T('가로채우기')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><line x1="1" y1="8" x2="4" y2="8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M4 5.5l-3 2.5 3 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><line x1="15" y1="8" x2="12" y2="8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M12 5.5l3 2.5-3 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="5" y="4" width="6" height="8" rx="1" fill="currentColor" opacity=".15" stroke="currentColor" stroke-width="1"/></svg></button>
+    </div>
+    <!-- 선 도구 선택 시 노출: 점/화살표 드롭다운 -->
+    <div id="imgToolRow" style="display:none;align-items:center;gap:4px;padding:0 8px;min-height:34px;flex-shrink:0;border-top:0.5px solid var(--g2);background:#FAFBFF;flex-wrap:nowrap;">
+      <span style="font-size:10px;color:var(--g4);">선</span>
+      <select class="tctx-sel" style="width:72px;" onchange="T('선스타일: '+this.value)">
+        <option>점</option><option>실선</option><option>긴점선</option>
+      </select>
+      <div class="tctx-sep"></div>
+      <span style="font-size:10px;color:var(--g4);">화살표</span>
+      <select class="tctx-sel" style="width:72px;" onchange="T('화살표: '+this.value)">
+        <option>없음</option><option>→</option><option>↔</option><option>←</option>
+      </select>
+      <div class="tctx-sep"></div>
+      <!-- 선색 -->
+      <label style="display:inline-flex;align-items:center;cursor:pointer;position:relative;" title="선 색">
+        <svg id="imgLineColorCircle" width="17" height="17" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" fill="#4B6EF5"/></svg>
+        <input type="color" value="#4B6EF5" style="width:0;height:0;opacity:0;position:absolute;" onchange="document.getElementById('imgLineColorCircle').querySelector('circle').setAttribute('fill',this.value);T('선색: '+this.value)">
+      </label>
+    </div>
+    <!-- 도형 선택 시 노출: 채우기색 + 말풍선 -->
+    <div id="imgShapeRow" style="display:none;align-items:center;gap:4px;padding:0 8px;min-height:34px;flex-shrink:0;border-top:0.5px solid var(--g2);background:#FAFBFF;flex-wrap:nowrap;">
+      <!-- 채우기색 -->
+      <label class="tctx-btn" title="채우기색" style="cursor:pointer;position:relative;gap:3px;">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 10l5-8 5 8H3z" stroke="#E0A800" stroke-width="1.3" stroke-linejoin="round" fill="#E0A800" fill-opacity=".2"/><rect x="0" y="12" width="11" height="3" rx="1" fill="#E0A800"/></svg>
+        채우기색
+        <input type="color" value="#FFFF00" style="width:0;height:0;opacity:0;position:absolute;" onchange="T('채우기: '+this.value)">
+      </label>
+      <div class="tctx-sep"></div>
+      <!-- 선색 -->
+      <label style="display:inline-flex;align-items:center;cursor:pointer;position:relative;" title="선 색">
+        <svg id="imgShapeColorCircle" width="17" height="17" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" fill="#4B6EF5"/></svg>
+        <input type="color" value="#4B6EF5" style="width:0;height:0;opacity:0;position:absolute;" onchange="document.getElementById('imgShapeColorCircle').querySelector('circle').setAttribute('fill',this.value);T('선색: '+this.value)">
+      </label>
+      <div class="tctx-sep"></div>
+      <!-- 말풍선 -->
+      <button class="tctx-btn" onclick="T('말풍선')" style="gap:4px;">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="11" height="8" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M4 9.5l-1.5 2.5 3-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        말풍선
+      </button>
+    </div>
   </div>
 
-  <!-- 동영상 컨텍스트 패널 -->
-  <div class="toolbar-ctx" id="ctx-video">
-    <span class="ctx-tag-pill" style="background:#E85D04;">동영상</span>
-    <button class="tctx-btn" style="color:#E85D04;" onclick="T('자동재생')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 5.5l5 2.5-5 2.5z" fill="currentColor"/></svg> 자동재생</button>
-    <button class="tctx-btn" style="color:#E85D04;" onclick="T('반복재생')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 0110.4-4H10M14 8a6 6 0 01-10.4 4H6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> 반복재생</button>
-    <button class="tctx-btn" style="color:#E85D04;" onclick="T('컨트롤바')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="4" width="13" height="8" rx="1.5" stroke="currentColor" stroke-width="1.3"/><line x1="4" y1="10" x2="12" y2="10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="5" cy="7.5" r="1.2" fill="currentColor"/></svg> 컨트롤</button>
-    <div class="tctx-sep"></div>
-    <button class="tctx-btn danger" onclick="ctxRemoveBlock('video')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><polyline points="2,4 14,4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5 4V2.5h6V4M6 7v5M10 7v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="3" y="4" width="10" height="10" rx="1" stroke="currentColor" stroke-width="1.3"/></svg> 삭제</button>
-  </div>
-
-  <!-- 수식 컨텍스트 패널 -->
+  <!-- 수식 컨텍스트 패널 — 이미지1 (2줄) -->
   <div class="toolbar-ctx" id="ctx-formula">
-    <span class="ctx-tag-pill" style="background:#0B7285;">수식</span>
-    <button class="tctx-btn" style="color:#0B7285;" onclick="T('분수')"><svg width="14" height="14" viewBox="0 0 16 16"><text x="4" y="8" font-size="7" fill="currentColor" font-family="serif">a</text><line x1="2" y1="8.5" x2="14" y2="8.5" stroke="currentColor" stroke-width="1.2"/><text x="4" y="15" font-size="7" fill="currentColor" font-family="serif">b</text></svg> 분수</button>
-    <button class="tctx-btn" style="color:#0B7285;" onclick="T('제곱근')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><polyline points="1,9 4,13 7,3 15,3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg> √</button>
-    <button class="tctx-btn" style="color:#0B7285;" onclick="T('합계')"><svg width="14" height="14" viewBox="0 0 16 16"><text x="2" y="13" font-size="13" fill="currentColor" font-family="serif">∑</text></svg> 합계</button>
-    <div class="tctx-sep"></div>
-    <select style="height:24px;border:1px solid var(--g2);border-radius:4px;font-size:11px;font-family:'Noto Sans KR',sans-serif;color:var(--g5);background:white;padding:0 4px;cursor:pointer;" onchange="T('크기: '+this.value)"><option>보통</option><option>크게</option><option>작게</option></select>
-    <div class="tctx-sep"></div>
-    <button class="tctx-btn danger" onclick="ctxRemoveBlock('formula')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><polyline points="2,4 14,4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5 4V2.5h6V4M6 7v5M10 7v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="3" y="4" width="10" height="10" rx="1" stroke="currentColor" stroke-width="1.3"/></svg> 삭제</button>
+    <div style="display:flex;align-items:center;gap:3px;padding:0 8px;min-height:44px;flex-shrink:0;flex-wrap:nowrap;">
+      <input type="number" class="tctx-num" value="16" min="6" max="72" style="width:48px;" onchange="T('수식크기: '+this.value)" title="크기">
+      <label class="tctx-btn" title="글자색" style="cursor:pointer;position:relative;gap:2px;">
+        <span style="font-size:13px;font-weight:700;border-bottom:2.5px solid #E24B4A;line-height:1.2;">A</span>
+        <input type="color" value="#E24B4A" style="width:0;height:0;opacity:0;position:absolute;" onchange="T('수식글자색: '+this.value)">
+      </label>
+      <label class="tctx-btn" title="채우기색" style="cursor:pointer;position:relative;gap:2px;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 10l5-8 5 8H3z" stroke="#1C1F2E" stroke-width="1.3" stroke-linejoin="round" fill="#1C1F2E" fill-opacity=".8"/><rect x="0" y="12" width="11" height="3" rx="1" fill="#1C1F2E"/></svg>
+        <input type="color" value="#1C1F2E" style="width:0;height:0;opacity:0;position:absolute;" onchange="T('수식배경색: '+this.value)">
+      </label>
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" style="padding:0 4px;gap:2px;" onclick="T('열너비')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="5" y1="1" x2="5" y2="15" stroke="currentColor" stroke-width="1"/><line x1="9" y1="1" x2="9" y2="15" stroke="currentColor" stroke-width="1"/><line x1="13" y1="1" x2="13" y2="15" stroke="currentColor" stroke-width="1"/></svg><svg width="6" height="6" viewBox="0 0 8 8"><path d="M1 2l3 4 3-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></button>
+      <input type="number" class="tctx-num" value="5" min="0" style="width:44px;" onchange="T('열너비값: '+this.value)">
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" style="padding:0 4px;gap:2px;" onclick="T('행높이')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 1"/><line x1="1" y1="5" x2="15" y2="5" stroke="currentColor" stroke-width="1"/><line x1="1" y1="9" x2="15" y2="9" stroke="currentColor" stroke-width="1"/><line x1="1" y1="13" x2="15" y2="13" stroke="currentColor" stroke-width="1"/></svg><svg width="6" height="6" viewBox="0 0 8 8"><path d="M1 2l3 4 3-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></button>
+      <input type="number" class="tctx-num" value="5" min="0" style="width:44px;" onchange="T('행높이값: '+this.value)">
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" style="padding:0 4px;gap:2px;" onclick="T('테두리')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2 1.5"/></svg><svg width="6" height="6" viewBox="0 0 8 8"><path d="M1 2l3 4 3-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></button>
+      <input type="number" class="tctx-num" value="0.2" min="0" max="10" step="0.1" style="width:44px;" onchange="T('테두리굵기: '+this.value)">
+      <span style="font-size:10px;color:var(--g4);">px</span>
+      <select class="tctx-sel" style="width:76px;" onchange="T('테두리선: '+this.value)"><option value="solid">──────</option><option value="dashed">- - - - -</option><option value="dotted">· · · · ·</option></select>
+      <button class="tctx-btn" onclick="T('테두리편집')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M10.5 2.5l3 3L5 14H2v-3L10.5 2.5z" stroke="#4B6EF5" stroke-width="1.4" stroke-linejoin="round"/><line x1="2" y1="14" x2="14" y2="14" stroke="#22C98B" stroke-width="2.5" stroke-linecap="round"/></svg></button>
+      <div class="tctx-sep"></div>
+      <select class="tctx-sel" style="width:54px;" onchange="T('위치: '+this.value)"><option>좌상</option><option>중상</option><option>우상</option><option>좌중</option><option>중앙</option><option>우중</option><option>좌하</option><option>중하</option><option>우하</option></select>
+      <input type="number" class="tctx-num" value="12" min="0" style="width:44px;" onchange="T('여백: '+this.value)">
+    </div>
   </div>
 
-  <!-- 표 컨텍스트 패널 -->
+  <!-- 표 컨텍스트 패널 — 텍스트 줄1+줄2 + 표편집 줄3(이미지2) -->
   <div class="toolbar-ctx" id="ctx-table">
-    <span class="ctx-tag-pill" style="background:#2B6CB0;">표</span>
-    <button class="tctx-btn" style="color:#2B6CB0;" onclick="T('행 추가')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="1.5" y1="6" x2="14.5" y2="6" stroke="currentColor" stroke-width="1"/><line x1="8" y1="12" x2="8" y2="15" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="5" y1="13.5" x2="11" y2="13.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> 행 추가</button>
-    <button class="tctx-btn" style="color:#2B6CB0;" onclick="T('열 추가')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="9" height="13" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="1.5" x2="6" y2="14.5" stroke="currentColor" stroke-width="1"/><line x1="12" y1="5" x2="15" y2="5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><line x1="13.5" y1="3.5" x2="13.5" y2="6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> 열 추가</button>
-    <button class="tctx-btn" style="color:#2B6CB0;" onclick="T('행 삭제')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="9" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="1.5" y1="6" x2="14.5" y2="6" stroke="currentColor" stroke-width="1"/><line x1="5" y1="13.5" x2="11" y2="13.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> 행 삭제</button>
-    <button class="tctx-btn" style="color:#2B6CB0;" onclick="T('열 삭제')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="9" height="13" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="1.5" x2="6" y2="14.5" stroke="currentColor" stroke-width="1"/><line x1="12" y1="7" x2="15" y2="7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> 열 삭제</button>
-    <div class="tctx-sep"></div>
-    <button class="tctx-btn" style="color:#2B6CB0;" onclick="T('셀 병합')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="8" y1="1.5" x2="8" y2="14.5" stroke="currentColor" stroke-width="1" stroke-dasharray="2 1.5"/><line x1="1.5" y1="8" x2="14.5" y2="8" stroke="currentColor" stroke-width="1" stroke-dasharray="2 1.5"/></svg> 셀 병합</button>
-    <button class="tctx-btn" style="color:#2B6CB0;" onclick="T('헤더')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1" stroke="currentColor" stroke-width="1.2"/><rect x="1.5" y="1.5" width="13" height="4.5" rx="1" fill="currentColor" opacity=".2"/><line x1="1.5" y1="6" x2="14.5" y2="6" stroke="currentColor" stroke-width="1"/></svg> 헤더</button>
-    <div class="tctx-sep"></div>
-    <button class="tctx-btn danger" onclick="ctxRemoveBlock('table')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><polyline points="2,4 14,4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5 4V2.5h6V4M6 7v5M10 7v5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="3" y="4" width="10" height="10" rx="1" stroke="currentColor" stroke-width="1.3"/></svg> 삭제</button>
+    <!-- 줄1: 텍스트 패널 줄1과 동일 -->
+    <div style="display:flex;align-items:center;gap:3px;padding:0 8px;min-height:44px;flex-shrink:0;flex-wrap:nowrap;">
+      <select class="tctx-sel" style="width:72px;" onchange="execTxtFmt('fontName',this.value)"><option value="'Noto Sans KR',sans-serif">고딕</option><option value="'Nanum Myeongjo',serif">명조</option><option value="'Courier New',monospace">코드</option></select>
+      <input type="number" class="tctx-num" value="16" min="6" max="72" style="width:48px;" onchange="execTxtFmt('fontSize',this.value+'px')">
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" onclick="execTxtFmt('bold')"><b>B</b></button>
+      <button class="tctx-btn" onclick="execTxtFmt('italic')"><i style="font-family:serif;">I</i></button>
+      <button class="tctx-btn" onclick="execTxtFmt('underline')"><u>U</u></button>
+      <button class="tctx-btn" onclick="execTxtFmt('strikeThrough')"><s>취</s></button>
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" onclick="execTxtFmt('superscript')" style="font-size:10px;">X²</button>
+      <button class="tctx-btn" onclick="execTxtFmt('subscript')" style="font-size:10px;">X₂</button>
+      <label class="tctx-btn" style="cursor:pointer;position:relative;"><span style="font-weight:700;border-bottom:2px solid #E24B4A;">A</span><input type="color" value="#E24B4A" style="width:0;height:0;opacity:0;position:absolute;" onchange="execTxtFmt('foreColor',this.value)"></label>
+      <label class="tctx-btn" style="cursor:pointer;position:relative;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M10 2l4 4-7 7H3v-4L10 2z" stroke="#22C98B" stroke-width="1.4" stroke-linejoin="round" fill="#22C98B" fill-opacity=".3"/></svg><input type="color" value="#22C98B" style="width:0;height:0;opacity:0;position:absolute;" onchange="execTxtFmt('hiliteColor',this.value)"></label>
+      <label class="tctx-btn" style="cursor:pointer;position:relative;font-size:10px;font-weight:700;">Ah<input type="color" value="#FFFF00" style="width:0;height:0;opacity:0;position:absolute;" onchange="execTxtFmt('hiliteColor',this.value)"></label>
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" onclick="execTxtFmt('justifyLeft')"><svg width="12" height="10" viewBox="0 0 14 12"><line x1="0" y1="1" x2="14" y2="1" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="5" x2="9" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="9" x2="11" y2="9" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <button class="tctx-btn" onclick="execTxtFmt('justifyCenter')"><svg width="12" height="10" viewBox="0 0 14 12"><line x1="0" y1="1" x2="14" y2="1" stroke="currentColor" stroke-width="1.5"/><line x1="2" y1="5" x2="12" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="1" y1="9" x2="13" y2="9" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <button class="tctx-btn" onclick="execTxtFmt('justifyRight')"><svg width="12" height="10" viewBox="0 0 14 12"><line x1="0" y1="1" x2="14" y2="1" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="5" x2="14" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="3" y1="9" x2="14" y2="9" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <button class="tctx-btn" onclick="execTxtFmt('justifyFull')"><svg width="12" height="10" viewBox="0 0 14 12"><line x1="0" y1="1" x2="14" y2="1" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="5" x2="14" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="9" x2="14" y2="9" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <div class="tctx-sep"></div>
+      <span style="font-size:10px;color:var(--g4);">줄간격</span>
+      <input type="number" class="tctx-num" value="2.2" min="1" max="4" step="0.1" style="width:48px;" onchange="applyLineHeightCtx(this.value)">
+      <div class="tctx-sep"></div>
+      <span style="font-size:10px;color:var(--g4);">자간</span>
+      <input type="number" class="tctx-num" value="-0.5" min="-5" max="20" step="0.1" style="width:48px;" onchange="applyLetterSpacingCtx(this.value)">
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" onclick="execTxtFmt('removeFormat')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 14l4-4M8 2l6 6-5 5H5l-3-3 6-6z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+    <!-- 줄2: 텍스트 패널 줄2와 동일 -->
+    <div style="display:flex;align-items:center;gap:3px;padding:0 8px;min-height:38px;flex-shrink:0;border-top:0.5px solid var(--g2);flex-wrap:nowrap;">
+      <button class="tctx-btn" style="padding:0 4px;gap:2px;" onclick="T('열너비')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="1" x2="6" y2="15" stroke="currentColor" stroke-width="1"/><line x1="10" y1="1" x2="10" y2="15" stroke="currentColor" stroke-width="1"/></svg><svg width="7" height="7" viewBox="0 0 8 8"><path d="M1 2l3 4 3-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></button>
+      <input type="number" class="tctx-num" value="5" min="0" style="width:44px;" onchange="T('열너비값: '+this.value)">
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" style="padding:0 4px;gap:2px;" onclick="T('행높이')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.2" stroke-dasharray="1 0"/><line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" stroke-width="1"/><line x1="1" y1="10" x2="15" y2="10" stroke="currentColor" stroke-width="1"/></svg><svg width="7" height="7" viewBox="0 0 8 8"><path d="M1 2l3 4 3-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></button>
+      <input type="number" class="tctx-num" value="5" min="0" style="width:44px;" onchange="T('행높이값: '+this.value)">
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" style="padding:0 4px;gap:2px;" onclick="T('테두리')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1" stroke="currentColor" stroke-width="1.3" stroke-dasharray="2 1.5"/></svg><svg width="7" height="7" viewBox="0 0 8 8"><path d="M1 2l3 4 3-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></button>
+      <input type="number" class="tctx-num" value="0.2" min="0" max="10" step="0.1" style="width:44px;" onchange="T('테두리굵기: '+this.value)">
+      <span style="font-size:10px;color:var(--g4);">px</span>
+      <select class="tctx-sel" style="width:76px;" onchange="T('테두리선: '+this.value)"><option value="solid">──────</option><option value="dashed">- - - - -</option><option value="dotted">· · · · ·</option><option value="double">══════</option></select>
+      <button class="tctx-btn" onclick="T('테두리편집')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M10.5 2.5l3 3L5 14H2v-3L10.5 2.5z" stroke="#4B6EF5" stroke-width="1.4" stroke-linejoin="round"/><line x1="2" y1="14" x2="14" y2="14" stroke="#22C98B" stroke-width="2.5" stroke-linecap="round"/></svg></button>
+      <div class="tctx-sep"></div>
+      <select class="tctx-sel" style="width:54px;" onchange="T('위치: '+this.value)"><option>좌상</option><option>중상</option><option>우상</option><option>좌중</option><option>중앙</option><option>우중</option><option>좌하</option><option>중하</option><option>우하</option></select>
+      <input type="number" class="tctx-num" value="12" min="0" max="100" style="width:44px;" onchange="T('여백: '+this.value)">
+    </div>
+    <!-- 줄3: 이미지2 — 표편집 + 셀정렬 + 패딩/간격 + 경계선 + 보기옵션 -->
+    <div style="display:flex;align-items:center;gap:2px;padding:0 8px;min-height:38px;flex-shrink:0;border-top:0.5px solid var(--g2);flex-wrap:nowrap;">
+      <button class="tctx-btn" title="전체 선택" onclick="T('전체선택')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1.5" stroke="currentColor" stroke-width="1.3"/><rect x="1.5" y="1.5" width="13" height="13" rx="1.5" fill="currentColor" opacity=".15"/></svg></button>
+      <button class="tctx-btn" title="위에 행 삽입" onclick="T('위에 행 삽입')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="5.5" width="13" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/><line x1="1.5" y1="10" x2="14.5" y2="10" stroke="currentColor" stroke-width="1.1"/><line x1="8" y1="1" x2="8" y2="4.5" stroke="#2B6CB0" stroke-width="1.5" stroke-linecap="round"/><line x1="5.5" y1="2.5" x2="10.5" y2="2.5" stroke="#2B6CB0" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <button class="tctx-btn" title="아래에 행 삽입" onclick="T('아래에 행 삽입')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/><line x1="1.5" y1="6" x2="14.5" y2="6" stroke="currentColor" stroke-width="1.1"/><line x1="8" y1="11.5" x2="8" y2="15" stroke="#2B6CB0" stroke-width="1.5" stroke-linecap="round"/><line x1="5.5" y1="13.2" x2="10.5" y2="13.2" stroke="#2B6CB0" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <button class="tctx-btn" title="행 삭제" onclick="T('행 삭제')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1" stroke="currentColor" stroke-width="1.3"/><line x1="1.5" y1="6" x2="14.5" y2="6" stroke="currentColor" stroke-width="1.1"/><line x1="1.5" y1="10.5" x2="14.5" y2="10.5" stroke="currentColor" stroke-width="1.1"/><line x1="5" y1="7.8" x2="11" y2="9.2" stroke="#E53E3E" stroke-width="1.5" stroke-linecap="round"/><line x1="11" y1="7.8" x2="5" y2="9.2" stroke="#E53E3E" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <button class="tctx-btn" title="왼쪽에 열 삽입" onclick="T('왼쪽 열 삽입')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="5.5" y="1.5" width="9" height="13" rx="1" stroke="currentColor" stroke-width="1.3"/><line x1="10" y1="1.5" x2="10" y2="14.5" stroke="currentColor" stroke-width="1.1"/><line x1="1" y1="8" x2="4.5" y2="8" stroke="#2B6CB0" stroke-width="1.5" stroke-linecap="round"/><line x1="2.7" y1="5.5" x2="2.7" y2="10.5" stroke="#2B6CB0" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <button class="tctx-btn" title="오른쪽에 열 삽입" onclick="T('오른쪽 열 삽입')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="9" height="13" rx="1" stroke="currentColor" stroke-width="1.3"/><line x1="6" y1="1.5" x2="6" y2="14.5" stroke="currentColor" stroke-width="1.1"/><line x1="11.5" y1="8" x2="15" y2="8" stroke="#2B6CB0" stroke-width="1.5" stroke-linecap="round"/><line x1="13.3" y1="5.5" x2="13.3" y2="10.5" stroke="#2B6CB0" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <button class="tctx-btn" title="열 삭제" onclick="T('열 삭제')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="1" stroke="currentColor" stroke-width="1.3"/><line x1="6" y1="1.5" x2="6" y2="14.5" stroke="currentColor" stroke-width="1.1"/><line x1="10.5" y1="1.5" x2="10.5" y2="14.5" stroke="currentColor" stroke-width="1.1"/><line x1="7.3" y1="5" x2="9.7" y2="11" stroke="#E53E3E" stroke-width="1.5" stroke-linecap="round"/><line x1="9.7" y1="5" x2="7.3" y2="11" stroke="#E53E3E" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <button class="tctx-btn" title="너비 균등" onclick="T('너비 균등')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><line x1="1" y1="8" x2="15" y2="8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M4 5.5l-3 2.5 3 2.5M12 5.5l3 2.5-3 2.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="tctx-btn" title="높이 균등" onclick="T('높이 균등')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><line x1="8" y1="1" x2="8" y2="15" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M5.5 4l2.5-3 2.5 3M5.5 12l2.5 3 2.5-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" title="셀 왼쪽 정렬" onclick="T('셀 왼쪽 정렬')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="3" y1="6" x2="9" y2="6" stroke="#4B6EF5" stroke-width="1.5" stroke-linecap="round"/><line x1="3" y1="9" x2="7" y2="9" stroke="#4B6EF5" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <button class="tctx-btn" title="셀 가운데 정렬" onclick="T('셀 가운데 정렬')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="6" x2="12" y2="6" stroke="#4B6EF5" stroke-width="1.5" stroke-linecap="round"/><line x1="5" y1="9" x2="11" y2="9" stroke="#4B6EF5" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <button class="tctx-btn" title="셀 오른쪽 정렬" onclick="T('셀 오른쪽 정렬')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="2" width="14" height="12" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="7" y1="6" x2="13" y2="6" stroke="#4B6EF5" stroke-width="1.5" stroke-linecap="round"/><line x1="9" y1="9" x2="13" y2="9" stroke="#4B6EF5" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+      <div class="tctx-sep"></div>
+      <input type="number" class="tctx-num" value="0" min="0" max="30" style="width:44px;" title="셀 패딩" onchange="T('셀패딩: '+this.value)">
+      <input type="number" class="tctx-num" value="0" min="0" max="30" style="width:44px;" title="셀 간격" onchange="T('셀간격: '+this.value)">
+      <span style="font-size:10px;color:var(--g4);white-space:nowrap;margin-left:2px;">경계선 분리</span>
+      <label style="display:inline-flex;align-items:center;cursor:pointer;position:relative;"><svg id="tableBorderCircle" width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7" fill="#4B6EF5"/></svg><input type="color" value="#4B6EF5" style="width:0;height:0;opacity:0;position:absolute;" onchange="document.getElementById('tableBorderCircle').querySelector('circle').setAttribute('fill',this.value);T('경계선색: '+this.value)"></label>
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" style="padding:0 4px;gap:2px;" onclick="T('표 보기 옵션')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="1" stroke="currentColor" stroke-width="1.2"/><line x1="6" y1="1" x2="6" y2="15" stroke="currentColor" stroke-width="1"/><line x1="10" y1="1" x2="10" y2="15" stroke="currentColor" stroke-width="1"/><line x1="1" y1="6" x2="15" y2="6" stroke="currentColor" stroke-width="1"/><line x1="1" y1="10" x2="15" y2="10" stroke="currentColor" stroke-width="1"/></svg><svg width="6" height="6" viewBox="0 0 8 8"><path d="M1 2l3 4 3-4" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg></button>
+    </div>
+  </div>
+
+  <!-- 링크 컨텍스트 패널 — 텍스트 줄1만 -->
+  <div class="toolbar-ctx" id="ctx-link">
+    <div style="display:flex;align-items:center;gap:3px;padding:0 8px;min-height:44px;flex-shrink:0;flex-wrap:nowrap;">
+      <select class="tctx-sel" style="width:72px;" onchange="execTxtFmt('fontName',this.value)"><option value="'Noto Sans KR',sans-serif">고딕</option><option value="'Nanum Myeongjo',serif">명조</option><option value="'Courier New',monospace">코드</option></select>
+      <input type="number" class="tctx-num" value="16" min="6" max="72" style="width:48px;" onchange="execTxtFmt('fontSize',this.value+'px')">
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" onclick="execTxtFmt('bold')"><b>B</b></button>
+      <button class="tctx-btn" onclick="execTxtFmt('italic')"><i style="font-family:serif;">I</i></button>
+      <button class="tctx-btn" onclick="execTxtFmt('underline')"><u>U</u></button>
+      <button class="tctx-btn" onclick="execTxtFmt('strikeThrough')"><s>취</s></button>
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" onclick="execTxtFmt('superscript')" style="font-size:10px;">X²</button>
+      <button class="tctx-btn" onclick="execTxtFmt('subscript')" style="font-size:10px;">X₂</button>
+      <label class="tctx-btn" style="cursor:pointer;position:relative;"><span style="font-weight:700;border-bottom:2px solid #E24B4A;">A</span><input type="color" value="#E24B4A" style="width:0;height:0;opacity:0;position:absolute;" onchange="execTxtFmt('foreColor',this.value)"></label>
+      <label class="tctx-btn" style="cursor:pointer;position:relative;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M10 2l4 4-7 7H3v-4L10 2z" stroke="#22C98B" stroke-width="1.4" stroke-linejoin="round" fill="#22C98B" fill-opacity=".3"/></svg><input type="color" value="#22C98B" style="width:0;height:0;opacity:0;position:absolute;" onchange="execTxtFmt('hiliteColor',this.value)"></label>
+      <label class="tctx-btn" style="cursor:pointer;position:relative;font-size:10px;font-weight:700;">Ah<input type="color" value="#FFFF00" style="width:0;height:0;opacity:0;position:absolute;" onchange="execTxtFmt('hiliteColor',this.value)"></label>
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" onclick="execTxtFmt('justifyLeft')"><svg width="12" height="10" viewBox="0 0 14 12"><line x1="0" y1="1" x2="14" y2="1" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="5" x2="9" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="9" x2="11" y2="9" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <button class="tctx-btn" onclick="execTxtFmt('justifyCenter')"><svg width="12" height="10" viewBox="0 0 14 12"><line x1="0" y1="1" x2="14" y2="1" stroke="currentColor" stroke-width="1.5"/><line x1="2" y1="5" x2="12" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="1" y1="9" x2="13" y2="9" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <button class="tctx-btn" onclick="execTxtFmt('justifyRight')"><svg width="12" height="10" viewBox="0 0 14 12"><line x1="0" y1="1" x2="14" y2="1" stroke="currentColor" stroke-width="1.5"/><line x1="5" y1="5" x2="14" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="3" y1="9" x2="14" y2="9" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <button class="tctx-btn" onclick="execTxtFmt('justifyFull')"><svg width="12" height="10" viewBox="0 0 14 12"><line x1="0" y1="1" x2="14" y2="1" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="5" x2="14" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="0" y1="9" x2="14" y2="9" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      <div class="tctx-sep"></div>
+      <span style="font-size:10px;color:var(--g4);">줄간격</span>
+      <input type="number" class="tctx-num" value="2.2" min="1" max="4" step="0.1" style="width:48px;" onchange="applyLineHeightCtx(this.value)">
+      <div class="tctx-sep"></div>
+      <span style="font-size:10px;color:var(--g4);">자간</span>
+      <input type="number" class="tctx-num" value="-0.5" min="-5" max="20" step="0.1" style="width:48px;" onchange="applyLetterSpacingCtx(this.value)">
+      <div class="tctx-sep"></div>
+      <button class="tctx-btn" onclick="execTxtFmt('removeFormat')"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M2 14l4-4M8 2l6 6-5 5H5l-3-3 6-6z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
   </div>
 
   <!-- 도형 컨텍스트 패널 -->
@@ -1661,17 +2007,13 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <div class="rp-tabs" id="rpTabs">
       <button class="rp-tab attr on" id="tab-attr" onclick="switchRp(0,this)">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
-        해당 콘텐츠 속성
+        속성
       </button>
       <button class="rp-tab aitab" id="tab-ai-cur" onclick="switchRp(1,this)">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="currentColor"/></svg>
-        해당 콘텐츠 AI
+        AI 편집
       </button>
-      <button class="rp-tab aitab" id="tab-ai-all" onclick="switchRp(2,this)">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 10h16M4 14h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        전체 AI
-      </button>
-      <!-- 수정기록 버튼 — 시계+돋보기 아이콘 -->
+      <!-- 수정기록 버튼 -->
       <button id="rpHistBtn" onclick="showEditHistoryPanel()"
         title="수정 기록"
         style="width:32px;height:42px;border:none;background:none;cursor:pointer;
@@ -1680,11 +2022,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
         onmouseover="this.style.color='var(--ai)'"
         onmouseout="this.style.color='var(--g3)'">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <!-- 시계 원 -->
           <circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <!-- 시계 바늘 -->
           <path d="M10 7.5V10.5L12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <!-- 돋보기 손잡이 -->
           <path d="M14.5 14.5L20 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
         </svg>
       </button>
@@ -1697,38 +2036,42 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       </div>
       <div class="rp-body" id="rpBody" style="display:none;"></div>
     </div>
-    <!-- 해당 문항 AI 탭 -->
+    <!-- AI 편집 탭 — 단일 채팅 + 컨텍스트 뱃지 (③ 아이디어) -->
     <div id="rpAiPane" style="flex:1;display:none;flex-direction:column;overflow:hidden;background:#F8F9FB;">
-      <!-- 현재 편집 컨텍스트 배너 -->
-      <div id="rpAiContextBanner" style="display:none;flex-shrink:0;padding:7px 12px;background:#EEF3FF;border-bottom:1px solid #D0DBFF;">
-        <div style="display:flex;align-items:center;gap:6px;">
-          <div style="width:7px;height:7px;border-radius:50%;background:var(--blue);flex-shrink:0;"></div>
-          <span id="rpAiContextLabel" style="font-size:11px;font-weight:700;color:var(--blue);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
-          <span style="font-size:10px;color:#7A9EE8;flex-shrink:0;">편집 중</span>
-        </div>
-      </div>
-      <!-- 콘텐츠 없을 때 안내 -->
+
+      <!-- 단일 채팅 메시지 영역 (해당 콘텐츠 + 전체 통합) -->
       <div id="rpAiEmpty" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center;">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" stroke="#C8CDD8" stroke-width="1.5"/></svg>
         <div style="font-size:11px;color:var(--g3);line-height:1.7;">콘텐츠를 선택하면<br>AI 편집을 사용할 수 있어요</div>
       </div>
-      <!-- AI 채팅 메시지 영역 -->
-      <div id="rpAiMsgs" style="flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:10px;display:none;"></div>
-      <!-- 빠른 실행 — 해당 문항 -->
+      <div id="rpAiMsgs" style="flex:1;overflow-y:auto;padding:14px 12px;display:none;flex-direction:column;gap:10px;"></div>
+
+      <!-- 빠른 실행 (해당/전체 범위에 따라 버튼 변경) -->
       <div class="rp-ai-actions" id="rpAiActions" style="display:none;">
-        <div class="rp-ai-actions-title">빠른 실행</div>
-        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+          <div class="rp-ai-actions-title" style="margin-bottom:0;">빠른 실행</div>
+          <!-- 범위 표시 뱃지 -->
+          <div style="display:flex;gap:3px;">
+            <button id="rpQuickScopeBtn0" onclick="setRpChatScope('current')"
+              style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;border:none;cursor:pointer;
+                     background:#E8F0FF;color:var(--blue);transition:all .15s;" >해당 콘텐츠</button>
+            <button id="rpQuickScopeBtn1" onclick="setRpChatScope('all')"
+              style="font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;border:none;cursor:pointer;
+                     background:var(--g1);color:var(--g4);transition:all .15s;">전체</button>
+          </div>
+        </div>
+        <div id="rpQuickBtnsCur" style="display:flex;flex-wrap:wrap;gap:4px;">
           <button class="rp-ai-action-btn" onclick="rpAiQuick('regen')">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             콘텐츠 재생성
           </button>
           <button class="rp-ai-action-btn" onclick="rpAiQuick('hint')">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            힌트·해설
+            힌트,해설 재생성
           </button>
           <button class="rp-ai-action-btn" onclick="rpAiQuick('level')">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M18 20V10M12 20V4M6 20v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            난이도 변경
+            난이도
           </button>
           <button class="rp-ai-action-btn" onclick="rpAiQuick('similar')">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="8" y="2" width="8" height="4" rx="1" stroke="currentColor" stroke-width="2"/></svg>
@@ -1740,39 +2083,21 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
           </button>
           <button class="rp-ai-action-btn" onclick="rpAiQuick('convert')">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            다른 템플릿으로 변환
+            템플릿 변환
           </button>
         </div>
-      </div>
-      <!-- AI 채팅 입력창 -->
-      <div class="rp-ai-input-area" id="rpAiInputArea" style="display:none;">
-        <div class="rp-ai-input-row">
-          <input class="rp-ai-inp" id="rpAiInp" placeholder="이 문항에 대해 입력하세요..." onkeydown="if(event.key==='Enter')sendRpAiChat()">
-          <button class="rp-ai-send" onclick="sendRpAiChat()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-    <!-- 전체 AI 탭 -->
-    <div id="rpAiAllPane" style="flex:1;display:none;flex-direction:column;overflow:hidden;background:#F8F9FB;">
-      <!-- 전체 채팅 메시지 영역 -->
-      <div id="rpAiAllMsgs" style="flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:10px;"></div>
-      <!-- 빠른 실행 — 전체 -->
-      <div class="rp-ai-actions" id="rpAiAllActions" style="border-top:1px solid var(--g2);flex-shrink:0;background:white;padding:7px 10px 5px;">
-        <div class="rp-ai-actions-title">빠른 실행</div>
-        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px;">
+        <div id="rpQuickBtnsAll" style="display:none;flex-wrap:wrap;gap:4px;">
           <button class="rp-ai-action-btn" onclick="rpAiQuickAll('regen')">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            콘텐츠 재생성
+            전체 재생성
           </button>
           <button class="rp-ai-action-btn" onclick="rpAiQuickAll('hint')">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            힌트·해설
+            힌트,해설 재생성
           </button>
           <button class="rp-ai-action-btn" onclick="rpAiQuickAll('level')">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M18 20V10M12 20V4M6 20v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            난이도 변경
+            난이도
           </button>
           <button class="rp-ai-action-btn" onclick="rpAiQuickAll('similar')">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="8" y="2" width="8" height="4" rx="1" stroke="currentColor" stroke-width="2"/></svg>
@@ -1783,16 +2108,18 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
             쌍둥이문항
           </button>
           <button class="rp-ai-action-btn danger" onclick="rpAiQuick('deleteAll')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             전체 삭제
           </button>
         </div>
       </div>
-      <!-- 전체 AI 입력창 -->
-      <div class="rp-ai-input-area" id="rpAiAllInputArea">
+
+      <!-- 통합 입력창 -->
+      <div class="rp-ai-input-area" id="rpAiInputArea" style="display:none;">
         <div class="rp-ai-input-row">
-          <input class="rp-ai-inp" id="rpAiAllInp" placeholder="전체 콘텐츠에 대해 입력하세요..." onkeydown="if(event.key==='Enter')sendRpAiAllChat()">
-          <button class="rp-ai-send" onclick="sendRpAiAllChat()">
+          <input class="rp-ai-inp" id="rpAiInp" placeholder="이 문항에 대해 입력하세요..."
+            onkeydown="if(event.key==='Enter')sendRpAiUnified()">
+          <button class="rp-ai-send" onclick="sendRpAiUnified()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
@@ -5517,7 +5844,7 @@ function showRightPanel(){
     if(!rpAiInited){ initRpAiChat(); rpAiInited=true; }
     if(curBlock && curBlock.id) loadRpAiChatForBlock(curBlock.id);
   }
-  // rpTab===2 (전체 AI)는 별도 처리 불필요 — 항상 열려있음
+  
 }
 function hideRightPanel(){
   if(rpTab===0){
@@ -5528,7 +5855,7 @@ function hideRightPanel(){
   } else if(rpTab===1){
     setRpAiContentVisible(false);
   }
-  // rpTab===2는 숨기지 않음 (전체 AI는 선택 없이도 사용 가능)
+  
 }
 
 function setRpAiContentVisible(show){
@@ -5577,7 +5904,7 @@ function selBlock(el){
   document.getElementById('sbSel').textContent={'question':'문제 블록 선택됨','image':'이미지 블록 선택됨','table':'표 블록 선택됨','concept':'개념 설명 블록 선택됨'}[curType]||'블록 선택됨';
   showRightPanel();
   // 동적 툴바 컨텍스트 패널
-  const ctxTypeMap = { image:'image', table:'table', video:'video', formula:'formula', shape:'shape' };
+  const ctxTypeMap = { text:'text', image:'image', table:'table', video:'video', formula:'formula', shape:'shape', link:'link' };
   if(ctxTypeMap[curType]) ctxShowPanel(ctxTypeMap[curType]);
   else ctxHideAll();
   // 카운터 업데이트
@@ -5587,9 +5914,7 @@ function selBlock(el){
   const blocks = [...document.querySelectorAll('#slide1 .cb')];
   const idx = blocks.indexOf(el) + 1;
   const label = qTxt ? `${idx}번 문항 · ${qTxt.slice(0,20)}${qTxt.length>20?'…':''}` : `${idx}번 문항`;
-  const banner = document.getElementById('rpAiContextBanner');
-  const labelEl = document.getElementById('rpAiContextLabel');
-  if(banner && labelEl){ labelEl.textContent = label; banner.style.display='block'; }
+  updateRpCtxTag();
   // 해당 블록 채팅 기록 불러오기
   if(!rpAiInited){ initRpAiChat(); rpAiInited = true; }
   if(rpTab===1){ setRpAiContentVisible(true); loadRpAiChatForBlock(el.id); }
@@ -5659,7 +5984,16 @@ function _showBlockAiSuggestion(el){
     const qText  = el.querySelector('.q-txt')?.textContent?.trim() || '';
     const hasHint = (el.querySelector('.q-hint-area .qsub')?.textContent?.trim()||'').length > 2;
     const hasSol  = (el.querySelector('.q-sol-area .qsub')?.textContent?.trim()||'').length > 2;
-    const isComplete = qText && hasHint && hasSol;
+    // 선택지가 하나라도 실제 내용으로 채워졌는지 확인 (placeholder 제외)
+    const choices = [...(el.querySelectorAll('.q-choice-text,.q-choice-inp') || [])];
+    const hasFilledChoice = choices.length > 0 && choices.some(c => {
+      const t = c.textContent?.trim() || c.value?.trim() || '';
+      return t.length > 0 && t !== '선택지를 입력합니다.' && t !== '입력';
+    });
+    // 단답형 등 선택지 없는 유형은 선택지 체크 생략
+    const choiceCheck = choices.length === 0 || hasFilledChoice;
+    const isComplete = qText.length > 3 && hasHint && hasSol && choiceCheck
+      && qText !== '발문을 입력합니다.' && qText !== 'L о 2 о L' && qText !== 'ㄴ ㅎ ㅇ';
 
     // 이미지 없을 때 — 완성된 콘텐츠(발문+힌트+해설 모두 입력)에만 이미지/동영상 제안
     if(!hasImage && isComplete){
@@ -5677,7 +6011,7 @@ function _showBlockAiSuggestion(el){
       }
     }
 
-    // 이미지 있을 때 — 완성 여부 무관하게 이미지 전용 제안
+    // 이미지 있을 때 — 완성 여부 체크 후 동영상 제안
     if(hasImage){
       suggestions.push({
         icon:'✏️', label:'이미지에 캡션 추가',
@@ -5691,7 +6025,8 @@ function _showBlockAiSuggestion(el){
         action:"openImageUploadModal(curBlock);addEditLog('🔄 이미지 교체','ai-edit')",
         accent:'#22C98B'
       });
-      if(!hasVideoBlock){
+      // 동영상 제안도 완성된 콘텐츠에만
+      if(!hasVideoBlock && isComplete){
         suggestions.push({
           icon:'🎬', label:'관련 동영상 추가',
           desc:'이 개념을 설명하는 교육 영상을 삽입해요',
@@ -5916,35 +6251,192 @@ function togC(el){
   }
 }
 
+let rpAiScope = 0; // 0=해당콘텐츠 1=전체
+let rpAiChatScope = 'current'; // 'current' | 'all'
+
+// 범위 전환
+function setRpChatScope(scope){
+  rpAiChatScope = scope;
+  const btn0 = document.getElementById('rpQuickScopeBtn0');
+  const btn1 = document.getElementById('rpQuickScopeBtn1');
+  const cur  = document.getElementById('rpQuickBtnsCur');
+  const all  = document.getElementById('rpQuickBtnsAll');
+  const tag  = document.getElementById('rpCtxTag');
+  const dot  = document.getElementById('rpCtxDot');
+  const lbl  = document.getElementById('rpCtxTagLabel');
+  const inp  = document.getElementById('rpAiInp');
+  if(scope === 'current'){
+    if(btn0){ btn0.style.background='#E8F0FF'; btn0.style.color='var(--blue)'; btn0.style.fontWeight='700'; }
+    if(btn1){ btn1.style.background='var(--g1)'; btn1.style.color='var(--g4)'; btn1.style.fontWeight='600'; }
+    if(cur) cur.style.display='flex';
+    if(all) all.style.display='none';
+    if(tag){ tag.style.background='#E8F0FF'; tag.style.borderColor='#C5D4FF'; }
+    if(dot) dot.style.background='var(--blue)';
+    if(lbl){ lbl.style.color='var(--blue)'; }
+    if(inp) inp.placeholder = '이 문항에 대해 입력하세요...';
+    // 컨텍스트 텍스트 업데이트
+    updateRpCtxTag();
+  } else {
+    if(btn0){ btn0.style.background='var(--g1)'; btn0.style.color='var(--g4)'; btn0.style.fontWeight='600'; }
+    if(btn1){ btn1.style.background='#E8FFF5'; btn1.style.color='#0B7A4F'; btn1.style.fontWeight='700'; }
+    if(cur) cur.style.display='none';
+    if(all) all.style.display='flex';
+    if(tag){ tag.style.background='#E8FFF5'; tag.style.borderColor='#A5DEC7'; }
+    if(dot) dot.style.background='#0B7A4F';
+    if(lbl){ lbl.style.color='#0B7A4F'; lbl.textContent='전체 콘텐츠'; }
+    if(inp) inp.placeholder = '전체 콘텐츠에 대해 입력하세요...';
+    initRpAiAllChat();
+  }
+}
+
+function toggleRpChatScope(){
+  setRpChatScope(rpAiChatScope === 'current' ? 'all' : 'current');
+}
+
+function updateRpCtxTag(){
+  if(rpAiChatScope !== 'current') return;
+  const lbl = document.getElementById('rpCtxTagLabel');
+  if(!lbl) return;
+  if(curBlock){
+    const blocks = [...document.querySelectorAll('#slide1 .cb')];
+    const idx = blocks.indexOf(curBlock) + 1;
+    const qTxt = curBlock.querySelector('.q-txt')?.textContent?.trim()
+               || curBlock.querySelector('.concept-title')?.textContent?.trim() || '';
+    lbl.textContent = qTxt
+      ? `${idx}번 · ${qTxt.slice(0,18)}${qTxt.length>18?'…':''}`
+      : `${idx}번 문항`;
+  } else {
+    lbl.textContent = '콘텐츠를 선택하세요';
+  }
+}
+
+// 통합 전송 — 범위에 따라 분기
+function sendRpAiUnified(){
+  const inp = document.getElementById('rpAiInp');
+  if(!inp || !inp.value.trim()) return;
+  const msg = inp.value.trim();
+  inp.value = '';
+  if(rpAiChatScope === 'all'){
+    // 전체 범위 — 뱃지 포함 사용자 메시지 추가 후 allChat 처리
+    const allBadge = `<span style="display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:#E8FFF5;color:#0B7A4F;margin-right:5px;">전체</span>`;
+    addRpAiMsg('user', allBadge + msg);
+    const allInp = document.getElementById('rpAiAllInp');
+    if(allInp){ allInp.value = msg; sendRpAiAllChatDirect(msg); }
+  } else {
+    // 해당 콘텐츠 범위 — 기존 채팅
+    const curInp = document.getElementById('rpAiInp');
+    if(curInp) curInp.value = msg;
+    sendRpAiChat();
+  }
+}
+
+function _addUnifiedUserMsg(msg, scope){
+  const msgs = document.getElementById('rpAiMsgs');
+  if(!msgs) return;
+  const badge = scope === 'all'
+    ? `<span style="display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:#E8FFF5;color:#0B7A4F;margin-right:5px;">전체</span>`
+    : '';
+  const wrap = document.createElement('div');
+  wrap.className = 'rp-ai-msg-user';
+  wrap.innerHTML = `<div class="rp-ai-msg-user-bubble">${badge}${msg}</div>`;
+  msgs.appendChild(wrap);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function switchRpScope(n){ /* 구버전 호환 — 미사용 */ }
+
 function switchRp(n,el){
   rpTab=n;
   document.querySelectorAll('.rp-tab').forEach(t=>t.classList.remove('on'));
   el.classList.add('on');
-  const attrPane   = document.getElementById('rpAttrPane');
-  const aiPane     = document.getElementById('rpAiPane');
-  const aiAllPane  = document.getElementById('rpAiAllPane');
+  const attrPane  = document.getElementById('rpAttrPane');
+  const aiPane    = document.getElementById('rpAiPane');
+  const aiAllPane = document.getElementById('rpAiAllPane');
   if(n===0){
-    if(attrPane)  attrPane.style.display='flex';
-    if(aiPane)    aiPane.style.display='none';
+    if(attrPane) attrPane.style.display='flex';
+    if(aiPane)   aiPane.style.display='none';
     if(aiAllPane) aiAllPane.style.display='none';
     renderRp();
-  } else if(n===1){
-    if(attrPane)  attrPane.style.display='none';
-    if(aiPane){ aiPane.style.display='flex'; if(!rpAiInited){ initRpAiChat(); rpAiInited=true; } }
+  } else {
+    if(attrPane) attrPane.style.display='none';
+    if(aiPane){  aiPane.style.display='flex'; if(!rpAiInited){ initRpAiChat(); rpAiInited=true; } }
     if(aiAllPane) aiAllPane.style.display='none';
     if(curBlock){
       setRpAiContentVisible(true);
       loadRpAiChatForBlock(curBlock.id);
     } else { setRpAiContentVisible(false); }
-  } else {
-    if(attrPane)  attrPane.style.display='none';
-    if(aiPane)    aiPane.style.display='none';
-    if(aiAllPane){ aiAllPane.style.display='flex'; initRpAiAllChat(); }
+    // 기본 해당 콘텐츠 탭 표시
+    switchRpScope(rpAiScope);
   }
 }
 
 function renderRp(){
   const b=document.getElementById('rpBody');
+
+  // 텍스트 블록이면 서식 패널 표시
+  if(curType === 'text'){
+    b.innerHTML = `<div class="attr-wrap">
+      <div class="rp-sec"><div class="rp-sec-t">텍스트 서식</div>
+        <!-- 폰트 / 크기 -->
+        <div class="rp-row" style="gap:6px;">
+          <select class="rp-sel" style="flex:1;" onchange="applyTextFormat('fontFamily',this.value)">
+            <option value="'Noto Sans KR',sans-serif">고딕</option>
+            <option value="'Nanum Myeongjo',serif">명조</option>
+            <option value="'Courier New',monospace">코드</option>
+          </select>
+          <input type="number" class="rp-inp" style="width:54px;" value="13" min="6" max="72"
+            onchange="applyTextFormat('fontSize',this.value+'px')" title="크기">
+        </div>
+        <!-- 굵게/기울기/밑줄/취소선 -->
+        <div class="rp-row" style="gap:4px;margin-top:4px;">
+          <button class="rp-fmt-btn" onclick="applyTextFormat('bold')" title="굵게"><b>B</b></button>
+          <button class="rp-fmt-btn" onclick="applyTextFormat('italic')" title="기울기"><i>I</i></button>
+          <button class="rp-fmt-btn" onclick="applyTextFormat('underline')" title="밑줄"><u>U</u></button>
+          <button class="rp-fmt-btn" onclick="applyTextFormat('strikeThrough')" title="취소선"><s>S</s></button>
+          <div style="width:1px;background:var(--g2);margin:0 2px;align-self:stretch;"></div>
+          <button class="rp-fmt-btn" onclick="applyTextFormat('superscript')" title="위첨자" style="font-size:9px;">X²</button>
+          <button class="rp-fmt-btn" onclick="applyTextFormat('subscript')" title="아래첨자" style="font-size:9px;">X₂</button>
+        </div>
+        <!-- 글자색 / 배경색 -->
+        <div class="rp-row" style="gap:6px;margin-top:4px;">
+          <label style="font-size:10px;color:var(--g4);white-space:nowrap;">글자색</label>
+          <input type="color" value="#1C1F2E" style="width:32px;height:24px;border:1px solid var(--g2);border-radius:4px;padding:1px;cursor:pointer;"
+            onchange="applyTextFormat('foreColor',this.value)">
+          <label style="font-size:10px;color:var(--g4);white-space:nowrap;">배경색</label>
+          <input type="color" value="#FFFFFF" style="width:32px;height:24px;border:1px solid var(--g2);border-radius:4px;padding:1px;cursor:pointer;"
+            onchange="applyTextFormat('hiliteColor',this.value)">
+        </div>
+      </div>
+      <div class="rp-divider"></div>
+      <div class="rp-sec"><div class="rp-sec-t">단락 설정</div>
+        <!-- 정렬 -->
+        <div class="rp-row" style="gap:4px;margin-top:2px;">
+          <button class="rp-fmt-btn" onclick="applyTextFormat('justifyLeft')" title="왼쪽">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><line x1="1" y1="3" x2="15" y2="3" stroke="currentColor" stroke-width="1.5"/><line x1="1" y1="7" x2="10" y2="7" stroke="currentColor" stroke-width="1.5"/><line x1="1" y1="11" x2="13" y2="11" stroke="currentColor" stroke-width="1.5"/><line x1="1" y1="15" x2="8" y2="15" stroke="currentColor" stroke-width="1.5"/></svg>
+          </button>
+          <button class="rp-fmt-btn" onclick="applyTextFormat('justifyCenter')" title="가운데">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><line x1="1" y1="3" x2="15" y2="3" stroke="currentColor" stroke-width="1.5"/><line x1="3" y1="7" x2="13" y2="7" stroke="currentColor" stroke-width="1.5"/><line x1="2" y1="11" x2="14" y2="11" stroke="currentColor" stroke-width="1.5"/><line x1="4" y1="15" x2="12" y2="15" stroke="currentColor" stroke-width="1.5"/></svg>
+          </button>
+          <button class="rp-fmt-btn" onclick="applyTextFormat('justifyRight')" title="오른쪽">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><line x1="1" y1="3" x2="15" y2="3" stroke="currentColor" stroke-width="1.5"/><line x1="6" y1="7" x2="15" y2="7" stroke="currentColor" stroke-width="1.5"/><line x1="3" y1="11" x2="15" y2="11" stroke="currentColor" stroke-width="1.5"/><line x1="8" y1="15" x2="15" y2="15" stroke="currentColor" stroke-width="1.5"/></svg>
+          </button>
+          <button class="rp-fmt-btn" onclick="applyTextFormat('justifyFull')" title="양쪽">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><line x1="1" y1="3" x2="15" y2="3" stroke="currentColor" stroke-width="1.5"/><line x1="1" y1="7" x2="15" y2="7" stroke="currentColor" stroke-width="1.5"/><line x1="1" y1="11" x2="15" y2="11" stroke="currentColor" stroke-width="1.5"/><line x1="1" y1="15" x2="15" y2="15" stroke="currentColor" stroke-width="1.5"/></svg>
+          </button>
+        </div>
+        <!-- 줄간격 / 자간 -->
+        <div class="rp-row" style="gap:6px;margin-top:6px;">
+          <label style="font-size:10px;color:var(--g4);white-space:nowrap;">줄간격</label>
+          <input type="number" class="rp-inp" style="width:54px;" value="1.5" min="1" max="4" step="0.1"
+            onchange="applyLineHeight(this.value)" title="줄간격">
+          <label style="font-size:10px;color:var(--g4);white-space:nowrap;">자간</label>
+          <input type="number" class="rp-inp" style="width:54px;" value="0" min="-5" max="20" step="0.5"
+            onchange="applyLetterSpacing(this.value)" title="자간(px)">
+        </div>
+      </div>
+    </div>`;
+    return;
+  }
   // 선택된 블록에서 현재 정답 번호 추출
   let answerVal = '②';
   let hintVisible = true;
@@ -6068,6 +6560,7 @@ function getCurBlockIndex(){
 let rpAiInited = false;
 let rpAiAllInited = false;
 const _rpAiBlockChats = {}; // 블록 id별 채팅 HTML 저장
+let _rpAiGlobalMsgsHtml = ''; // 전체 범위 메시지 공통 저장
 
 function initRpAiChat(){
   if(rpAiInited) return;
@@ -6077,7 +6570,7 @@ function initRpAiChat(){
 function initRpAiAllChat(){
   if(rpAiAllInited) return;
   rpAiAllInited = true;
-  const msgs = document.getElementById('rpAiAllMsgs');
+  const msgs = document.getElementById('rpAiMsgs');
   if(!msgs) return;
   const wrap = document.createElement('div');
   wrap.className = 'rp-ai-msg-ai';
@@ -6086,7 +6579,7 @@ function initRpAiAllChat(){
 }
 
 function addRpAiAllMsg(role, html){
-  const msgs = document.getElementById('rpAiAllMsgs');
+  const msgs = document.getElementById('rpAiMsgs');
   if(!msgs) return;
   const wrap = document.createElement('div');
   if(role==='ai'){
@@ -6100,6 +6593,42 @@ function addRpAiAllMsg(role, html){
   msgs.scrollTop = msgs.scrollHeight;
 }
 
+async function sendRpAiAllChatDirect(msg){
+  addEditLog(`💬 [전체] ${msg.slice(0,30)}${msg.length>30?'…':''}`, 'ai-all');
+  const loadId = 'allchat-'+Date.now();
+  const msgs = document.getElementById('rpAiMsgs');
+  const lw = document.createElement('div');
+  const allBadge = `<span style="display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:#E8FFF5;color:#0B7A4F;margin-right:5px;">전체</span>`;
+  lw.className='rp-ai-msg-ai'; lw.id=loadId;
+  lw.innerHTML=`<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble"><div>${allBadge}</div>처리 중...</div>`;
+  if(msgs){ msgs.appendChild(lw); msgs.scrollTop=msgs.scrollHeight; }
+  const unitLabel=(typeof lgCurrentUnit!=='undefined'&&lgCurrentUnit)?lgCurrentUnit.split(' · ')[1]||'덧셈과 뺄셈':'덧셈과 뺄셈';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST', headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:400,
+        messages:[{role:'user',content:`초등 수학 교재 AI 편집 도우미입니다. 단원: ${unitLabel}. 전체 콘텐츠에 대한 요청: "${msg}". 짧고 친절하게 처리 결과를 안내해주세요.`}]
+      })
+    });
+    const d = await res.json();
+    const text = d.content?.map(i=>i.text||'').join('').trim() || '전체 콘텐츠를 처리했어요!';
+    document.getElementById(loadId)?.remove();
+    // 전체 뱃지 포함 AI 응답
+    const wrap = document.createElement('div');
+    wrap.className='rp-ai-msg-ai';
+    wrap.innerHTML=`<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble"><div>${allBadge}</div>${text.replace(/\n/g,'<br>')}</div>`;
+    if(msgs){ msgs.appendChild(wrap); msgs.scrollTop=msgs.scrollHeight; }
+    if(curBlock && curBlock.id) saveRpAiChatForBlock(curBlock.id);
+  } catch(e) {
+    document.getElementById(loadId)?.remove();
+    const wrap = document.createElement('div');
+    wrap.className='rp-ai-msg-ai';
+    wrap.innerHTML=`<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble"><div>${allBadge}</div>전체 콘텐츠에 요청을 처리했어요!</div>`;
+    if(msgs){ msgs.appendChild(wrap); msgs.scrollTop=msgs.scrollHeight; }
+    if(curBlock && curBlock.id) saveRpAiChatForBlock(curBlock.id);
+  }
+}
+
 async function sendRpAiAllChat(){
   const inp = document.getElementById('rpAiAllInp');
   if(!inp) return;
@@ -6109,7 +6638,7 @@ async function sendRpAiAllChat(){
   addRpAiAllMsg('user', msg);
   addEditLog(`💬 ${msg.slice(0,30)}${msg.length>30?'…':''}`, 'ai-all');
   const loadId = 'allchat-'+Date.now();
-  const msgs = document.getElementById('rpAiAllMsgs');
+  const msgs = document.getElementById('rpAiMsgs');
   const lw = document.createElement('div');
   lw.className='rp-ai-msg-ai'; lw.id=loadId;
   lw.innerHTML=`<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble" style="color:var(--g3);">처리 중...</div>`;
@@ -6137,8 +6666,11 @@ function loadRpAiChatForBlock(blockId){
   const msgs = document.getElementById('rpAiMsgs');
   if(!msgs) return;
   msgs.innerHTML = '';
+  // 항상 전체 공통 메시지 먼저 표시
+  if(_rpAiGlobalMsgsHtml) msgs.innerHTML = _rpAiGlobalMsgsHtml;
+  // 해당 블록 전용 메시지 이어서 표시
   if(_rpAiBlockChats[blockId]){
-    msgs.innerHTML = _rpAiBlockChats[blockId];
+    msgs.innerHTML += _rpAiBlockChats[blockId];
   } else {
     const wrap = document.createElement('div');
     wrap.className = 'rp-ai-msg-ai';
@@ -6148,11 +6680,23 @@ function loadRpAiChatForBlock(blockId){
   msgs.scrollTop = msgs.scrollHeight;
 }
 
-// 현재 블록 채팅 상태 저장
+// 현재 블록 채팅 상태 저장 — 전체 메시지와 블록 전용 메시지 분리 저장
 function saveRpAiChatForBlock(blockId){
   if(!blockId) return;
   const msgs = document.getElementById('rpAiMsgs');
-  if(msgs) _rpAiBlockChats[blockId] = msgs.innerHTML;
+  if(!msgs) return;
+  // 전체 뱃지가 있는 메시지는 global, 없는 것만 block 전용 저장
+  const allNodes = [...msgs.children];
+  let globalHtml = '';
+  let blockHtml = '';
+  allNodes.forEach(el => {
+    const bubble = el.querySelector('.rp-ai-msg-bubble, .rp-ai-msg-user-bubble');
+    const isGlobal = bubble && bubble.innerHTML.includes('background:#E8FFF5') && bubble.innerHTML.includes('전체');
+    if(isGlobal) globalHtml += el.outerHTML;
+    else blockHtml += el.outerHTML;
+  });
+  _rpAiGlobalMsgsHtml = globalHtml;
+  _rpAiBlockChats[blockId] = blockHtml;
 }
 
 function addRpAiMsg(role, html){
@@ -6160,15 +6704,23 @@ function addRpAiMsg(role, html){
   if(!msgs) return;
   const wrap = document.createElement('div');
   if(role==='ai'){
+    // AI 메시지에 현재 범위 뱃지 추가
+    const scopeBadge = rpAiChatScope === 'all'
+      ? `<span style="display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:#E8FFF5;color:#0B7A4F;margin-bottom:5px;margin-right:4px;">전체</span>`
+      : (()=>{
+          if(!curBlock) return '';
+          const blocks=[...document.querySelectorAll('#slide1 .cb')];
+          const idx=blocks.indexOf(curBlock)+1;
+          return `<span style="display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:#E8F0FF;color:var(--blue);margin-bottom:5px;margin-right:4px;">${idx}번 문항</span>`;
+        })();
     wrap.className='rp-ai-msg-ai';
-    wrap.innerHTML=`<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble">${html}</div>`;
+    wrap.innerHTML=`<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble"><div>${scopeBadge}</div>${html}</div>`;
   } else {
     wrap.className='rp-ai-msg-user';
     wrap.innerHTML=`<div class="rp-ai-msg-user-bubble">${html}</div>`;
   }
   msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
-  // 현재 블록 채팅 자동 저장
   if(curBlock && curBlock.id) saveRpAiChatForBlock(curBlock.id);
 }
 
@@ -6231,13 +6783,19 @@ function rpAiQuickAll(action){
   rpAiPendingAction = action;
   const guide = RP_QUICK_GUIDE[action];
   if(!guide) return;
-  rpShowQuickGuide(action, guide, 'all', 'rpAiAllMsgs');
+  // 채팅창 표시 보장
+  setRpAiContentVisible(true);
+  if(!rpAiInited){ initRpAiChat(); rpAiInited=true; }
+  rpShowQuickGuide(action, guide, 'all', 'rpAiMsgs');
 }
 
 function rpAiQuick(action){
   rpAiPendingAction = action;
   const guide = RP_QUICK_GUIDE[action];
   if(!guide) return;
+  // 채팅창 표시 보장
+  setRpAiContentVisible(true);
+  if(!rpAiInited){ initRpAiChat(); rpAiInited=true; }
   rpShowQuickGuide(action, guide, 'current', 'rpAiMsgs');
 }
 
@@ -6389,6 +6947,10 @@ function rpShowQuickGuide(action, guide, forcedScope, targetMsgsId){
   // 가이드 카드를 올바른 채팅창에 추가
   const msgsEl = document.getElementById(targetMsgsId || 'rpAiMsgs');
   if(!msgsEl) return;
+  // display:none이면 flex로 전환
+  if(msgsEl.style.display === 'none') msgsEl.style.display = 'flex';
+  const emptyEl = document.getElementById('rpAiEmpty');
+  if(emptyEl) emptyEl.style.display = 'none';
   const wrap = document.createElement('div');
   wrap.className = 'rp-ai-msg-ai rp-quick-guide-card';
   wrap.innerHTML = `<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble">${guideHtml}</div>`;
@@ -6416,7 +6978,7 @@ function rpAiApply(scope){
     return;
   }
   if(action === 'similar'){
-    const msgsTarget = document.getElementById(scope==='all' ? 'rpAiAllMsgs' : 'rpAiMsgs');
+    const msgsTarget = document.getElementById(scope==='all' ? 'rpAiMsgs' : 'rpAiMsgs');
     const simUserWrap = document.createElement('div');
     simUserWrap.className='rp-ai-msg-user';
     simUserWrap.innerHTML=`<div class="rp-ai-msg-user-bubble">유사문항 생성 (${scopeLabel})</div>`;
@@ -6441,7 +7003,7 @@ function rpAiApply(scope){
     return;
   }
   if(action === 'twin'){
-    const msgsTarget2 = document.getElementById(scope==='all' ? 'rpAiAllMsgs' : 'rpAiMsgs');
+    const msgsTarget2 = document.getElementById(scope==='all' ? 'rpAiMsgs' : 'rpAiMsgs');
     const twUserWrap = document.createElement('div');
     twUserWrap.className='rp-ai-msg-user';
     twUserWrap.innerHTML=`<div class="rp-ai-msg-user-bubble">쌍둥이문항 생성 (${scopeLabel})</div>`;
@@ -6472,7 +7034,7 @@ function rpAiApply(scope){
 
   // scope에 맞는 채팅창에 메시지 추가하는 헬퍼
   const addScopedMsg = (role, html) => {
-    const msgsId = scope==='all' ? 'rpAiAllMsgs' : 'rpAiMsgs';
+    const msgsId = scope==='all' ? 'rpAiMsgs' : 'rpAiMsgs';
     const el = document.getElementById(msgsId);
     if(!el) return;
     const w = document.createElement('div');
@@ -6498,7 +7060,7 @@ function rpAiApply(scope){
 
   // 로딩 메시지
   const loadId = 'rpa-'+Date.now();
-  const msgsTarget = document.getElementById(scope==='all' ? 'rpAiAllMsgs' : 'rpAiMsgs');
+  const msgsTarget = document.getElementById(scope==='all' ? 'rpAiMsgs' : 'rpAiMsgs');
   const loadWrap = document.createElement('div');
   loadWrap.className='rp-ai-msg-ai'; loadWrap.id=loadId;
   loadWrap.innerHTML=`<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble" style="color:var(--g3);">처리 중...</div>`;
@@ -6507,29 +7069,74 @@ function rpAiApply(scope){
   if(action === 'regen'){
     setTimeout(async ()=>{
       const targets = scope==='current' && curBlock ? [curBlock] : [...document.querySelectorAll('#slide1 .cb')];
-      const cnt = targets.length || 2;
-      const req = `덧셈과 뺄셈 선택형 ${cnt}개`;
-      targets.forEach(b=>b.remove());
-      checkSlideEmpty();
+      const cnt = targets.length || 1;
       document.getElementById(loadId)?.remove();
       addScopedMsg('ai', `🔄 ${scopeLabel} ${cnt}개를 재생성할게요!`);
       addEditLog(`🔄 콘텐츠 재생성`, source);
-      const hid = addHistory('선택형','중',req,String(cnt),[]);
-      await landingCallAPI(hid,'선택형','중',req,String(cnt));
+
+      // 오버레이 없이 인라인 재생성 — 각 블록 발문/선택지 초기화 후 AI 처리
+      targets.forEach((bl, i) => {
+        const qTxt = bl.querySelector('.q-txt');
+        const hints = bl.querySelectorAll('.q-hint-area .qsub');
+        const sols  = bl.querySelectorAll('.q-sol-area .qsub');
+        const choices = bl.querySelectorAll('.q-choice');
+        if(qTxt) qTxt.textContent = '발문을 입력합니다.';
+        choices.forEach(ch => { const s = ch.querySelector('.choice-text'); if(s) s.textContent='선택지를 입력합니다.'; });
+        hints.forEach(h => { h.textContent = '힌트를 입력합니다.'; });
+        sols.forEach(s  => { s.textContent  = '해설을 입력합니다.'; });
+      });
+
+      // 채팅창에 완료 메시지
+      setTimeout(()=>{
+        const doneWrap = document.createElement('div');
+        doneWrap.className = 'rp-ai-msg-ai';
+        doneWrap.innerHTML = `<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble">✅ ${cnt}개 콘텐츠를 초기화했어요. 발문·선택지를 직접 수정하거나 AI 채팅으로 내용을 채워보세요!</div>`;
+        const msgsEl = document.getElementById('rpAiMsgs');
+        if(msgsEl){ msgsEl.appendChild(doneWrap); msgsEl.scrollTop = msgsEl.scrollHeight; }
+      }, 400);
     }, 400);
   } else if(action === 'hint'){
-    setTimeout(()=>{
+    setTimeout(async ()=>{
       const targets = scope==='current' && curBlock ? [curBlock] : [...document.querySelectorAll('#slide1 .cb')];
-      targets.forEach(bl=>{
-        const hintEl = bl.querySelector('.q-hint-area .qsub');
-        const solEl  = bl.querySelector('.q-sol-area .qsub');
-        if(hintEl) hintEl.textContent = '자릿값을 맞추어 차례로 계산해보세요.';
-        if(solEl)  solEl.textContent  = '받아올림/받아내림에 주의하여 계산합니다.';
-      });
-      document.getElementById(loadId)?.remove();
-      addEditLog(`💡 힌트·해설 재생성`, source);
-      addScopedMsg('ai', `✅ ${scopeLabel} ${targets.length}개의 힌트·해설을 재생성했어요!`);
-    }, 800);
+      const cnt = targets.length;
+      const unitLabel = (typeof lgCurrentUnit!=='undefined'&&lgCurrentUnit)?lgCurrentUnit.split(' · ')[1]||'덧셈과 뺄셈':'덧셈과 뺄셈';
+      try {
+        const res = await fetch('https://api.anthropic.com/v1/messages',{
+          method:'POST', headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-access':'true'},
+          body:JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:400,
+            messages:[{role:'user',content:`초등 수학 단원: ${unitLabel}. 선택형 문항의 힌트와 해설을 각각 한 문장으로 간결하게 작성해주세요. JSON으로만 응답: {"hint":"...","sol":"..."}`}]
+          })
+        });
+        const d = await res.json();
+        let hint = '자릿값을 맞추어 차례로 계산해보세요.';
+        let sol  = '받아올림/받아내림에 주의하여 계산합니다.';
+        try {
+          const txt = d.content?.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+          const parsed = JSON.parse(txt);
+          if(parsed.hint) hint = parsed.hint;
+          if(parsed.sol)  sol  = parsed.sol;
+        } catch(e){}
+        targets.forEach(bl=>{
+          const hintEl = bl.querySelector('.q-hint-area .qsub');
+          const solEl  = bl.querySelector('.q-sol-area .qsub');
+          if(hintEl) hintEl.textContent = hint;
+          if(solEl)  solEl.textContent  = sol;
+        });
+        document.getElementById(loadId)?.remove();
+        addEditLog(`💡 힌트·해설 재생성`, source);
+        addScopedMsg('ai', `✅ ${scopeLabel} ${cnt}개의 힌트·해설을 재생성했어요!`);
+      } catch(e) {
+        targets.forEach(bl=>{
+          const hintEl = bl.querySelector('.q-hint-area .qsub');
+          const solEl  = bl.querySelector('.q-sol-area .qsub');
+          if(hintEl) hintEl.textContent = '자릿값을 맞추어 차례로 계산해보세요.';
+          if(solEl)  solEl.textContent  = '받아올림/받아내림에 주의하여 계산합니다.';
+        });
+        document.getElementById(loadId)?.remove();
+        addEditLog(`💡 힌트·해설 재생성`, source);
+        addScopedMsg('ai', `✅ ${scopeLabel} ${cnt}개의 힌트·해설을 재생성했어요!`);
+      }
+    }, 200);
   } else if(action === 'level'){
     document.getElementById(loadId)?.remove();
     const levelHtml = `
@@ -6546,7 +7153,7 @@ function rpAiApply(scope){
 async function rpAiApplyLevel(lv, scope){
   const scopeLabel = scope==='current' ? '현재 콘텐츠' : '전체 콘텐츠';
   const source = scope==='current' ? 'ai-current' : 'ai-all';
-  const msgsEl = document.getElementById(scope==='all' ? 'rpAiAllMsgs' : 'rpAiMsgs');
+  const msgsEl = document.getElementById(scope==='all' ? 'rpAiMsgs' : 'rpAiMsgs');
   const addScopedMsg2 = (role, html) => {
     if(!msgsEl) return;
     const w = document.createElement('div');
@@ -6563,14 +7170,25 @@ async function rpAiApplyLevel(lv, scope){
   lw.innerHTML=`<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble" style="color:var(--g3);">재생성 중...</div>`;
   if(msgsEl){ msgsEl.appendChild(lw); msgsEl.scrollTop=msgsEl.scrollHeight; }
   const targets = scope==='current' && curBlock ? [curBlock] : [...document.querySelectorAll('#slide1 .cb')];
-  const cnt = targets.length || 2;
-  targets.forEach(b=>b.remove());
-  checkSlideEmpty();
+  const cnt = targets.length || 1;
   document.getElementById(loadId2)?.remove();
-  addScopedMsg2('ai', `🔄 난이도 "${lv}" (${scopeLabel}) ${cnt}개를 재생성할게요!`);
-  const req = `덧셈과 뺄셈 선택형 ${cnt}개 난이도 ${lv}`;
-  const hid = addHistory('선택형', lv, req, String(cnt), []);
-  await landingCallAPI(hid, '선택형', lv, req, String(cnt));
+  addScopedMsg2('ai', `🔄 난이도 "${lv}" (${scopeLabel}) ${cnt}개를 변경할게요!`);
+
+  // 난이도 배지 업데이트 (로컬)
+  targets.forEach(bl => {
+    const qTxt = bl.querySelector('.q-txt');
+    if(qTxt){
+      const cur = qTxt.textContent.replace(/\s*\[난이도:[상중하]\]/g,'').trim();
+      qTxt.textContent = cur + ` [난이도:${lv}]`;
+    }
+  });
+  setTimeout(()=>{
+    const doneWrap = document.createElement('div');
+    doneWrap.className = 'rp-ai-msg-ai';
+    doneWrap.innerHTML = `<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble">✅ ${cnt}개 콘텐츠를 난이도 "${lv}"으로 변경했어요!</div>`;
+    const msgsEl = document.getElementById('rpAiMsgs');
+    if(msgsEl){ msgsEl.appendChild(doneWrap); msgsEl.scrollTop=msgsEl.scrollHeight; }
+  }, 300);
   addEditLog(`🏷 난이도 "${lv}" 변경`, source);
 }
 
@@ -6608,13 +7226,13 @@ function renderLogItem(log){
     ? '<svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="white"/></svg>'
     : '<svg width="9" height="9" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="#4B6EF5" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="#4B6EF5" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="#4B6EF5" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="#4B6EF5" stroke-width="2"/></svg>';
 
-  // 탭 출처 뱃지 (1번, 2번 요구사항)
+  // 탭 출처 뱃지
   const tabBadge = log.source==='prop'
     ? `<span style="font-size:9px;padding:1px 7px;border-radius:10px;background:#EEF1FF;color:#3351D4;font-weight:700;white-space:nowrap;">속성</span>`
-    : log.source==='ai-current'
-    ? `<span style="font-size:9px;padding:1px 7px;border-radius:10px;background:linear-gradient(135deg,#4B6EF5,#7C4DFF);color:white;font-weight:700;white-space:nowrap;">해당 콘텐츠 AI</span>`
-    : (log.source==='ai-all'||log.source==='ai-edit')
-    ? `<span style="font-size:9px;padding:1px 7px;border-radius:10px;background:linear-gradient(135deg,#7C4DFF,#A87DFF);color:white;font-weight:700;white-space:nowrap;">전체 AI</span>`
+    : (log.source==='ai-current'||log.source==='ai-edit')
+    ? `<span style="font-size:9px;padding:1px 7px;border-radius:10px;background:linear-gradient(135deg,#4B6EF5,#7C4DFF);color:white;font-weight:700;white-space:nowrap;">AI편집</span>`
+    : log.source==='ai-all'
+    ? `<span style="font-size:9px;padding:1px 7px;border-radius:10px;background:linear-gradient(135deg,#0B7A4F,#22C98B);color:white;font-weight:700;white-space:nowrap;">AI편집 · 전체</span>`
     : '';
 
   // 블록 번호 뱃지 (3번 요구사항: 해당 콘텐츠 관련일 때만)
@@ -6655,23 +7273,23 @@ function renderEditHistoryPanel(panel){
       <span style="font-size:12px;font-weight:800;color:var(--text);">수정 기록</span>
       <span style="font-size:10px;color:var(--g4);margin-left:auto;">${logs.length}건</span>
     </div>
-    <!-- 탭 필터 -->
+    <!-- 탭 필터: 전체 / 속성 / AI편집 -->
     <div style="display:flex;border-bottom:1px solid var(--g2);flex-shrink:0;">
       <button onclick="filterEditLog('all',this)"
         style="flex:1;height:32px;border:none;background:none;cursor:pointer;
                font-size:10px;font-weight:700;color:var(--blue);font-family:'Noto Sans KR',sans-serif;
                border-bottom:2px solid var(--blue);"
         id="histFilter-all">전체</button>
-      <button onclick="filterEditLog('cur-combined',this)"
-        style="flex:1.8;height:32px;border:none;background:none;cursor:pointer;
-               font-size:10px;font-weight:700;color:var(--g4);font-family:'Noto Sans KR',sans-serif;
-               border-bottom:2px solid transparent;"
-        id="histFilter-cur-combined">해당 콘텐츠 속성·AI</button>
-      <button onclick="filterEditLog('ai-all',this)"
+      <button onclick="filterEditLog('prop',this)"
         style="flex:1;height:32px;border:none;background:none;cursor:pointer;
                font-size:10px;font-weight:700;color:var(--g4);font-family:'Noto Sans KR',sans-serif;
                border-bottom:2px solid transparent;"
-        id="histFilter-ai-all">전체 AI</button>
+        id="histFilter-prop">속성</button>
+      <button onclick="filterEditLog('ai',this)"
+        style="flex:1;height:32px;border:none;background:none;cursor:pointer;
+               font-size:10px;font-weight:700;color:var(--g4);font-family:'Noto Sans KR',sans-serif;
+               border-bottom:2px solid transparent;"
+        id="histFilter-ai">AI편집</button>
     </div>
     <div id="rpHistList" style="flex:1;overflow-y:auto;">
       ${logs.length===0
@@ -6684,28 +7302,26 @@ let _histFilter = 'all';
 
 function filterEditLog(filter, btn){
   _histFilter = filter;
-  ['all','cur-combined','ai-all'].forEach(f=>{
+  ['all','prop','ai'].forEach(f=>{
     const b = document.getElementById('histFilter-'+f);
     if(!b) return;
-    if(f===filter){ b.style.color='var(--blue)'; b.style.borderBottom='2px solid var(--blue)'; }
-    else { b.style.color='var(--g4)'; b.style.borderBottom='2px solid transparent'; }
+    if(f===filter){ b.style.color='var(--blue)'; b.style.borderBottom='2px solid var(--blue)'; b.style.fontWeight='700'; }
+    else { b.style.color='var(--g4)'; b.style.borderBottom='2px solid transparent'; b.style.fontWeight='600'; }
   });
   applyHistFilters();
 }
 
 function applyHistFilters(){
   let logs = editLog;
-  if(_histFilter === 'cur-combined'){
-    // 해당 콘텐츠 속성 + 해당 콘텐츠 AI 합쳐서 표시
+  if(_histFilter === 'prop'){
+    // 속성 탭: 속성 패널에서 변경한 것만
+    logs = logs.filter(l=> l.source==='prop');
+  } else if(_histFilter === 'ai'){
+    // AI편집 탭: 해당 콘텐츠 AI + 전체 AI + ai-edit 모두
     logs = logs.filter(l=>
-      l.source==='prop' ||
       l.source==='ai-current' ||
-      (l.source==='ai-edit' && l.scope==='current')
-    );
-  } else if(_histFilter === 'ai-all'){
-    logs = logs.filter(l=>
       l.source==='ai-all' ||
-      (l.source==='ai-edit' && l.scope==='all')
+      l.source==='ai-edit'
     );
   }
   // 'all'이면 전부 표시
@@ -7211,6 +7827,9 @@ function onBlockTextInput(el, blockType, fieldType){
   const block = el.closest('.cb');
   if(block && block !== curBlock){ selBlock(block); }
 
+  // 텍스트 입력 시 텍스트 서식 패널 표시
+  ctxShowPanel('text');
+
   clearTimeout(_inputSuggestTimer);
   _inputSuggestTimer = setTimeout(()=>{
     const text = el.textContent.trim();
@@ -7428,7 +8047,238 @@ function rpInsertSampleQuestion(idx){
 }
 
 
-// ── 이미지 업로드 모달 ──
+// 표 팝오버 토글
+function toggleTablePicker(){
+  const pop = document.getElementById('tablePickerPopover');
+  if(!pop) return;
+  pop.style.display = pop.style.display==='none' ? 'block' : 'none';
+}
+function resetTableGrid(){
+  document.querySelectorAll('#tableGrid div').forEach(d=>{
+    d.style.background='white'; d.style.borderColor='#D1D5DB';
+  });
+  document.getElementById('tablePickerLabel').textContent='표 삽입';
+}
+// NxM 표 블록 삽입
+function insertTableBlock(rows, cols){
+  blkCnt++;
+  const slide = document.getElementById('slide1');
+  const addArea = slide.querySelector('.add-area');
+  const el = document.createElement('div');
+  el.className = 'cb'; el.id = 'blk-table'+blkCnt; el.dataset.type = 'table';
+  el.onclick = function(e){ if(!e.target.closest('td,th')) selBlock(this); };
+  const thStyle = 'border:1px solid #D1D5DB;padding:6px 10px;font-size:12px;font-weight:700;background:#F3F4F6;min-width:60px;';
+  const tdStyle = 'border:1px solid #D1D5DB;padding:6px 10px;font-size:12px;min-width:60px;min-height:28px;';
+  let tableHtml = `<table style="border-collapse:collapse;width:100%;">`;
+  for(let r=0;r<rows;r++){
+    tableHtml += '<tr>';
+    for(let c=0;c<cols;c++){
+      const tag = r===0 ? 'th' : 'td';
+      tableHtml += `<${tag} contenteditable="true" style="${r===0?thStyle:tdStyle}" oninput="onBlockTextInput(this,'table','cell')"></${tag}>`;
+    }
+    tableHtml += '</tr>';
+  }
+  tableHtml += '</table>';
+  el.innerHTML = `<div class="bctrl"><button onclick="event.stopPropagation();blockMoveUp(this)" title="위로">▲</button><button onclick="event.stopPropagation();blockMoveDown(this)" title="아래로">▼</button><button onclick="event.stopPropagation();blockAddBelow(this)" title="추가"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><button onclick="event.stopPropagation();blockCopyBelow(this)" title="복사"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="1.8"/></svg></button><button class="del" onclick="event.stopPropagation();rmBlock(this)" title="삭제">✕</button></div>
+    <div style="padding:12px 16px;overflow-x:auto;">${tableHtml}</div>`;
+  const insertAfter = curBlock;
+  if(insertAfter && insertAfter.nextSibling && insertAfter.parentNode===slide){
+    slide.insertBefore(el, insertAfter.nextSibling);
+  } else {
+    slide.insertBefore(el, addArea);
+  }
+  checkSlideEmpty();
+  setTimeout(()=>{ selBlock(el); ctxShowPanel('table'); }, 30);
+  T(`✅ ${rows}×${cols} 표 삽입됨`);
+}
+// 줄간격/자간 컨텍스트 패널 적용
+function applyLineHeightCtx(val){
+  const active = document.activeElement;
+  const target = (active && active.isContentEditable) ? active : curBlock?.querySelector('[contenteditable="true"]');
+  if(target) target.style.lineHeight = val;
+}
+function applyLetterSpacingCtx(val){
+  const active = document.activeElement;
+  const target = (active && active.isContentEditable) ? active : curBlock?.querySelector('[contenteditable="true"]');
+  if(target) target.style.letterSpacing = val+'px';
+}
+
+// 텍스트 서식 실행 (컨텍스트 패널 버튼용)
+function execTxtFmt(cmd, val){
+  // 현재 포커스된 contenteditable에 적용
+  const active = document.activeElement;
+  if(active && active.isContentEditable){
+    active.focus();
+    document.execCommand(cmd, false, val || null);
+  } else if(curBlock){
+    // 포커스가 없으면 현재 블록의 마지막 contenteditable에 포커스 후 적용
+    const ce = curBlock.querySelector('[contenteditable="true"]');
+    if(ce){ ce.focus(); document.execCommand(cmd, false, val || null); }
+  }
+}
+
+// 동영상/오디오 파일 업로드 모달 (이미지 모달과 동일 스타일)
+function openMediaUploadModal(mediaType){
+  const existing = document.getElementById('mediaUploadModal');
+  if(existing) existing.remove();
+  const isVideo = mediaType==='video';
+  const title = isVideo ? '동영상 삽입' : '오디오 삽입';
+  const accept = isVideo ? 'video/*' : 'audio/*';
+  const formats = isVideo ? 'MP4, MOV, WebM 지원 (최대 100MB)' : 'MP3, WAV, OGG 지원 (최대 50MB)';
+  const urlPh = isVideo ? 'https://example.com/video.mp4' : 'https://example.com/audio.mp3';
+  const modal = document.createElement('div');
+  modal.id = 'mediaUploadModal';
+  modal.className = 'img-upload-modal-overlay';
+  modal.innerHTML = `
+    <div class="img-upload-modal" onclick="event.stopPropagation()">
+      <div class="img-upload-title">${title}</div>
+      <div class="img-upload-sub">로컬 파일을 업로드하거나 URL을 입력하세요.</div>
+      <div class="img-upload-zone" id="mediaDropZone"
+        onclick="document.getElementById('mediaFileInput').click()"
+        ondragover="event.preventDefault();this.classList.add('drag-over')"
+        ondragleave="this.classList.remove('drag-over')"
+        ondrop="handleMediaDrop(event,'${mediaType}')">
+        ${isVideo
+          ? `<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="14" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M16 9l5-3v12l-5-3V9z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>`
+          : `<svg width="40" height="40" viewBox="0 0 24 24" fill="none"><rect x="6" y="2" width="12" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M3 11a9 9 0 0018 0M12 18v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`
+        }
+        <div class="img-upload-zone-text">클릭하거나 파일을 드래그하세요</div>
+        <div class="img-upload-zone-sub">${formats}</div>
+      </div>
+      <input type="file" id="mediaFileInput" accept="${accept}" style="display:none"
+        onchange="handleMediaFileSelect(this,'${mediaType}')">
+      <div class="img-upload-divider"><span>또는 URL 입력</span></div>
+      <div class="img-upload-url-row">
+        <input class="img-upload-url-inp" id="mediaUrlInput" placeholder="${urlPh}">
+        <button class="img-upload-url-btn" onclick="applyMediaUrl('${mediaType}')">삽입</button>
+      </div>
+      <div class="img-upload-footer">
+        <button class="img-upload-cancel" onclick="document.getElementById('mediaUploadModal').remove()">취소</button>
+      </div>
+    </div>`;
+  modal.addEventListener('click', ()=>modal.remove());
+  document.body.appendChild(modal);
+}
+
+function handleMediaDrop(e, mediaType){
+  e.preventDefault();
+  document.getElementById('mediaDropZone')?.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if(file) applyMediaFile(file, mediaType);
+}
+function handleMediaFileSelect(input, mediaType){
+  const file = input.files[0];
+  if(file) applyMediaFile(file, mediaType);
+}
+function applyMediaUrl(mediaType){
+  const url = document.getElementById('mediaUrlInput')?.value?.trim();
+  if(!url) return;
+  document.getElementById('mediaUploadModal')?.remove();
+  _insertMediaBlock(url, mediaType);
+}
+function applyMediaFile(file, mediaType){
+  document.getElementById('mediaUploadModal')?.remove();
+  const url = URL.createObjectURL(file);
+  _insertMediaBlock(url, mediaType);
+}
+function _insertMediaBlock(src, mediaType){
+  blkCnt++;
+  const slide = document.getElementById('slide1');
+  const addArea = slide.querySelector('.add-area');
+  const el = document.createElement('div');
+  el.className = 'cb'; el.id = 'blk-'+mediaType+blkCnt; el.dataset.type = mediaType;
+  el.onclick = function(){ selBlock(this); };
+  const mediaTag = mediaType==='video'
+    ? `<video src="${src}" controls style="max-width:100%;border-radius:6px;display:block;"></video>`
+    : `<audio src="${src}" controls style="width:100%;"></audio>`;
+  el.innerHTML = `<div class="bctrl">
+    <button onclick="event.stopPropagation();blockMoveUp(this)">▲</button>
+    <button onclick="event.stopPropagation();blockMoveDown(this)">▼</button>
+    <button onclick="event.stopPropagation();blockAddBelow(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <button onclick="event.stopPropagation();blockCopyBelow(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="1.8"/></svg></button>
+    <button class="del" onclick="event.stopPropagation();rmBlock(this)">✕</button>
+  </div>
+  <div style="padding:12px 16px;">${mediaTag}</div>`;
+  const insertAfter = curBlock;
+  if(insertAfter && insertAfter.nextSibling && insertAfter.parentNode===slide){
+    slide.insertBefore(el, insertAfter.nextSibling);
+  } else {
+    slide.insertBefore(el, addArea);
+  }
+  checkSlideEmpty();
+  setTimeout(()=>selBlock(el), 30);
+  T(`✅ ${mediaType==='video'?'동영상':'오디오'} 삽입됨`);
+}
+
+// 이미지 도구 선택 — 선/도형에 따라 서브 행 토글
+// 이미지 도구 선택 — 선/도형에 따라 서브 행 토글
+function selectImgTool(type, btn){
+  document.querySelectorAll('.img-tool-btn').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  const lineRow  = document.getElementById('imgToolRow');
+  const shapeRow = document.getElementById('imgShapeRow');
+  if(type==='line'){
+    if(lineRow)  lineRow.style.display  = (lineRow.style.display==='flex') ? 'none' : 'flex';
+    if(shapeRow) shapeRow.style.display = 'none';
+  } else {
+    if(shapeRow) shapeRow.style.display = (shapeRow.style.display==='flex') ? 'none' : 'flex';
+    if(lineRow)  lineRow.style.display  = 'none';
+  }
+}
+
+function insertTextBlock(){
+  blkCnt++;
+  const slide = document.getElementById('slide1');
+  const addArea = slide.querySelector('.add-area');
+  const el = document.createElement('div');
+  el.className = 'cb'; el.id = 'blk-text'+blkCnt; el.dataset.type = 'text';
+  el.onclick = function(){ selBlock(this); };
+  el.innerHTML = `<div class="bctrl">
+    <button onclick="event.stopPropagation();blockMoveUp(this)" title="위로">▲</button>
+    <button onclick="event.stopPropagation();blockMoveDown(this)" title="아래로">▼</button>
+    <button onclick="event.stopPropagation();blockAddBelow(this)" title="아래에 추가"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    <button onclick="event.stopPropagation();blockCopyBelow(this)" title="복사"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="1.8"/></svg></button>
+    <button class="del" onclick="event.stopPropagation();rmBlock(this)" title="삭제">✕</button>
+  </div>
+  <div class="text-blk-body" contenteditable="true"
+    style="padding:14px 20px;min-height:40px;font-size:13px;line-height:1.7;
+           color:var(--text);outline:none;font-family:'Noto Sans KR',sans-serif;"
+    data-ph="텍스트를 입력하세요"
+    oninput="onBlockTextInput(this,'text','text')"
+    onfocus="selBlock(this.closest('.cb'))"
+  ></div>`;
+  const insertAfter = curBlock;
+  if(insertAfter && insertAfter.nextSibling && insertAfter.parentNode === slide){
+    slide.insertBefore(el, insertAfter.nextSibling);
+  } else {
+    slide.insertBefore(el, addArea);
+  }
+  checkSlideEmpty();
+  setTimeout(()=>{
+    selBlock(el);
+    el.querySelector('.text-blk-body')?.focus();
+  }, 30);
+  T('✅ 텍스트 블록 추가됨');
+}
+
+// 텍스트 서식 적용
+function applyTextFormat(cmd, val){
+  const el = document.activeElement;
+  if(el && el.classList.contains('text-blk-body')){
+    document.execCommand(cmd, false, val || null);
+    el.focus();
+  }
+}
+function applyLineHeight(val){
+  if(!curBlock) return;
+  const body = curBlock.querySelector('.text-blk-body');
+  if(body) body.style.lineHeight = val;
+}
+function applyLetterSpacing(val){
+  if(!curBlock) return;
+  const body = curBlock.querySelector('.text-blk-body');
+  if(body) body.style.letterSpacing = val+'px';
+}
 let _imgTargetBlock = null;
 let _imgInsertAfter = null;
 let _imgSavedRange = null; // 커서 위치 저장 (contenteditable 내부 삽입용)
