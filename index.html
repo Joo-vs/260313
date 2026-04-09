@@ -15,7 +15,7 @@
   --g1:#F8F9FB;--g2:#EAECF0;--g3:#C8CDD8;--g4:#8A93A8;--g5:#555E75;
   --text:#1E2340;--bar:#2B3250;
 }
-body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;font-size:12px;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;font-size:12px;transition:padding-right .3s cubic-bezier(.4,0,.2,1);}
 
 /* ══════════════════════════════════════
    ★ NEW LANDING SCREEN
@@ -1673,6 +1673,19 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <div class="doc-name">설정 · [2394] 초등3-1_수학_1단원_덧셈과 뺄셈_단원 도입</div>
   <div class="sp"></div>
   <div style="display:flex;gap:6px;align-items:center;">
+    <!-- 교과 전환 스위치 -->
+    <div id="subjectSwitch" style="display:flex;align-items:center;background:#F3F4F6;border-radius:20px;padding:3px;gap:2px;margin-right:8px;">
+      <button id="sw-math" onclick="switchSubject('math')"
+        style="height:26px;padding:0 14px;border-radius:16px;border:none;background:linear-gradient(135deg,#4B6EF5,#7C4DFF);
+               color:white;font-size:11px;font-weight:800;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;">
+        수학
+      </button>
+      <button id="sw-english" onclick="switchSubject('english')"
+        style="height:26px;padding:0 14px;border-radius:16px;border:none;background:transparent;
+               color:#9CA3AF;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .2s;">
+        영어
+      </button>
+    </div>
     <button class="tbtn prim" onclick="T('👁 미리보기 실행')">미리보기</button>
     <button class="tbtn save" onclick="openSaveModal()">저장하기</button>
   </div>
@@ -1854,7 +1867,17 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       </button>
 
       <!-- Math2D: 텍스트 박스 -->
-      <button class="tico" onclick="insertMath2DBlock()" title="Math 2D">
+      <button class="tico" onclick="insertBlock('syntax')" title="구문분석" data-subject="english" style="display:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="15" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="7" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="7" y1="12" x2="14" y2="12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <circle cx="19" cy="18" r="3.5" stroke="currentColor" stroke-width="1.4"/>
+          <line x1="21.5" y1="20.5" x2="23" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="ico-lbl">구문분석</span>
+      </button>
+      <button class="tico" onclick="insertMath2DBlock()" title="Math 2D" data-subject="math">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
           <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
           <text x="4" y="14" font-size="8" font-weight="700" fill="currentColor" font-family="serif">Math</text>
@@ -3509,6 +3532,18 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
           <circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
           <path d="M10 7.5V10.5L12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M14.5 14.5L20 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <!-- ★ 기능명세서 동시 보기 버튼 -->
+      <button id="rpSpecBtn" onclick="toggleDescPanel()" title="기능명세서 열기/닫기"
+        style="width:32px;height:42px;border:none;background:none;cursor:pointer;
+               display:flex;align-items:center;justify-content:center;
+               color:var(--g3);transition:color .15s;flex-shrink:0;border-left:1px solid var(--g2);"
+        onmouseover="this.style.color='var(--blue)'"
+        onmouseout="this.style.color='var(--g3)'">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 8v4l2 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
       </button>
     </div>
@@ -8695,7 +8730,6 @@ function showRightPanel(){
     if(!rpAiInited){ initRpAiChat(); rpAiInited=true; }
     if(curBlock && curBlock.id) loadRpAiChatForBlock(curBlock.id);
   }
-  
 }
 function hideRightPanel(){
   if(rpTab===0){
@@ -8953,7 +8987,21 @@ function _showBlockAiSuggestion(el){
           accent:'#7C4DFF'
         });
       }
-    }
+
+      // 서술형 — 채점기준표 제안
+      if(tmpl === '서술형'){
+        const hasRubric = [...document.querySelectorAll('#slide1 .cb')].some(b=>b.dataset.type==='table' && b.innerHTML.includes('채점기준표'));
+        if(!hasRubric){
+          suggestions.push({
+            icon:'📋', label:'채점기준표를 제안해 드릴까요?',
+            desc:'서술형 답안을 채점할 수 있는 기준표를 자동으로 만들어요',
+            action:"aclGenerateScoringRubric({});addEditLog('📋 채점기준표 제안','ai-edit')",
+            accent:'#22C98B'
+          });
+        }
+      }
+
+    } // isComplete 블록 끝
 
     // 이미지 없을 때 — 완성된 콘텐츠에만 이미지/동영상 제안
     if(!hasImage && isComplete){
@@ -13050,25 +13098,80 @@ function imgResizeStartInline(e, handle){
   </svg>
 </button>
 
-<div id="descPanel" style="display:none;position:fixed;inset:0;z-index:99998;font-family:'Noto Sans KR',sans-serif;background:white;flex-direction:column;">
+<!-- ★ 기능 명세서 패널 (우측 슬라이드) ★ -->
+<!-- ★ 동시 보기 모드 뱃지 (에디터 상단) -->
+<div id="splitViewBadge" style="display:none;position:fixed;top:10px;left:50%;transform:translateX(-50%);
+     z-index:99997;background:#1C1F2E;color:white;border-radius:20px;
+     padding:6px 14px;font-size:11px;font-weight:700;font-family:'Noto Sans KR',sans-serif;
+     align-items:center;gap:6px;box-shadow:0 4px 16px rgba(0,0,0,.25);
+     pointer-events:none;white-space:nowrap;">
+  <span style="width:6px;height:6px;border-radius:50%;background:#22C98B;display:inline-block;flex-shrink:0;"></span>
+  속성/AI편집 + 기능명세서 동시 보기 중
+</div>
+
+<div id="descPanel" style="display:none;position:fixed;top:0;right:0;bottom:0;width:440px;z-index:99998;
+     font-family:'Noto Sans KR',sans-serif;background:white;flex-direction:column;
+     box-shadow:-8px 0 40px rgba(0,0,0,.18);border-left:1.5px solid #E5E7EB;
+     transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);">
+
+  <!-- 리사이즈 핸들 (왼쪽 가장자리) -->
+  <div id="descResizeHandle"
+    style="position:absolute;top:0;left:-4px;width:8px;height:100%;cursor:ew-resize;z-index:10;
+           display:flex;align-items:center;justify-content:center;">
+    <div style="width:3px;height:40px;border-radius:2px;background:#C9CCE0;opacity:.6;pointer-events:none;"></div>
+  </div>
 
   <!-- 헤더 -->
-  <div style="height:52px;background:white;border-bottom:1.5px solid #E5E7EB;display:flex;align-items:center;padding:0 24px;gap:10px;flex-shrink:0;">
-    <span style="font-size:16px;font-weight:800;color:#111827;">기능 디스크립션</span>
-    <span style="font-size:12px;color:#9CA3AF;">콘텐츠 저작툴 AI (수학) — 전체 기능 명세</span>
+  <div style="height:52px;background:linear-gradient(135deg,#4B6EF5,#7C4DFF);display:flex;align-items:center;padding:0 18px;gap:10px;flex-shrink:0;">
+    <div style="width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;">
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8.5" stroke="white" stroke-width="1.6"/><path d="M10 9v5M10 7v.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:800;color:white;line-height:1.2;">기능 디스크립션</div>
+      <div class="desc-subject-label" style="font-size:10px;color:rgba(255,255,255,.7);">콘텐츠 저작툴 AI (수학)</div>
+    </div>
     <div style="flex:1;"></div>
+    <!-- 마킹 상태 뱃지 -->
+    <div id="descMarkBadge"
+      style="height:26px;padding:0 10px;border-radius:20px;border:1.5px solid rgba(255,255,255,.5);
+             background:rgba(255,255,255,.25);color:white;font-size:10px;font-weight:700;
+             font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;gap:4px;">
+      <span style="width:6px;height:6px;border-radius:50%;background:#22C98B;display:inline-block;"></span>
+      마킹 ON
+    </div>
     <button onclick="toggleDescPanel()"
-      style="width:28px;height:28px;border-radius:6px;border:1.5px solid #E5E7EB;background:white;
-             cursor:pointer;display:flex;align-items:center;justify-content:center;color:#9CA3AF;font-size:14px;transition:all .15s;"
-      onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='white'">✕</button>
+      style="width:30px;height:30px;border-radius:8px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);
+             cursor:pointer;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;
+             transition:all .15s;margin-left:8px;"
+      onmouseover="this.style.background='rgba(255,255,255,.25)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">✕</button>
+  </div>
+
+  <!-- 현재 화면 표시 바 -->
+  <div id="descCurScreen" style="padding:7px 18px;background:#F8F9FF;border-bottom:1px solid #E5E7EB;
+       display:flex;align-items:center;gap:8px;font-size:11px;color:#374151;flex-shrink:0;">
+    <span style="width:6px;height:6px;border-radius:50%;background:#22C98B;flex-shrink:0;display:inline-block;"></span>
+    <span id="descCurScreenTxt">현재 화면 감지 중...</span>
+    <div style="flex:1;"></div>
+    <button onclick="toggleSpecMarkers()" id="descMarkToggle"
+      style="height:22px;padding:0 9px;border-radius:10px;border:1px solid #D1D5DB;background:white;
+             color:#6B7280;font-size:10px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;
+             display:flex;align-items:center;gap:4px;transition:all .15s;"
+      onmouseover="this.style.borderColor='#4B6EF5';this.style.color='#4B6EF5'"
+      onmouseout="_resetMarkBtn(this)">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.5 2.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span id="descMarkBtnTxt">마킹 숨기기</span>
+    </button>
   </div>
 
   <!-- 바디 -->
   <div style="display:flex;flex:1;overflow:hidden;">
-    <div id="descNav" style="width:232px;flex-shrink:0;background:#F9FAFB;border-right:1.5px solid #E5E7EB;overflow-y:auto;padding:12px 0 24px;"></div>
+    <div id="descNav" style="width:176px;flex-shrink:0;background:#F9FAFB;border-right:1.5px solid #E5E7EB;overflow-y:auto;padding:8px 0 24px;"></div>
     <div id="descContent" style="flex:1;overflow-y:auto;background:white;"></div>
   </div>
 </div>
+
+<!-- 패널 열릴 때 배경 딤 — 화면을 보면서 확인할 수 있도록 제거 -->
+<div id="descDim" style="display:none;"></div>
 
 <style>
 .dn-group{padding:18px 16px 5px;font-size:10px;font-weight:700;color:#9CA3AF;letter-spacing:.08em;text-transform:uppercase;}
@@ -13146,7 +13249,6 @@ PAGES['overview'] = ['서비스 개요','🗺','',`
 <tr><td>⭐ 추천 콘텐츠 화면</td><td><dc>#tmplRecommendScreen</dc></td><td>오버레이 전체화면</td><td>템플릿 모달 내 "★ 추천 보기"</td></tr>
 <tr><td>✏️ 메인 에디터</td><td><dc>.toolbar + .editor-body</dc></td><td>상시 표시</td><td>랜딩 이후 배경 노출</td></tr>
 <tr><td>💾 저장 모달</td><td><dc>#saveOverlay</dc></td><td>오버레이 모달</td><td>"저장하기" 버튼</td></tr>
-<tr><td>⚠️ 저장 알럿 모달</td><td><dc>#saveAlertModal</dc></td><td>소형 확인 모달</td><td>콘텐츠 있을 때 "AI로 편집" 클릭</td></tr>
 </table>
 
 <div class="dc-h2" data-sec="주요-사용자-흐름">주요 사용자 흐름</div>
@@ -13200,6 +13302,7 @@ PAGES['landing'] = ['① 랜딩 화면','🏠','#landingScreen',`
 <table class="dc-tbl">
 <tr><th>요소</th><th>설명</th></tr>
 <tr><td>로고 + 문서명</td><td>"콘텐츠 저작툴 AI" 브랜딩 / 현재 작업 문서명 고정 표시</td></tr>
+<tr><td><b>교과 전환 스위치</b></td><td>수학 / 영어 탭으로 교과 모드 전환. 툴바 버튼·명세서 내용이 교과에 맞게 변경됨</td></tr>
 <tr><td><b>미리보기</b> 버튼</td><td>클릭 시 토스트 표시 (기능 개발 예정)</td></tr>
 <tr><td><b>저장하기</b> 버튼</td><td>저장 모달 오픈</td></tr>
 </table>
@@ -13363,6 +13466,14 @@ PAGES['toolbar'] = ['⑥ 툴바 & 블록','🔧','',`
 <tr><td>📋 복사</td><td>블록 복제하여 아래에 삽입</td></tr>
 <tr><td>✕ 삭제</td><td>블록 삭제</td></tr>
 </table>
+
+<div class="dc-h2" data-sec="교과별-차이">교과별 버튼 차이</div>
+<table class="dc-tbl">
+<tr><th>버튼</th><th>수학</th><th>영어</th></tr>
+<tr><td><b>Math 2D</b></td><td><span class="dc-chip dc-chip-b">있음</span> — 2D 수학 그래프 블록</td><td><span class="dc-chip dc-chip-gray">없음</span></td></tr>
+<tr><td><b>구문분석</b></td><td><span class="dc-chip dc-chip-gray">없음</span></td><td><span class="dc-chip dc-chip-g">있음</span> — 영어 문장 구문 분석 블록</td></tr>
+</table>
+<div class="dc-info">ℹ 상단 스위치에서 <b>수학 ↔ 영어</b>를 전환하면 해당 교과 전용 버튼만 활성화됩니다.</div>
 `];
 
 PAGES['props'] = ['⑦ 속성 패널','📐','#tbProps',`
@@ -13428,10 +13539,23 @@ PAGES['rpanel'] = ['⑧ 우측 AI 패널','✨','#rightPanel',`
 <tr><td><b>순서입력형 / 순서조합형</b></td><td>🔀 선택지 순서 변경</td></tr>
 <tr><td><b>T/F형</b></td><td>🔀 선택지 순서 변경</td></tr>
 <tr><td><b>연결형</b></td><td>🎯 연결 쌍 하나 추가</td></tr>
+<tr><td><b>서술형</b></td><td>📋 채점기준표 제안 — 발문이 완성된 경우, 캔버스에 채점기준표가 없으면 자동 제안. 제안 카드에서 "저작툴에 추가" 클릭 시 표(table) 블록으로 삽입</td></tr>
 <tr><td><b>이미지 없을 때</b></td><td>🖼️ 이해 돕는 이미지 추가 / 🎬 관련 동영상 추가</td></tr>
 <tr><td><b>이미지 있을 때</b></td><td>✏️ 캡션 추가 / 🔄 다른 이미지로 교체 / 🎬 동영상 추가</td></tr>
-<tr><td><b>개념 설명 블록</b></td><td>🖼️ 개념 이미지 추가 / 🎬 관련 동영상 추가</td></tr>
+<tr><td><b>개념 설명 블록</b></td><td>✏️ 개념 설명 다시 쓰기 / 📝 예시 문항 추가 / 🖼️ 개념 이미지 추가 or 🔄 이미지 교체</td></tr>
 </table>
+
+<div class="dc-h2 green" data-sec="채점기준표-자동-생성">📋 채점기준표 자동 생성</div>
+<p class="dc-p">서술형 블록이 완성됐을 때 우측 AI 탭에 제안 카드가 자동으로 나타납니다. "개념설명 + 활동" 유형으로 AI 생성 시에도 동일하게 제안됩니다.</p>
+<table class="dc-tbl">
+<tr><th>항목</th><th>내용</th></tr>
+<tr><td><b>트리거 조건</b></td><td>① 서술형 블록 선택 + 발문 3자 이상 입력 완료<br>② "개념설명+활동" AI 생성 흐름 완료 시 자동 실행</td></tr>
+<tr><td><b>중복 방지</b></td><td>캔버스에 채점기준표 블록이 이미 있으면 제안하지 않음</td></tr>
+<tr><td><b>기준표 구성</b></td><td>점수(4~0점) · 수준(매우 잘함 ~ 미응답) · 채점 기준 텍스트 (3열 표)</td></tr>
+<tr><td><b>편집 가능</b></td><td>삽입된 채점 기준 셀은 <dc>contenteditable</dc>로 직접 수정 가능</td></tr>
+<tr><td><b>저작툴 추가</b></td><td>AI 패널 제안 카드 → "📋 저작툴에 추가" 클릭 → 캔버스 하단에 표 블록으로 삽입</td></tr>
+</table>
+<div class="dc-note">채점기준표는 자동 생성되는 초안입니다. 실제 교육과정·단원·문항 내용에 맞게 각 셀을 수정해 사용하세요.</div>
 
 <div class="dc-h2" data-sec="빠른-실행-버튼">빠른 실행 버튼</div>
 <table class="dc-tbl">
@@ -13447,6 +13571,8 @@ PAGES['rpanel'] = ['⑧ 우측 AI 패널','✨','#rightPanel',`
   <li>전체 수정 — "전체 난이도 높여줘", "모든 문항 힌트 추가해줘"</li>
   <li>"이런 건 어떨까요?" 섹션에서 블록 텍스트 기반 추가 제안 표시</li>
 </ul>
+
+<div class="dc-info">캔버스가 비어 있으면 이 모달 없이 AI 채팅 화면으로 바로 진입합니다.</div>
 `];
 
 PAGES['savemodal'] = ['⑨ 저장 모달','💾','#saveOverlay',`
@@ -13650,18 +13776,72 @@ function descShowPage(id, sectionId){
   var page = PAGES[id];
   var content = document.getElementById('descContent');
   if(!page || !content) return;
+
+  content.dataset.lastPageId = id;
+
   var title = page[0], icon = page[1], tag = page[2], body = page[3];
   var tagHtml = tag ? '<span class="dc-section-tag">'+tag+'</span>' : '';
-  content.innerHTML =
-    '<div class="dc-wrap">'+
-    '<div class="dc-head"><div class="dc-h1">'+icon+' '+title+'</div>'+tagHtml+'</div>'+
-    '<hr class="dc-hr">'+
-    body+
+
+  // ── 명세 설명 ──
+  var specHtml =
+    '<div class="dc-wrap" id="desc-spec-'+id+'">' +
+    '<div class="dc-head"><div class="dc-h1">'+icon+' '+title+'</div>'+tagHtml+'</div>' +
+    '<hr class="dc-hr">' +
+    body +
     '</div>';
-  content.scrollTop = 0;
+
+  // ── 마킹 테이블 ──
+  var markers = _MARKERS.filter(function(m){ return m.page === id; });
+  var tableHtml = '';
+  if(markers.length > 0){
+    tableHtml += '<div style="border-top:2px solid #F0F2F7;margin:0;padding:24px 28px 40px;">';
+    tableHtml += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">';
+    tableHtml += '<div style="font-size:14px;font-weight:800;color:#1C1F2E;display:flex;align-items:center;gap:6px;">';
+    tableHtml += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#4B6EF5" stroke-width="2"/><path d="M12 12v8M8 20h8" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/></svg>';
+    tableHtml += '마킹 목록</div>';
+    tableHtml += '<div style="flex:1;"></div>';
+    tableHtml += '<button onclick="_addMarkerRow(\''+id+'\')"' +
+      ' style="display:flex;align-items:center;gap:5px;height:28px;padding:0 12px;border-radius:20px;' +
+      'border:1.5px solid #4B6EF5;background:#EEF1FF;color:#4B6EF5;font-size:11px;font-weight:700;' +
+      'cursor:pointer;font-family:\'Noto Sans KR\',sans-serif;transition:all .15s;"' +
+      ' onmouseover="this.style.background=\'#4B6EF5\';this.style.color=\'white\'"' +
+      ' onmouseout="this.style.background=\'#EEF1FF\';this.style.color=\'#4B6EF5\'">' +
+      '<svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>' +
+      '마킹 추가</button>';
+    tableHtml += '</div>';
+    tableHtml += '<table style="width:100%;border-collapse:collapse;font-size:12.5px;">';
+    tableHtml += '<thead><tr style="background:#F8F9FF;">';
+    tableHtml += '<th style="width:48px;padding:9px 12px;text-align:center;border:1px solid #E5E7EB;font-weight:800;color:#374151;font-size:11px;">No</th>';
+    tableHtml += '<th style="padding:9px 14px;text-align:left;border:1px solid #E5E7EB;font-weight:800;color:#374151;font-size:11px;">Description</th>';
+    tableHtml += '<th style="width:60px;border:1px solid #E5E7EB;"></th>';
+    tableHtml += '</tr></thead>';
+    tableHtml += '<tbody id="markerTbody-'+id+'"></tbody>';
+    tableHtml += '</table></div>';
+  } else {
+    // 마킹 없는 페이지엔 추가 버튼만
+    tableHtml += '<div style="border-top:2px solid #F0F2F7;padding:16px 28px 32px;display:flex;align-items:center;gap:10px;">';
+    tableHtml += '<span style="font-size:12px;color:#9CA3AF;">마킹이 없습니다.</span>';
+    tableHtml += '<button onclick="_addMarkerRow(\''+id+'\')"' +
+      ' style="display:flex;align-items:center;gap:5px;height:28px;padding:0 12px;border-radius:20px;' +
+      'border:1.5px solid #4B6EF5;background:#EEF1FF;color:#4B6EF5;font-size:11px;font-weight:700;' +
+      'cursor:pointer;font-family:\'Noto Sans KR\',sans-serif;">' +
+      '<svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>' +
+      '마킹 추가</button>';
+    tableHtml += '</div>';
+  }
+
+  content.innerHTML = specHtml + tableHtml;
+
+  if(markers.length > 0) _renderMarkerRows(id);
+
   document.querySelectorAll('.dn-item').forEach(function(el){ el.classList.remove('on'); });
   var dn = document.getElementById('dn-'+id);
   if(dn) dn.classList.add('on');
+
+  _updateCurScreenBar();
+  if(_markersVisible){ _showMarkersForPage(id); }
+
+  // 섹션 하이라이트
   if(sectionId){
     setTimeout(function(){
       var target = content.querySelector('[data-sec="'+sectionId+'"]');
@@ -13677,44 +13857,970 @@ window.descShowPage = descShowPage;
 
 function openDescToSpec(pageId, sectionId){
   var p = document.getElementById('descPanel');
+  var dim = document.getElementById('descDim');
   var b = document.getElementById('descTriggerBtn');
   if(!p) return;
-  p.style.display = 'flex';
-  p.style.flexDirection = 'column';
-  if(b) b.style.background = 'linear-gradient(135deg,#22C98B,#4B6EF5)';
-  buildNav();
+  if(p.style.display !== 'flex'){
+    p.style.display = 'flex';
+    if(dim) dim.style.display = 'block';
+    if(b) b.style.background = 'linear-gradient(135deg,#22C98B,#4B6EF5)';
+    requestAnimationFrame(function(){
+      p.style.transform = 'translateX(0)';
+      document.body.style.paddingRight = p.offsetWidth + 'px';
+    });
+    _showSplitViewBadge(true);
+    buildNav();
+  }
   descShowPage(pageId, sectionId);
 }
 window.openDescToSpec = openDescToSpec;
 
+// ──────────────────────────────────────────────
+// 교과 전환 (수학 ↔ 영어)
+// ──────────────────────────────────────────────
+var _currentSubject = 'math';
+
+function switchSubject(subj){
+  _currentSubject = subj;
+
+  // 스위치 버튼 스타일
+  var swMath = document.getElementById('sw-math');
+  var swEng  = document.getElementById('sw-english');
+  if(subj === 'math'){
+    swMath.style.background = 'linear-gradient(135deg,#4B6EF5,#7C4DFF)';
+    swMath.style.color = 'white';
+    swEng.style.background = 'transparent';
+    swEng.style.color = '#9CA3AF';
+  } else {
+    swEng.style.background = 'linear-gradient(135deg,#22C98B,#4B6EF5)';
+    swEng.style.color = 'white';
+    swMath.style.background = 'transparent';
+    swMath.style.color = '#9CA3AF';
+  }
+
+  // 교과별 버튼 show/hide
+  document.querySelectorAll('[data-subject]').forEach(function(el){
+    var s = el.dataset.subject;
+    el.style.display = (s === subj) ? '' : 'none';
+  });
+
+  // 타이틀바 문서명 업데이트
+  var titleEl = document.querySelector('.tbar-doc-name');
+  if(titleEl){
+    titleEl.textContent = subj === 'math' ? '콘텐츠 저작툴 AI (수학)' : '콘텐츠 저작툴 AI (영어)';
+  }
+
+  // 기능명세서 헤더 교과명 업데이트
+  var specSub = document.querySelector('#descPanel .desc-subject-label');
+  if(specSub) specSub.textContent = subj === 'math' ? '콘텐츠 저작툴 AI (수학)' : '콘텐츠 저작툴 AI (영어)';
+
+  // 명세서 툴바 페이지 열려있으면 갱신
+  if(_markersVisible){
+    var page = _detectSpecPage();
+    _hideAllMarkers();
+    _showMarkersForPage(page);
+  }
+
+  T(subj === 'math' ? '📐 수학 모드로 전환됐어요' : '🔤 영어 모드로 전환됐어요');
+}
+window.switchSubject = switchSubject;
+
 function toggleDescPanel(){
   var p = document.getElementById('descPanel');
+  var dim = document.getElementById('descDim');
   var b = document.getElementById('descTriggerBtn');
+  var rp = document.getElementById('rightPanel');
   if(!p) return;
   var isOpen = p.style.display === 'flex';
-  p.style.display = isOpen ? 'none' : 'flex';
-  p.style.flexDirection = 'column';
-  if(b) b.style.background = isOpen
-    ? 'linear-gradient(135deg,#4B6EF5,#7C4DFF)'
-    : 'linear-gradient(135deg,#22C98B,#4B6EF5)';
   if(!isOpen){
-    // 현재 화면 기반으로 컨텍스트 자동 결정
-    var autoPage = _detectSpecPage();
-    // 마우스가 특정 요소 위에 있었으면 그 컨텍스트 우선 사용
-    var page = _specCtx.page || autoPage;
-    var sec  = _specCtx.sec  || '';
-    // 화면이 바뀐 경우 자동 감지 우선
-    if(autoPage !== 'editor' && autoPage !== page){ page = autoPage; sec = ''; }
+    p.style.display = 'flex';
+    dim.style.display = 'block';
+    if(b) b.style.background = 'linear-gradient(135deg,#22C98B,#4B6EF5)';
+    // 우측 패널 명세서 버튼 활성 표시
+    var specBtn = document.getElementById('rpSpecBtn');
+    if(specBtn){ specBtn.style.color = 'var(--blue)'; specBtn.style.background = 'var(--blue-lt)'; }
+    requestAnimationFrame(function(){
+      p.style.transform = 'translateX(0)';
+      // 패널 너비만큼 body padding-right 추가 → 화면이 좌측으로 밀림
+      document.body.style.paddingRight = p.offsetWidth + 'px';
+    });
+    // ★ 우측 패널(속성/AI편집)은 숨기지 않고 동시에 표시 — 동시 보기 모드
+    _showSplitViewBadge(true);
     buildNav();
+    var autoPage = _detectSpecPage();
+    var page = (_specCtx.page && _specCtx.page !== 'overview') ? _specCtx.page : autoPage;
+    var sec  = _specCtx.sec || '';
+    if(autoPage !== 'editor' && autoPage !== page){ page = autoPage; sec = ''; }
     descShowPage(page, sec || undefined);
+    _updateCurScreenBar();
+    setTimeout(function(){ _showMarkersForPage(page); }, 200);
+    _initResizeHandle();
+  } else {
+    p.style.transform = 'translateX(100%)';
+    dim.style.display = 'none';
+    if(b) b.style.background = 'linear-gradient(135deg,#4B6EF5,#7C4DFF)';
+    // 우측 패널 명세서 버튼 비활성
+    var specBtn = document.getElementById('rpSpecBtn');
+    if(specBtn){ specBtn.style.color = ''; specBtn.style.background = ''; }
+    // body padding 제거 → 화면 복원
+    document.body.style.paddingRight = '0';
+    setTimeout(function(){ p.style.display = 'none'; }, 300);
+    _hideAllMarkers();
+    _showSplitViewBadge(false);
   }
 }
 window.toggleDescPanel = toggleDescPanel;
+
+// ── 동시 보기 뱃지 표시/숨김 ──
+function _showSplitViewBadge(show){
+  var badge = document.getElementById('splitViewBadge');
+  if(!badge) return;
+  badge.style.display = show ? 'flex' : 'none';
+}
+window._showSplitViewBadge = _showSplitViewBadge;
+
+// ── 현재 화면 바 업데이트 ──
+function _updateCurScreenBar(){
+  var txt = document.getElementById('descCurScreenTxt');
+  if(!txt) return;
+  var pageNames = {
+    overview:'서비스 개요', landing:'① 랜딩 화면', aipopup:'② AI 생성 팝업',
+    tmpl:'③ 템플릿 선택', recommend:'④ 추천 콘텐츠',
+    editor:'⑤ 메인 에디터', toolbar:'⑥ 툴바 & 블록',
+    props:'⑦ 속성 패널', rpanel:'⑧ 우측 AI 패널', savemodal:'⑨ 저장 모달'
+  };
+  var page = _detectSpecPage();
+  txt.textContent = '현재 화면: ' + (pageNames[page] || page);
+}
+
+// ══════════════════════════════════════════════
+// 화면 마킹 시스템
+// ══════════════════════════════════════════════
+var _markersVisible = false;
+
+// ──────────────────────────────────────────────
+// 페이지별 마킹 정의
+// ──────────────────────────────────────────────
+var _MARKERS = [
+  // ① 랜딩
+  { id:'m-l1', sel:'.lmb-direct',      num:1, label:'직접 생성하기',    desc:'에디터 진입 → 템플릿 선택 모달 자동 오픈 (420ms 딜레이)', page:'landing',   sec:'핵심-ui-요소' },
+  { id:'m-l2', sel:'.lmb-ai',          num:2, label:'AI로 생성하기',   desc:'에디터 진입 → AI 생성 팝업 자동 오픈 (메인 추천 경로)',   page:'landing',   sec:'핵심-ui-요소' },
+
+  // ② AI 생성 팝업
+  { id:'m-a1', sel:'#aiPopupUnitBtns',   num:1, label:'단원 선택',      desc:'학년·단원 선택 버튼 그룹 (초2~초4, 각 6단원). 선택사항',   page:'aipopup', sec:'1단계--내용-선택' },
+  { id:'m-a2', sel:'#aiPopupTypeBtns',   num:2, label:'콘텐츠 유형',   desc:'📖개념설명+문항 / 🎯개념설명+활동 / ✏️문항 선택',          page:'aipopup', sec:'1단계--내용-선택' },
+  { id:'m-a3', sel:'#aiPopupSubPanel',   num:3, label:'서브 패널',      desc:'유형 선택 시 노출 — 스타일·문항유형·개수·평가유형 등',      page:'aipopup', sec:'1단계--내용-선택' },
+  { id:'m-a4', sel:'#aiPopupDropZone',   num:4, label:'참고 자료 첨부', desc:'PDF·PPT·HWP 등 최대 20MB. 드래그앤드롭 지원',             page:'aipopup', sec:'1단계--내용-선택' },
+  { id:'m-a5', sel:'#aiPopupStep2Body',  num:5, label:'개요 확인',      desc:'AI 생성 결과 실제 템플릿 UI 미리보기 + 저작툴에 추가 버튼', page:'aipopup', sec:'2단계--개요-확인' },
+
+  // ③ 템플릿 모달
+  { id:'m-t1', sel:'.tmpl-left',        num:1, label:'템플릿 목록',     desc:'기본 10종 (빈문서·자료이미지화·선택형 등) + 문제추출 OCR',  page:'tmpl', sec:'템플릿-목록' },
+  { id:'m-t2', sel:'.tmpl-right',       num:2, label:'미리보기 패널',   desc:'선택 템플릿의 실제 UI 예시 렌더. 미선택 시 안내 문구',      page:'tmpl', sec:'우측-미리보기-패널' },
+  { id:'m-t3', sel:'#tmplConfirm',      num:3, label:'템플릿 선택 버튼',desc:'선택 유형의 빈 블록을 캔버스에 삽입하고 모달 닫힘',         page:'tmpl', sec:'하단-버튼' },
+
+  // ④ 추천 콘텐츠
+  { id:'m-r1', sel:'#tmplRecUnitSel',   num:1, label:'단원 필터',       desc:'전체/개별 단원 선택 → 콘텐츠 카드 실시간 필터링',          page:'recommend', sec:'핵심-기능' },
+  { id:'m-r2', sel:'#tmplRecGrid',      num:2, label:'콘텐츠 카드',     desc:'썸네일·유형·제목·학년·교사명 + 미리보기 버튼',             page:'recommend', sec:'핵심-기능' },
+
+  // ⑤ 메인 에디터
+  { id:'m-e1', sel:'.title-bar',        num:1, label:'타이틀바',        desc:'로고·문서명·교과전환 스위치·미리보기·저장하기 버튼',          page:'editor', sec:'레이아웃-구성' },
+  { id:'m-e2', sel:'.tb-row1',          num:2, label:'툴바 Row1',       desc:'블록 삽입 버튼 20종 / 취소·재실행 / 축소·확대',            page:'editor', sec:'레이아웃-구성' },
+  { id:'m-e3', sel:'#tbProps',          num:3, label:'속성 패널',       desc:'선택 블록 유형에 따라 1~3행 동적 교체',                    page:'editor', sec:'레이아웃-구성' },
+  { id:'m-e4', sel:'#slide1',           num:4, label:'캔버스',          desc:'블록 세로 스택 편집 영역. 블록 클릭 시 선택·편집',          page:'editor', sec:'캔버스-동작' },
+  { id:'m-e5', sel:'#rightPanel',       num:5, label:'우측 패널',       desc:'속성 탭 / ★AI 편집 탭 / 🕐수정기록 버튼',                  page:'editor', sec:'레이아웃-구성' },
+  { id:'m-e6', sel:'.tmpl-bar',         num:6, label:'퀵추가 바',       desc:'선택형·단답형·OX형 등 자주 쓰는 유형 클릭 한 번에 추가',   page:'editor', sec:'하단-퀵추가-바' },
+
+  { id:'m-tb4', sel:'[data-subject]', num:4, label:'교과별 전용 버튼', desc:'수학: Math 2D / 영어: 구문분석 — 상단 스위치로 교과 전환', page:'toolbar', sec:'교과별-차이' },
+
+  // ⑦ 속성 패널
+  { id:'m-p1', sel:'#ctx-image',        num:1, label:'이미지 속성',     desc:'도구버튼(일자선/U선/곡선/사각형/원형/펜) 선택 시 행1·행2 가변 영역 변경', page:'props', sec:'이미지-블록--ctx-image' },
+  { id:'m-p2', sel:'#ctx-draw',         num:2, label:'그리기상자 속성', desc:'배경◆·이미지🖼·반복안함·크기·정렬 / 테두리·전체',         page:'props', sec:'그리기상자-블록--ctx-draw' },
+  { id:'m-p3', sel:'#ctx-table',        num:3, label:'표 속성 (3행)',   desc:'행3: 위행·아래행·행삭제 / 왼열·오른열·열삭제 / 셀병합·분리 / 셀정렬 / 여백·경계선·캡션', page:'props', sec:'표-블록--ctx-table' },
+
+  // ⑧ 우측 AI 패널
+  { id:'m-rp1', sel:'.rp-tabs',         num:1, label:'탭 구성',         desc:'⚙속성 탭 / ★AI 편집 탭 / 🕐수정기록 버튼',               page:'rpanel', sec:'탭-구성' },
+  { id:'m-rp2', sel:'#rpAiSuggestArea', num:2, label:'AI 제안 카드',    desc:'완성된 블록 분석 후 맞춤 제안 자동 표시 (선택형→선택지 순서변경 등)', page:'rpanel', sec:'ai-제안-카드' },
+  { id:'m-rp3', sel:'#rpAiInp',         num:3, label:'AI 채팅 입력',    desc:'"발문을 더 쉽게 바꿔줘" 등 자유 텍스트 입력으로 콘텐츠 수정', page:'rpanel', sec:'ai-채팅' },
+
+  // ⑨ 저장 모달
+  { id:'m-s1', sel:'#sstep-0',          num:1, label:'1단계 상세 설정', desc:'콘텐츠명·교과/비교과·학습맵·교과역량·해시태그·평가영역·난이도·출처 입력', page:'savemodal', sec:'1단계--상세-설정' },
+  { id:'m-s2', sel:'#sstep-1',          num:2, label:'2단계 최종 반영', desc:'입력 내용 확인 후 저장 완료 → 하단 토스트 표시',            page:'savemodal', sec:'2단계--최종-반영' },
+];
+
+// ──────────────────────────────────────────────
+// localStorage 저장/불러오기
+// ──────────────────────────────────────────────
+var _STORAGE_KEY = 'specMarkers_v1';
+
+function _saveMarkersToStorage(){
+  try {
+    // label·desc 수정 내용 + 커스텀 행만 저장 (sel 포함 전체 저장)
+    var data = _MARKERS.map(function(m){
+      return { id:m.id, num:m.num, label:m.label, desc:m.desc, page:m.page, sel:m.sel||null, sec:m.sec||'', custom:!!m.custom, pin:m.pin||null };
+    });
+    localStorage.setItem(_STORAGE_KEY, JSON.stringify(data));
+  } catch(e){}
+}
+
+function _loadMarkersFromStorage(){
+  try {
+    var raw = localStorage.getItem(_STORAGE_KEY);
+    if(!raw) return;
+    var saved = JSON.parse(raw);
+    saved.forEach(function(s){
+      var m = _MARKERS.find(function(x){ return x.id === s.id; });
+      if(m){
+        // 기존 항목: label/desc만 덮어쓰기
+        m.label = s.label;
+        m.desc  = s.desc;
+      } else if(s.custom){
+        // 커스텀 추가 항목: 복원
+        _MARKERS.push({ id:s.id, sel:s.sel, num:s.num, label:s.label, desc:s.desc, page:s.page, sec:s.sec, custom:true, pin:s.pin||null });
+      }
+    });
+    // 커스텀 항목 번호 재정렬
+    ['landing','aipopup','tmpl','recommend','editor','toolbar','props','rpanel','savemodal'].forEach(function(pg){
+      var pgMarkers = _MARKERS.filter(function(m){ return m.page===pg; });
+      // 기본 항목 번호는 유지, 커스텀만 뒤에 붙임
+      var baseNums = pgMarkers.filter(function(m){ return !m.custom; }).map(function(m){ return m.num; });
+      var maxBase  = baseNums.length ? Math.max.apply(null,baseNums) : 0;
+      pgMarkers.filter(function(m){ return m.custom; }).forEach(function(m,i){ m.num = maxBase + i + 1; });
+    });
+  } catch(e){}
+}
+
+// 페이지 로드 시 즉시 복원
+_loadMarkersFromStorage();
+
+// ──────────────────────────────────────────────
+// 마킹 표시 — 뱃지를 body에 fixed로 배치 (잘림 방지)
+// ──────────────────────────────────────────────
+function _showMarkersForPage(pageId){
+  // 뱃지만 제거 (콘텐츠는 건드리지 않음)
+  document.querySelectorAll('.spec-marker').forEach(function(el){ el.remove(); });
+  _markersVisible = true;
+  var btnTxt = document.getElementById('descMarkBtnTxt');
+  if(btnTxt) btnTxt.textContent = '마킹 숨기기';
+
+  _MARKERS.forEach(function(m){
+    if(m.page !== pageId) return;
+    // pin 좌표 직접 지정된 커스텀 마커
+    if(m.pin && m.pin.x != null){
+      var badge = document.createElement('div');
+      badge.className = 'spec-marker';
+      badge.id = m.id + '-badge';
+      badge.dataset.markId = m.id;
+      badge.textContent = m.num;
+      badge.style.cssText = 'position:fixed;top:'+(m.pin.y-13)+'px;left:'+(m.pin.x-13)+'px;z-index:99990;';
+      badge.onclick = function(e){ e.stopPropagation(); _highlightMarkerRow(m.id); };
+      (function(bid){ badge.onclick = function(e){ e.stopPropagation(); _highlightMarkerRow(bid); }; })(m.id);
+      document.body.appendChild(badge);
+      return;
+    }
+
+    var el = document.querySelector(m.sel);
+    if(!el) return;
+    var rect = el.getBoundingClientRect();
+    if(rect.width === 0 && rect.height === 0) return;
+
+    var badge = document.createElement('div');
+    badge.className = 'spec-marker';
+    badge.id = m.id + '-badge';
+    badge.dataset.markId = m.id;
+    badge.textContent = m.num;
+    badge.style.cssText =
+      'position:fixed;' +
+      'top:' + (rect.top + 4) + 'px;' +
+      'left:' + (rect.left + 4) + 'px;' +
+      'z-index:99990;';
+    badge.onclick = function(e){ e.stopPropagation(); _highlightMarkerRow(m.id); };
+    document.body.appendChild(badge);
+  });
+
+  // 스크롤·리사이즈 시 뱃지 위치 갱신
+  if(!window._markerScrollBound){
+    window._markerScrollBound = true;
+    window.addEventListener('scroll', _refreshMarkerPositions, true);
+    window.addEventListener('resize', _refreshMarkerPositions);
+  }
+}
+
+function _refreshMarkerPositions(){
+  if(!_markersVisible) return;
+  document.querySelectorAll('.spec-marker').forEach(function(badge){
+    var mid = badge.dataset.markId;
+    var m = _MARKERS.find(function(x){ return x.id === mid; });
+    if(!m) return;
+    var el = document.querySelector(m.sel);
+    if(!el) return;
+    var rect = el.getBoundingClientRect();
+    badge.style.top  = (rect.top  + 4) + 'px';
+    badge.style.left = (rect.left + 4) + 'px';
+  });
+}
+
+function _hideAllMarkers(){
+  _markersVisible = false;
+  var btnTxt = document.getElementById('descMarkBtnTxt');
+  if(btnTxt) btnTxt.textContent = '마킹 표시';
+  document.querySelectorAll('.spec-marker').forEach(function(el){ el.remove(); });
+  // 콘텐츠 패널은 그대로 유지
+}
+
+// ──────────────────────────────────────────────
+// 우측 패널 — No/Description 테이블 렌더
+// ──────────────────────────────────────────────
+function _renderMarkerTable(pageId){
+  var content = document.getElementById('descContent');
+  if(!content) return;
+  content.dataset.lastPageId = pageId;
+
+  var markers = _MARKERS.filter(function(m){ return m.page === pageId; });
+  if(markers.length === 0) return;
+
+  var pageNames = {
+    overview:'서비스 개요', landing:'① 랜딩 화면', aipopup:'② AI 생성 팝업',
+    tmpl:'③ 템플릿 선택', recommend:'④ 추천 콘텐츠',
+    editor:'⑤ 메인 에디터', toolbar:'⑥ 툴바 & 블록',
+    props:'⑦ 속성 패널', rpanel:'⑧ 우측 AI 패널', savemodal:'⑨ 저장 모달'
+  };
+
+  var html = '<div class="dc-wrap" style="padding:24px 28px 40px;">';
+  html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">';
+  html += '<div class="dc-h1" style="font-size:18px;">' + (pageNames[pageId]||pageId) + '</div>';
+  html += '<div style="flex:1;"></div>';
+  // + 마킹 추가 버튼
+  html += '<button onclick="_addMarkerRow(\'' + pageId + '\')"' +
+    ' style="display:flex;align-items:center;gap:5px;height:30px;padding:0 13px;border-radius:20px;' +
+    'border:1.5px solid #4B6EF5;background:#EEF1FF;color:#4B6EF5;font-size:11px;font-weight:700;' +
+    'cursor:pointer;font-family:\'Noto Sans KR\',sans-serif;transition:all .15s;"' +
+    ' onmouseover="this.style.background=\'#4B6EF5\';this.style.color=\'white\'"' +
+    ' onmouseout="this.style.background=\'#EEF1FF\';this.style.color=\'#4B6EF5\'">' +
+    '<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>' +
+    '마킹 추가</button>';
+  html += '</div>';
+  html += '<hr class="dc-hr">';
+
+  html += '<table style="width:100%;border-collapse:collapse;font-size:12.5px;">';
+  html += '<thead><tr style="background:#F8F9FF;">';
+  html += '<th style="width:48px;padding:9px 12px;text-align:center;border:1px solid #E5E7EB;font-weight:800;color:#374151;font-size:11px;">No</th>';
+  html += '<th style="padding:9px 14px;text-align:left;border:1px solid #E5E7EB;font-weight:800;color:#374151;font-size:11px;">Description</th>';
+  html += '<th style="width:60px;border:1px solid #E5E7EB;"></th>';
+  html += '</tr></thead><tbody id="markerTbody-' + pageId + '">';
+  html += '</tbody></table></div>';
+
+  content.innerHTML = html;
+  _renderMarkerRows(pageId);
+
+  document.querySelectorAll('.dn-item').forEach(function(el){ el.classList.remove('on'); });
+  var dn = document.getElementById('dn-' + pageId);
+  if(dn) dn.classList.add('on');
+}
+
+// 마킹 행 추가
+function _addMarkerRow(pageId){
+  // 열린 편집 행 먼저 저장
+  document.querySelectorAll('.mrow-editing').forEach(function(r){ _saveEditRow(r.dataset.mid); });
+
+  var pageMarkers = _MARKERS.filter(function(m){ return m.page === pageId; });
+  var maxNum = pageMarkers.reduce(function(acc,m){ return Math.max(acc, m.num); }, 0);
+  var newId = 'm-custom-' + pageId + '-' + Date.now();
+  var newMarker = {
+    id: newId, sel: null, num: maxNum + 1,
+    label: '', desc: '', page: pageId, sec: '', custom: true
+  };
+  _MARKERS.push(newMarker);
+  _saveMarkersToStorage();
+  _renderMarkerRows(pageId);
+
+  // 새 행 편집 모드로 바로 오픈 + 스크롤
+  setTimeout(function(){
+    _startEditRow(newId);
+    var row = document.getElementById('mrow-' + newId);
+    if(row) row.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }, 30);
+}
+window._addMarkerRow = _addMarkerRow;
+
+// 마킹 행 삭제
+function _deleteMarkerRow(mid){
+  var idx = _MARKERS.findIndex(function(m){ return m.id === mid; });
+  if(idx === -1) return;
+  var pageId = _MARKERS[idx].page;
+  _MARKERS.splice(idx, 1);
+  // 같은 페이지 번호 재정렬
+  var n = 1;
+  _MARKERS.filter(function(m){ return m.page === pageId; }).forEach(function(m){ m.num = n++; });
+  _saveMarkersToStorage();
+  _renderMarkerRows(pageId);
+  // 화면 뱃지 갱신
+  if(_markersVisible){ _hideAllMarkers(); _showMarkersForPage(pageId); }
+}
+window._deleteMarkerRow = _deleteMarkerRow;
+
+// 수정 내용 초기화
+// ──────────────────────────────────────────────
+// 위치 지정 모드 — 클릭한 좌표에 뱃지 고정
+// ──────────────────────────────────────────────
+var _placingMarkerId = null;
+
+function _startPlaceMode(mid, pageId){
+  _placingMarkerId = mid;
+  var m = _MARKERS.find(function(x){ return x.id === mid; });
+
+  // 오버레이 생성
+  var overlay = document.createElement('div');
+  overlay.id = 'specPlaceOverlay';
+  overlay.style.cssText =
+    'position:fixed;inset:0;z-index:99985;cursor:crosshair;' +
+    'background:rgba(75,110,245,.08);';
+
+  // 안내 문구
+  var guide = document.createElement('div');
+  guide.style.cssText =
+    'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
+    'background:rgba(28,31,46,.92);color:white;padding:14px 24px;border-radius:12px;' +
+    'font-size:13px;font-weight:700;font-family:\'Noto Sans KR\',sans-serif;' +
+    'text-align:center;line-height:1.7;pointer-events:none;z-index:99994;' +
+    'box-shadow:0 8px 32px rgba(0,0,0,.3);';
+  guide.innerHTML =
+    '<div style="font-size:22px;margin-bottom:6px;">📌</div>' +
+    '<div><b style="color:#A5B4FC;">' + (m ? m.label||'마킹' : '마킹') + '</b> 위치를 클릭하세요</div>' +
+    '<div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:4px;">ESC — 취소</div>';
+  overlay.appendChild(guide);
+
+  // 기존 뱃지 잠시 흐리게
+  document.querySelectorAll('.spec-marker').forEach(function(b){ b.style.opacity='.3'; });
+
+  overlay.addEventListener('click', function(e){
+    var x = e.clientX, y = e.clientY;
+    _finishPlaceMode(mid, x, y, pageId);
+  });
+
+  document.addEventListener('keydown', function escHandler(e){
+    if(e.key === 'Escape'){
+      _cancelPlaceMode();
+      document.removeEventListener('keydown', escHandler);
+    }
+  });
+
+  document.body.appendChild(overlay);
+}
+window._startPlaceMode = _startPlaceMode;
+
+function _finishPlaceMode(mid, x, y, pageId){
+  var m = _MARKERS.find(function(x){ return x.id === mid; });
+  if(m){
+    m.sel  = null;         // CSS selector 없음 — 좌표 직접 사용
+    m.pin  = { x:x, y:y }; // 픽셀 좌표 저장
+    _saveMarkersToStorage();
+  }
+  _cancelPlaceMode();
+
+  // 해당 뱃지만 새 위치에 배치
+  var old = document.getElementById(mid + '-badge');
+  if(old) old.remove();
+  if(m && m.pin){
+    var badge = document.createElement('div');
+    badge.className = 'spec-marker';
+    badge.id = mid + '-badge';
+    badge.dataset.markId = mid;
+    badge.textContent = m.num;
+    badge.style.cssText = 'position:fixed;top:' + (m.pin.y - 13) + 'px;left:' + (m.pin.x - 13) + 'px;z-index:99990;';
+    badge.onclick = function(e){ e.stopPropagation(); _highlightMarkerRow(mid); };
+    document.body.appendChild(badge);
+  }
+  // 테이블 행 갱신
+  _renderMarkerRows(pageId);
+
+  document.querySelectorAll('.spec-marker').forEach(function(b){ b.style.opacity=''; });
+  T('📌 위치가 지정됐어요');
+}
+
+function _cancelPlaceMode(){
+  var ov = document.getElementById('specPlaceOverlay');
+  if(ov) ov.remove();
+  document.querySelectorAll('.spec-marker').forEach(function(b){ b.style.opacity=''; });
+  _placingMarkerId = null;
+}
+
+function _resetMarkersConfirm(){
+  if(!confirm('마킹 수정 내용을 모두 초기화할까요?\n(추가한 항목 포함 원래 상태로 돌아갑니다)')) return;
+  try { localStorage.removeItem(_STORAGE_KEY); } catch(e){}
+  location.reload();
+}
+window._resetMarkersConfirm = _resetMarkersConfirm;
+
+function _renderMarkerRows(pageId){
+  var tbody = document.getElementById('markerTbody-' + pageId);
+  if(!tbody) return;
+  var markers = _MARKERS.filter(function(m){ return m.page === pageId; });
+
+  tbody.innerHTML = markers.map(function(m){
+    var isCustom = !!m.custom;
+    var numBg = isCustom
+      ? 'linear-gradient(135deg,#22C98B,#16A37A)'   // 커스텀: 초록
+      : 'linear-gradient(135deg,#4B6EF5,#7C4DFF)';  // 기본: 파랑
+    var rowStyle = isCustom ? 'background:#F0FDF4;' : '';
+    var customBadge = isCustom
+      ? '<span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px;background:#DCFCE7;color:#15803D;margin-left:6px;vertical-align:middle;">추가됨</span>'
+      : '';
+
+    return '<tr id="mrow-' + m.id + '" data-mid="' + m.id + '" style="transition:background .2s;cursor:pointer;' + rowStyle + '"' +
+           ' onclick="_startEditRow(\'' + m.id + '\')"' +
+           ' onmouseover="if(!this.classList.contains(\'mrow-editing\'))this.style.background=\'#F8F9FF\'"' +
+           ' onmouseout="if(!this.classList.contains(\'mrow-active\')&&!this.classList.contains(\'mrow-editing\'))this.style.background=\'' + (isCustom?'#F0FDF4':'') + '\'">' +
+      // No 칸 — 클릭 시 마킹 뱃지 위치로 포커스
+      '<td style="padding:11px 8px;text-align:center;border:1px solid #E5E7EB;vertical-align:top;">' +
+        '<div onclick="event.stopPropagation();_focusMarkerBadge(\'' + m.id + '\')"' +
+             ' title="클릭 → 화면에서 마킹 위치 확인"' +
+             ' style="width:26px;height:26px;border-radius:50%;background:' + numBg + ';' +
+             'color:white;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;' +
+             'margin:0 auto;box-shadow:0 2px 6px rgba(75,110,245,.3);cursor:pointer;' +
+             'transition:transform .15s,box-shadow .15s;"' +
+             ' onmouseover="this.style.transform=\'scale(1.25)\';this.style.boxShadow=\'0 4px 14px rgba(75,110,245,.55)\'"' +
+             ' onmouseout="this.style.transform=\'\';this.style.boxShadow=\'0 2px 6px rgba(75,110,245,.3)\'">' +
+          m.num +
+        '</div>' +
+      '</td>' +
+      // Description 칸
+      '<td id="mcell-' + m.id + '" style="padding:11px 14px;border:1px solid #E5E7EB;vertical-align:top;">' +
+        '<div style="font-size:12px;font-weight:700;color:#1C1F2E;margin-bottom:3px;">' +
+          (m.label ? _esc(m.label) : '<span style="color:#C9CCE0;font-style:italic;">제목 없음</span>') +
+          customBadge +
+        '</div>' +
+        '<div style="font-size:11.5px;color:#6B7280;line-height:1.65;">' +
+          (m.desc ? _esc(m.desc) : '<span style="color:#C9CCE0;font-style:italic;">설명을 입력하세요</span>') +
+        '</div>' +
+      '</td>' +
+      // 액션 칸: 편집 + 삭제
+      '<td style="border:1px solid #E5E7EB;text-align:center;vertical-align:middle;width:60px;">' +
+        '<div style="display:flex;align-items:center;justify-content:center;gap:2px;">' +
+          // 위치 지정 (커스텀만) — 핀 버튼
+          _makePinBtn(m) +
+          // 편집
+          '<button onclick="event.stopPropagation();_startEditRow(\'' + m.id + '\')"' +
+            ' style="width:24px;height:24px;border:none;background:none;cursor:pointer;color:#C9CCE0;padding:0;' +
+                    'display:flex;align-items:center;justify-content:center;border-radius:4px;transition:all .15s;"' +
+            ' onmouseover="this.style.color=\'#4B6EF5\';this.style.background=\'#EEF1FF\'"' +
+            ' onmouseout="this.style.color=\'#C9CCE0\';this.style.background=\'none\'">' +
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>' +
+          '</button>' +
+          // 삭제
+          '<button onclick="event.stopPropagation();_deleteMarkerRow(\'' + m.id + '\')"' +
+            ' style="width:24px;height:24px;border:none;background:none;cursor:pointer;color:#C9CCE0;padding:0;' +
+                    'display:flex;align-items:center;justify-content:center;border-radius:4px;transition:all .15s;"' +
+            ' onmouseover="this.style.color=\'#EF4444\';this.style.background=\'#FEF2F2\'"' +
+            ' onmouseout="this.style.color=\'#C9CCE0\';this.style.background=\'none\'">' +
+            '<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+          '</button>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function _makePinBtn(m){
+  if(!m.custom) return '';
+  var pinned = !!(m.pin && m.pin.x != null);
+  var mid = m.id, pg = m.page;
+  var cls = 'spec-pin-btn' + (pinned ? ' spec-pin-btn-on' : '');
+  return '<button class="' + cls + '"'
+    + ' onclick="event.stopPropagation();_startPlaceMode(\'' + mid + '\',\'' + pg + '\')"'
+    + ' title="화면에서 위치를 클릭하여 지정">'
+    + '<svg width="11" height="11" viewBox="0 0 24 24" fill="none">'
+    + '<circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>'
+    + '<path d="M12 12v8M8 20h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>'
+    + '</svg></button>';
+}
+function _esc(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function _startEditRow(mid){
+  // 이미 편집 중이면 무시
+  var row = document.getElementById('mrow-' + mid);
+  if(!row || row.classList.contains('mrow-editing')) return;
+
+  // 다른 편집 중인 행 저장
+  document.querySelectorAll('.mrow-editing').forEach(function(r){
+    _saveEditRow(r.dataset.mid);
+  });
+
+  var m = _MARKERS.find(function(x){ return x.id === mid; });
+  if(!m) return;
+
+  row.classList.add('mrow-editing');
+  row.style.background = '#FAFBFF';
+  row.onclick = null; // 편집 중 클릭 무시
+
+  var cell = document.getElementById('mcell-' + mid);
+  cell.innerHTML =
+    '<div style="display:flex;flex-direction:column;gap:6px;">' +
+      // label 입력
+      '<div>' +
+        '<div style="font-size:10px;font-weight:700;color:#9CA3AF;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">제목</div>' +
+        '<input id="medit-label-' + mid + '" value="' + _esc(m.label) + '"' +
+          ' style="width:100%;box-sizing:border-box;padding:6px 10px;border-radius:6px;border:1.5px solid #4B6EF5;' +
+                  'font-size:12px;font-weight:700;color:#1C1F2E;font-family:\'Noto Sans KR\',sans-serif;outline:none;"' +
+          ' onkeydown="if(event.key===\'Enter\'){event.preventDefault();document.getElementById(\'medit-desc-' + mid + '\').focus();}">' +
+      '</div>' +
+      // desc 입력
+      '<div>' +
+        '<div style="font-size:10px;font-weight:700;color:#9CA3AF;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">설명</div>' +
+        '<textarea id="medit-desc-' + mid + '" rows="2"' +
+          ' style="width:100%;box-sizing:border-box;padding:6px 10px;border-radius:6px;border:1.5px solid #E5E7EB;' +
+                  'font-size:11.5px;color:#6B7280;font-family:\'Noto Sans KR\',sans-serif;outline:none;resize:vertical;line-height:1.6;"' +
+          ' onkeydown="if(event.key===\'Escape\')_cancelEditRow(\'' + mid + '\')">' + _esc(m.desc) + '</textarea>' +
+      '</div>' +
+      // 버튼
+      '<div style="display:flex;gap:6px;justify-content:flex-end;padding-top:2px;">' +
+        '<button onclick="event.stopPropagation();_cancelEditRow(\'' + mid + '\')"' +
+          ' style="height:28px;padding:0 12px;border-radius:6px;border:1.5px solid #E5E7EB;background:white;' +
+                  'font-size:11px;font-weight:700;color:#6B7280;cursor:pointer;font-family:\'Noto Sans KR\',sans-serif;">' +
+          '취소' +
+        '</button>' +
+        '<button onclick="event.stopPropagation();_saveEditRow(\'' + mid + '\')"' +
+          ' style="height:28px;padding:0 14px;border-radius:6px;border:none;background:linear-gradient(135deg,#4B6EF5,#7C4DFF);' +
+                  'font-size:11px;font-weight:700;color:white;cursor:pointer;font-family:\'Noto Sans KR\',sans-serif;">' +
+          '저장' +
+        '</button>' +
+      '</div>' +
+    '</div>';
+
+  // label 인풋 포커스
+  setTimeout(function(){
+    var inp = document.getElementById('medit-label-' + mid);
+    if(inp){ inp.focus(); inp.select(); }
+  }, 30);
+}
+window._startEditRow = _startEditRow;
+
+function _saveEditRow(mid){
+  var labelEl = document.getElementById('medit-label-' + mid);
+  var descEl  = document.getElementById('medit-desc-' + mid);
+  if(!labelEl || !descEl) return;
+
+  var newLabel = labelEl.value.trim();
+  var newDesc  = descEl.value.trim();
+
+  // _MARKERS 배열 업데이트
+  var m = _MARKERS.find(function(x){ return x.id === mid; });
+  if(m){ m.label = newLabel; m.desc = newDesc; }
+
+  // localStorage에 저장
+  _saveMarkersToStorage();
+
+  // 행 복원
+  var row = document.getElementById('mrow-' + mid);
+  if(row){ row.classList.remove('mrow-editing'); row.style.background = m&&m.custom ? '#F0FDF4' : ''; }
+
+  var cell = document.getElementById('mcell-' + mid);
+  var isCustom = m && !!m.custom;
+  var customBadge = isCustom
+    ? '<span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px;background:#DCFCE7;color:#15803D;margin-left:6px;vertical-align:middle;">추가됨</span>'
+    : '';
+  if(cell && m){
+    cell.innerHTML =
+      '<div style="font-size:12px;font-weight:700;color:#1C1F2E;margin-bottom:3px;">' +
+        (m.label ? _esc(m.label) : '<span style="color:#C9CCE0;font-style:italic;">제목 없음</span>') +
+        customBadge +
+      '</div>' +
+      '<div style="font-size:11.5px;color:#6B7280;line-height:1.65;">' +
+        (m.desc ? _esc(m.desc) : '<span style="color:#C9CCE0;font-style:italic;">설명을 입력하세요</span>') +
+      '</div>';
+  }
+
+  // 이벤트 복원
+  if(row){
+    row.onclick = function(){ _startEditRow(mid); };
+    row.onmouseover = function(){ if(!row.classList.contains('mrow-editing')) row.style.background='#F8F9FF'; };
+    row.onmouseout  = function(){ if(!row.classList.contains('mrow-active')&&!row.classList.contains('mrow-editing')) row.style.background = isCustom?'#F0FDF4':''; };
+  }
+
+  // 저장 피드백
+  if(row){
+    row.style.background = '#ECFDF5';
+    setTimeout(function(){ if(row) row.style.background = isCustom ? '#F0FDF4' : ''; }, 800);
+  }
+
+  // 커스텀 마킹이고 마킹 ON 상태면 뱃지 갱신
+  if(_markersVisible && m){
+    var pageId = m.page;
+    _hideAllMarkers();
+    _showMarkersForPage(pageId);
+  }
+}
+window._saveEditRow = _saveEditRow;
+
+function _cancelEditRow(mid){
+  var m = _MARKERS.find(function(x){ return x.id === mid; });
+  if(!m) return;
+  var row = document.getElementById('mrow-' + mid);
+  if(row){ row.classList.remove('mrow-editing'); row.style.background=''; }
+  var cell = document.getElementById('mcell-' + mid);
+  if(cell){
+    cell.innerHTML =
+      '<div style="font-size:12px;font-weight:700;color:#1C1F2E;margin-bottom:3px;">' + _esc(m.label) + '</div>' +
+      '<div style="font-size:11.5px;color:#6B7280;line-height:1.65;">' + _esc(m.desc) + '</div>';
+  }
+  if(row){
+    row.onclick = function(){ _startEditRow(mid); };
+    row.onmouseover = function(){ if(!row.classList.contains('mrow-editing')) row.style.background='#F8F9FF'; };
+    row.onmouseout  = function(){ if(!row.classList.contains('mrow-active')&&!row.classList.contains('mrow-editing')) row.style.background=''; };
+  }
+}
+window._cancelEditRow = _cancelEditRow;
+
+
+// 뱃지·테이블 행 동시 하이라이트
+function _highlightMarkerRow(markId){
+  // 테이블 행 하이라이트
+  document.querySelectorAll('.mrow-active').forEach(function(r){
+    r.classList.remove('mrow-active');
+    r.style.background = '';
+  });
+  var row = document.getElementById('mrow-' + markId);
+  if(row){
+    row.classList.add('mrow-active');
+    row.style.background = '#EEF1FF';
+    row.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+  // 뱃지 강조
+  document.querySelectorAll('.spec-marker').forEach(function(b){
+    b.style.transform = '';
+    b.style.boxShadow = '0 2px 8px rgba(75,110,245,.5)';
+    b.style.background = 'linear-gradient(135deg,#4B6EF5,#7C4DFF)';
+  });
+  var badge = document.getElementById(markId + '-badge');
+  if(badge){
+    badge.style.transform = 'scale(1.3)';
+    badge.style.boxShadow = '0 4px 16px rgba(75,110,245,.7)';
+    badge.style.background = 'linear-gradient(135deg,#FF4F6A,#FF8C42)';
+    setTimeout(function(){
+      if(badge){
+        badge.style.transform = '';
+        badge.style.background = 'linear-gradient(135deg,#4B6EF5,#7C4DFF)';
+      }
+    }, 1200);
+  }
+}
+window._highlightMarkerRow = _highlightMarkerRow;
+
+// ── No 번호 클릭 → 화면에서 마킹 뱃지 포커스 ──
+function _focusMarkerBadge(markId){
+  var m = _MARKERS.find(function(x){ return x.id === markId; });
+  if(!m) return;
+
+  // 마킹이 꺼져 있으면 먼저 켜기
+  if(!_markersVisible){
+    _showMarkersForPage(m.page);
+  }
+
+  // 테이블 행도 함께 하이라이트
+  _highlightMarkerRow(markId);
+
+  var badge = document.getElementById(markId + '-badge');
+  if(!badge){
+    // pin 정보가 없는 경우 — 대상 DOM 요소로 스크롤
+    if(m.sel){
+      var target = document.querySelector(m.sel);
+      if(target){
+        target.scrollIntoView({ behavior:'smooth', block:'center' });
+        _pulseElement(target);
+      }
+    }
+    return;
+  }
+
+  // 뱃지가 fixed 좌표에 있으므로 화면 중앙으로 부드럽게 유도
+  var bRect = badge.getBoundingClientRect();
+  var vCx = window.innerWidth / 2;
+  var vCy = window.innerHeight / 2;
+
+  // 뱃지가 뷰포트 안에 있지 않으면 대상 DOM 요소를 스크롤
+  var inView = bRect.top > 0 && bRect.bottom < window.innerHeight &&
+               bRect.left > 0 && bRect.right < window.innerWidth;
+  if(!inView && m.sel){
+    var el = document.querySelector(m.sel);
+    if(el) el.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+
+  // 뱃지 강조 애니메이션 (크게 점프 + 색상 전환)
+  badge.style.transition = 'transform .18s cubic-bezier(.34,1.8,.64,1), box-shadow .18s, background .18s';
+  badge.style.transform = 'scale(2.2)';
+  badge.style.boxShadow = '0 0 0 6px rgba(255,79,106,.35), 0 4px 20px rgba(255,79,106,.5)';
+  badge.style.background = 'linear-gradient(135deg,#FF4F6A,#FF8C42)';
+  badge.style.zIndex = '100000';
+
+  setTimeout(function(){
+    badge.style.transform = 'scale(1.4)';
+    badge.style.boxShadow = '0 0 0 4px rgba(75,110,245,.3), 0 4px 16px rgba(75,110,245,.5)';
+  }, 220);
+  setTimeout(function(){
+    badge.style.transform = '';
+    badge.style.background = 'linear-gradient(135deg,#4B6EF5,#7C4DFF)';
+    badge.style.boxShadow = '0 2px 8px rgba(75,110,245,.5)';
+    badge.style.zIndex = '99990';
+  }, 900);
+
+  // 대상 DOM 요소도 펄스
+  if(m.sel){
+    var domEl = document.querySelector(m.sel);
+    if(domEl) _pulseElement(domEl);
+  }
+}
+window._focusMarkerBadge = _focusMarkerBadge;
+
+// 지정 DOM 요소 외곽선 펄스
+function _pulseElement(el){
+  var prev = el.style.outline;
+  var prevTrans = el.style.transition;
+  el.style.transition = 'outline .15s';
+  el.style.outline = '3px solid #FF4F6A';
+  el.style.outlineOffset = '3px';
+  setTimeout(function(){
+    el.style.outline = '3px solid #4B6EF5';
+  }, 300);
+  setTimeout(function(){
+    el.style.outline = prev;
+    el.style.outlineOffset = '';
+    el.style.transition = prevTrans;
+  }, 1100);
+}
+window._pulseElement = _pulseElement;
+
+// 마킹 ON시 descShowPage → 테이블로 전환
+function _renderSpecContent(pageId, sectionId){
+  // 기존 descShowPage 내용 렌더 (마킹 OFF 시)
+  var page = PAGES[pageId];
+  var content = document.getElementById('descContent');
+  if(!page || !content) return;
+  var title=page[0], icon=page[1], tag=page[2], body=page[3];
+  var tagHtml = tag ? '<span class="dc-section-tag">'+tag+'</span>' : '';
+  content.innerHTML =
+    '<div class="dc-wrap">'+
+    '<div class="dc-head"><div class="dc-h1">'+icon+' '+title+'</div>'+tagHtml+'</div>'+
+    '<hr class="dc-hr">'+body+'</div>';
+  content.scrollTop = 0;
+  document.querySelectorAll('.dn-item').forEach(function(el){ el.classList.remove('on'); });
+  var dn = document.getElementById('dn-'+pageId);
+  if(dn) dn.classList.add('on');
+  if(sectionId){
+    setTimeout(function(){
+      var target = content.querySelector('[data-sec="'+sectionId+'"]');
+      if(!target) return;
+      content.querySelectorAll('.dc-sec-highlight').forEach(function(el){ el.classList.remove('dc-sec-highlight'); });
+      target.classList.add('dc-sec-highlight');
+      target.scrollIntoView({behavior:'smooth', block:'center'});
+      setTimeout(function(){ target.classList.remove('dc-sec-highlight'); }, 3200);
+    }, 80);
+  }
+}
+
+function toggleSpecMarkers(){
+  if(_markersVisible){
+    _hideAllMarkers();
+  } else {
+    var page = _detectSpecPage();
+    _showMarkersForPage(page);
+  }
+}
+window.toggleSpecMarkers = toggleSpecMarkers;
+
+function _resetMarkBtn(btn){
+  if(_markersVisible){
+    btn.style.borderColor='#4B6EF5'; btn.style.color='#4B6EF5';
+  } else {
+    btn.style.borderColor='#D1D5DB'; btn.style.color='#6B7280';
+  }
+}
+window._resetMarkBtn = _resetMarkBtn;
+
+// ── 패널 리사이즈 ──
+function _initResizeHandle(){
+  var handle = document.getElementById('descResizeHandle');
+  var panel  = document.getElementById('descPanel');
+  if(!handle || !panel || handle._bound) return;
+  handle._bound = true;
+  var startX, startW;
+  handle.addEventListener('mousedown', function(e){
+    startX = e.clientX;
+    startW = panel.offsetWidth;
+    panel.style.transition = 'none'; // 리사이즈 중 transition 끔
+    document.body.style.cursor = 'ew-resize';
+    document.body.style.userSelect = 'none';
+    function onMove(e){
+      var dx = startX - e.clientX; // 왼쪽으로 드래그 = 넓어짐
+      var newW = Math.max(320, Math.min(720, startW + dx));
+      panel.style.width = newW + 'px';
+      document.body.style.paddingRight = newW + 'px';
+    }
+    function onUp(){
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      panel.style.transition = 'transform .3s cubic-bezier(.4,0,.2,1)';
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  });
+}
 
 })();
 </script>
 
 <style>
+/* ── 슬라이드 패널 ── */
+#descPanel { transition: transform .3s cubic-bezier(.4,0,.2,1); }
+
+/* ── 마킹 뱃지 (body에 fixed로 배치) ── */
+.spec-marker {
+  width:26px; height:26px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#4B6EF5,#7C4DFF);
+  color:white;
+  font-size:12px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  box-shadow:0 2px 8px rgba(75,110,245,.5);
+  border:2.5px solid white;
+  transition:transform .15s, box-shadow .15s, background .15s;
+  font-family:'Noto Sans KR',sans-serif;
+  user-select:none;
+  animation:markerPop .22s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:auto;
+}
+@keyframes markerPop {
+  from { transform:scale(0); opacity:0; }
+  to   { transform:scale(1); opacity:1; }
+}
+.spec-marker:hover {
+  transform:scale(1.2);
+  box-shadow:0 4px 14px rgba(75,110,245,.65);
+}
+/* 핀 버튼 */
+.spec-pin-btn {
+  width:24px;height:24px;border:none;cursor:pointer;padding:0;
+  border-radius:4px;transition:all .15s;
+  background:transparent;color:#C9CCE0;
+  display:flex;align-items:center;justify-content:center;
+}
+.spec-pin-btn:hover { background:#EEF1FF; color:#4B6EF5; }
+.spec-pin-btn-on { background:#EEF1FF; color:#4B6EF5; }
+.spec-pin-btn-on:hover { background:#DBEAFE; color:#3351D4; }
+/* 테이블 행 활성 */
+tr.mrow-active td { background:#EEF1FF !important; }
+.spec-pin-btn {
+  width:24px;height:24px;border:none;cursor:pointer;padding:0;
+  border-radius:4px;transition:all .15s;
+  background:transparent;color:#C9CCE0;
+  display:flex;align-items:center;justify-content:center;
+}
+.spec-pin-btn:hover { background:#EEF1FF; color:#4B6EF5; }
+.spec-pin-btn-on { background:#EEF1FF; color:#4B6EF5; }
+.spec-pin-btn-on:hover { background:#DBEAFE; color:#3351D4; }
+
+/* ── 섹션 하이라이트 ── */
 .dc-sec-highlight {
   background:#FFFBEB !important;
   border-radius:10px;
@@ -13723,18 +14829,9 @@ window.toggleDescPanel = toggleDescPanel;
 }
 @keyframes specPulse {
   0%  { outline-color:#F59E0B; background:#FEF3C7; }
-  50% { outline-color:#EF4444; background:#FFF3CD; }
+  50% { outline-color:#4B6EF5; background:#EEF1FF; }
   100%{ outline-color:#F59E0B; background:#FFFBEB; }
 }
-.spec-btn {
-  display:inline-flex;align-items:center;justify-content:center;
-  width:15px;height:15px;border-radius:50%;
-  border:1.5px solid #9CA3AF;background:transparent;
-  color:#9CA3AF;font-size:9px;font-weight:800;
-  cursor:pointer;transition:all .15s;
-  margin-left:4px;vertical-align:middle;flex-shrink:0;line-height:1;padding:0;
-}
-.spec-btn:hover{ border-color:#4B6EF5;color:#4B6EF5;background:#EEF1FF; }
 .spec-now-badge{
   display:inline-block;padding:1px 7px;border-radius:10px;
   background:#FEF3C7;color:#92400E;font-size:10px;font-weight:700;margin-left:6px;
