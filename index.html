@@ -194,12 +194,55 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   display:flex;align-items:center;gap:8px;
 }
 .ls-sec-title-em{color:#9CA3AF;font-size:14px;font-weight:500;}
-.ls-sec-more{
-  font-size:12px;font-weight:600;color:#6B7280;cursor:pointer;
-  transition:all .15s;padding:4px 10px;border-radius:20px;
-  border:1px solid #E5E7EB;background:white;
+/* ── 카드 선택 버튼 ── */
+.ls-card-check-btn{
+  position:absolute;top:8px;left:8px;
+  width:22px;height:22px;border-radius:50%;
+  background:white;border:2px solid #D1D5DB;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  z-index:3;transition:all .15s;color:transparent;
+  box-shadow:0 1px 4px rgba(0,0,0,.1);
+  opacity:0;pointer-events:none;
 }
-.ls-sec-more:hover{color:#4B6EF5;border-color:#D6DFFF;background:#F5F7FF;}
+.ls-card-check-btn:hover{border-color:#4B6EF5;}
+.ls-card-sel .ls-card-check-btn{
+  background:#4B6EF5;border-color:#4B6EF5;color:white;opacity:1;pointer-events:auto;
+}
+.ls-card-sel{
+  outline:2px solid #4B6EF5;
+  box-shadow:0 0 0 4px rgba(75,110,245,.15);
+}
+
+/* ── 찜 버튼 ── */
+.ls-wish-btn{
+  position:absolute;bottom:10px;right:10px;
+  width:34px;height:34px;border-radius:10px;
+  border:1px solid #E8E7E2;background:white;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;z-index:2;
+  box-shadow:0 1px 4px rgba(0,0,0,.08);
+}
+.ls-wish-btn:hover{border-color:#F59E0B;background:#FFFBEB;}
+.ls-wish-btn.on{border-color:#F59E0B;background:#FFFBEB;}
+.ls-wish-btn svg{pointer-events:none;transition:transform .2s cubic-bezier(.34,1.56,.64,1);}
+.ls-wish-btn:active svg{transform:scale(1.3);}
+
+/* ── 더보기 버튼 ── */
+.ls-loadmore-wrap{
+  display:flex;justify-content:center;padding:16px 0 4px;
+}
+.ls-loadmore-btn{
+  display:flex;align-items:center;gap:6px;
+  height:36px;padding:0 20px;border-radius:20px;
+  border:1px solid #E5E7EB;background:white;
+  font-size:12px;font-weight:700;color:#6B7280;
+  cursor:pointer;transition:all .15s;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.ls-loadmore-btn:hover{border-color:#4B6EF5;color:#4B6EF5;background:#F5F7FF;}
+.ls-loadmore-btn svg{transition:transform .2s;}
+.ls-loadmore-btn.loading svg{animation:lmSpin .6s linear infinite;}
+@keyframes lmSpin{to{transform:rotate(360deg);}}
 
 /* ── 세트지 카드 (3열) ── */
 .ls-set-grid{
@@ -895,12 +938,88 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 }
 .sm-save-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(75,110,245,.4);}
 
-/* ── 심플모드 힌트 바 ── */
-.sm-hint-bar{
-  background:#FFFBEF;border-bottom:1px solid #F0E8C4;
-  padding:8px 28px;display:flex;align-items:center;gap:8px;
-  font-size:11.5px;color:#92712A;font-weight:600;flex-shrink:0;
+/* ── 심플모드 툴바 ── */
+.sm-toolbar{
+  background:white;border-bottom:1.5px solid #E8E7E2;
+  flex-shrink:0;overflow:hidden;display:none;
 }
+.sm-toolbar.open{
+  display:block;
+  animation:smTbSlide .2s cubic-bezier(.2,0,.0,1);
+}
+@keyframes smTbSlide{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+@keyframes smDot{from{opacity:.3;transform:scale(.8);}to{opacity:1;transform:scale(1.2);}}
+.sm-toolbar-inner{
+  display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:10px 24px;
+}
+.sm-tb-btn{
+  display:flex;align-items:center;gap:5px;
+  height:30px;padding:0 12px;border-radius:8px;
+  border:1.5px solid #E8E7E2;background:white;
+  font-size:11px;font-weight:700;color:#555E75;
+  cursor:pointer;transition:all .13s;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.sm-tb-btn:hover{border-color:#4B6EF5;color:#4B6EF5;background:#EEF1FF;}
+.sm-tb-sep{width:1px;height:20px;background:#E8E7E2;margin:0 2px;flex-shrink:0;}
+#smToolbarToggleBtn{
+  width:32px;height:32px;border-radius:8px;
+  border:1.5px solid #E8E7E2;background:white;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;flex-shrink:0;
+}
+#smToolbarToggleBtn:hover{border-color:#4B6EF5;background:#EEF1FF;}
+#smToolbarToggleBtn.open{background:#EEF1FF;border-color:#4B6EF5;}
+#smToolbarToggleBtn.open svg{color:#4B6EF5;transform:rotate(90deg);}
+#smToolbarToggleBtn svg{transition:transform .2s,color .15s;color:#8A93A8;}
+
+/* ── 심플모드 블록 선택 ── */
+.sm-canvas.has-sel .sm-block-row:not(.sm-row-sel) .sm-block{
+  opacity:0.35;transition:opacity .15s;
+}
+.sm-canvas.has-sel .sm-block-row:not(.sm-row-sel) .sm-block:hover{opacity:0.6;}
+.sm-block-row.sm-row-sel .sm-block{
+  border-color:#4B6EF5 !important;
+  box-shadow:0 0 0 3px rgba(75,110,245,.12),0 2px 12px rgba(75,110,245,.1);
+}
+/* 선택 안된 블록 행의 AI 버튼 숨김 */
+.sm-canvas.has-sel .sm-block-row:not(.sm-row-sel) .sm-ai-icon-btn{
+  opacity:0;pointer-events:none;
+}
+/* 편집 중 뱃지 */
+.sm-editing-badge{
+  position:absolute;top:10px;right:12px;
+  font-size:10px;font-weight:700;padding:2px 9px;border-radius:10px;
+  background:#4B6EF5;color:white;pointer-events:none;z-index:2;
+}
+
+/* ── 심플모드 블록 컨트롤 (고급모드 bctrl과 동일) ── */
+.sm-bctrl{
+  position:absolute;right:-44px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:4px;
+  opacity:0;pointer-events:none;transition:opacity .15s;
+}
+.sm-block-row.sm-row-sel .sm-bctrl{opacity:1;pointer-events:auto;}
+.sm-bctrl button{
+  width:28px;height:28px;border-radius:5px;
+  background:white;border:1px solid #E5E7EB;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:#555E75;font-size:11px;transition:all .15s;
+}
+.sm-bctrl button:hover{background:#EEF1FF;border-color:#4B6EF5;color:#4B6EF5;}
+.sm-bctrl .sm-bctrl-del:hover{background:#FFF0F0;border-color:#FF4F6A;color:#FF4F6A;}
+
+/* ── 심플모드 블록 카운터 ── */
+.sm-block-counter{
+  display:flex;
+  align-items:center;gap:4px;
+  background:#EEF1FF;border:1.5px solid #D6DFFF;border-radius:10px;
+  padding:4px 10px;font-size:12px;font-weight:700;color:#1E2340;
+  flex-shrink:0;
+}
+.sm-block-counter.show{display:flex;}
+.sm-block-counter-cur{color:#4B6EF5;}
+
 
 /* ── 심플모드 본문 영역 ── */
 .sm-body{
@@ -909,9 +1028,80 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .sm-body::-webkit-scrollbar{width:4px;}
 .sm-body::-webkit-scrollbar-thumb{background:#D8D7D0;border-radius:2px;}
 .sm-canvas{
-  max-width:720px;margin:0 auto;padding:0 24px;
+  max-width:800px;margin:0 auto;padding:0 24px 0 24px;
   display:flex;flex-direction:column;gap:12px;
 }
+/* 블록 + AI 버튼 행 */
+.sm-block-row{
+  display:flex;align-items:flex-start;gap:10px;
+  position:relative; /* bctrl 위치 기준 */
+}
+/* 제목 행: 선택 불가 */
+.sm-block-row.sm-title-row{ pointer-events:none; opacity:1 !important; }
+.sm-canvas.has-sel .sm-block-row.sm-title-row .sm-block{ opacity:1 !important; }
+.sm-block-row > .sm-block{flex:1;min-width:0;}
+.sm-block-row > .sm-block-var-bar,
+.sm-block-row > .sm-vartype{display:none;}
+
+/* ── AI 버튼 (앱아이콘 스타일) ── */
+.sm-ai-icon-btn{
+  width:48px;height:48px;border-radius:14px;
+  background:linear-gradient(135deg,#4B6EF5 0%,#7C4DFF 60%,#E040FB 100%);
+  padding:2.5px;border:none;cursor:pointer;flex-shrink:0;
+  transition:transform .15s,box-shadow .15s;
+  box-shadow:0 3px 14px rgba(124,77,255,.55);
+  margin-top:2px;
+}
+.sm-ai-icon-btn:hover{transform:scale(1.08);box-shadow:0 5px 22px rgba(124,77,255,.7);}
+.sm-ai-icon-inner{
+  width:100%;height:100%;border-radius:11.5px;
+  background:white;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;gap:1px;
+}
+.sm-ai-icon-text{
+  font-size:13px;font-weight:900;letter-spacing:-.5px;
+  background:linear-gradient(135deg,#4B6EF5,#A040FF);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1;
+}
+.sm-ai-icon-spark{
+  position:absolute;top:5px;right:5px;
+  color:#7C4DFF;font-size:9px;line-height:1;
+}
+
+/* ── AI 팝오버 ── */
+.sm-ai-pop{
+  position:absolute;z-index:200;
+  background:white;border:1px solid #E8E7E2;
+  border-radius:14px;padding:12px 14px;
+  box-shadow:0 8px 28px rgba(0,0,0,.12);
+  min-width:220px;
+  animation:smAiPopIn .18s cubic-bezier(.34,1.3,.64,1);
+}
+@keyframes smAiPopIn{from{opacity:0;transform:translateY(-6px)scale(.97);}to{opacity:1;transform:none;}}
+.sm-ai-pop-section{margin-bottom:10px;}
+.sm-ai-pop-section:last-child{margin-bottom:0;}
+.sm-ai-pop-label{
+  display:flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:800;letter-spacing:.04em;
+  margin-bottom:7px;
+}
+.sm-ai-pop-label.blue{color:#4B6EF5;}
+.sm-ai-pop-label.purple{color:#7C4DFF;}
+.sm-ai-pop-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.sm-ai-pop-chip{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 11px;border-radius:20px;
+  border:1.5px solid #D6DFFF;background:white;
+  font-size:11.5px;font-weight:700;color:#555E75;
+  cursor:pointer;transition:all .13s;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.sm-ai-pop-chip:hover{border-color:#4B6EF5;color:#4B6EF5;background:#EEF1FF;}
+.sm-ai-pop-chip.purple-chip{border-color:#D8B4FE;}
+.sm-ai-pop-chip.purple-chip:hover{border-color:#7C4DFF;color:#7C4DFF;background:#F3EEFF;}
+.sm-ai-pop-div{height:1px;background:#F0F0F0;margin:8px 0;}
 
 /* ── Topbar 미디어 버튼 ── */
 .sm-top-media-btn{
@@ -1303,6 +1493,69 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   pointer-events:none;display:flex;align-items:center;gap:8px;
 }
 .sm-done-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ══ 공용 AI 실행 로딩 오버레이 (고급·심플 동일) ══ */
+.ai-quick-loading{
+  position:fixed;inset:0;z-index:9998;
+  background:rgba(255,255,255,.88);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  animation:aiqlFadeIn .2s ease;
+}
+@keyframes aiqlFadeIn{ from{opacity:0;} to{opacity:1;} }
+.ai-quick-loading-icon{
+  width:52px;height:52px;border-radius:16px;
+  background:linear-gradient(135deg,#00D2FF,#845EC2);
+  padding:3px;
+}
+.ai-quick-loading-icon-inner{
+  width:100%;height:100%;border-radius:13px;background:white;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:900;
+  background-clip:text;
+}
+.ai-quick-loading-text{text-align:center;}
+.ai-quick-loading-text-main{
+  font-size:14px;font-weight:800;color:#1E2340;margin-bottom:6px;
+}
+.ai-quick-loading-text-sub{
+  font-size:12px;color:#8A93A8;
+}
+.ai-quick-loading-dots{ display:flex;gap:6px; }
+.ai-quick-loading-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:linear-gradient(135deg,#4B6EF5,#7C4DFF);
+  animation:smDot .9s infinite alternate;
+}
+
+/* ══ 공용 AI 실행 완료 토스트 ══ */
+.ai-quick-toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:#1E2340;color:white;padding:11px 24px;border-radius:24px;
+  font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.2);
+  z-index:9999;opacity:0;transition:all .3s cubic-bezier(.34,1.4,.64,1);
+  pointer-events:none;display:flex;align-items:center;gap:8px;
+}
+.ai-quick-toast.show{
+  opacity:1;transform:translateX(-50%) translateY(0);
+}
+
+/* ══ 심플모드 플로팅 퀵메뉴 (고급모드 editorQuickMenu와 동일 외관) ══ */
+#smQuickMenu{
+  position:absolute;
+  bottom:20px;
+  right:28px;
+  z-index:50;
+  display:none;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+  pointer-events:none;
+}
+#simpleMode.show #smQuickMenu{ display:flex; }
+
+/* 심플모드에서 per-block AI 버튼 숨김 (퀵메뉴로 대체) */
+#simpleMode .sm-ai-icon-btn,
+#simpleMode #smGlobalAiBtn{ display:none !important; }
 
 
 /* ══════════════════════════════════════
@@ -1811,7 +2064,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
 /* ── TOOLBAR ── */
 /* 툴바 */
-.toolbar{background:white;border-bottom:1px solid var(--g2);flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.06);overflow:visible;}
+.toolbar{background:white;border-bottom:1px solid var(--g2);flex-shrink:0;overflow:visible;display:block;}
+.toolbar.open{display:block;}
+/* 심플모드 내 클론 툴바 */
+#smToolbarClone{display:block;border-top:1px solid #E8E7E2;}
+#smToolbarClone.open{animation:tbSlideDown .2s cubic-bezier(.2,0,.0,1);}
 .tb-row1{display:flex;align-items:center;height:44px;padding:0 14px;gap:0;border-bottom:1px solid var(--g2);}
 /* 속성 행 — 최대 2줄 지원 */
 .tb-props{min-height:44px;max-height:132px;border-bottom:1px solid var(--g2);background:white;overflow:hidden;display:flex;flex-direction:column;flex-shrink:0;}
@@ -2066,7 +2323,48 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .btn-ai-main:hover{transform:translateY(-1px);}
 
 /* ── RIGHT PANEL ── */
-.right-panel{width:245px;background:white;border-left:1px solid var(--g2);flex-shrink:0;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.right-panel{
+  width:28px;background:white;border-left:1px solid var(--g2);
+  flex-shrink:0;display:flex;flex-direction:row;
+  overflow:hidden;position:relative;
+  transition:width .22s cubic-bezier(.4,0,.2,1);
+}
+.right-panel.rp-open{width:260px;}
+@keyframes rpAttrSlideIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── 속성 핸들 ── */
+#rpAttrHandle{
+  width:28px;min-width:28px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:white;border-right:1px solid var(--g2);
+  cursor:pointer;transition:background .15s;z-index:2;
+  height:100%;position:absolute;left:0;top:0;
+}
+#rpAttrHandle:hover{ background:#F5F7FF; }
+#rpAttrHandle.open{ background:#EEF1FF; border-right-color:#4B6EF5; }
+#rpAttrArrow{ transition:transform .22s;color:#B0B8CC; }
+#rpAttrHandle.open #rpAttrArrow{ transform:rotate(180deg);color:#4B6EF5; }
+
+/* 패널 내용 — 닫힌 상태에서 완전 숨김 */
+#rpContentArea{
+  flex:1;min-width:0;
+  display:none;          /* 기본: 숨김 */
+  flex-direction:column;
+  overflow:hidden;
+  margin-left:0;
+}
+.right-panel.rp-open #rpContentArea{
+  display:flex;          /* 열릴 때만 표시 */
+  overflow-y:auto;
+}
+
+/* 이전 스타일 호환 숨김 */
+#rpSideTabBar{display:none;}
+.rp-side-tab{display:none;}
+#rpAttrToggleRow{display:none !important;}
+
+
+
 .rp-tabs{display:flex;border-bottom:1px solid var(--g2);flex-shrink:0;}
 .rp-tab{flex:1;height:42px;font-size:11px;font-weight:700;color:var(--g4);background:none;border:none;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .15s;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center;gap:4px;}
 .rp-tab.attr.on{color:var(--g5);border-bottom-color:var(--g5);}
@@ -2575,6 +2873,24 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     </div>
   </div>
 
+  <!-- 콘텐츠 복수 선택 하단 바 -->
+  <div class="ls-tmpl-multibar" id="lsContMultiBar">
+    <div class="ls-tmpl-multibar-left">
+      <span class="ls-tmpl-count-label">
+        <span class="ls-tmpl-count-num" id="lsContCountNum">0</span>
+        개 선택됨
+      </span>
+      <div id="lsContPills" style="display:flex;gap:6px;flex-wrap:wrap;overflow:hidden;max-height:28px;"></div>
+    </div>
+    <div class="ls-tmpl-multibar-btns">
+      <button class="ls-tmpl-clear-btn" onclick="lsClearSelection()">선택 초기화</button>
+      <button class="ls-tmpl-insert-btn" id="lsContInsertBtn" disabled onclick="lsInsertSelected()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+        저작툴에 삽입
+      </button>
+    </div>
+  </div>
+
 </div>
 
 <!-- ★ 콘텐츠 프리뷰 모달 ★ -->
@@ -2606,40 +2922,87 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <div class="sm-topbar-title" id="smTopTitle">콘텐츠 편집</div>
     <span class="sm-topbar-badge" id="smTopBadge"></span>
     <div class="sm-topbar-sp"></div>
-    <!-- 선택된 블록의 미디어 버튼 (동적 표시) -->
-    <div id="smTopMediaArea" style="display:none;align-items:center;gap:6px;">
-      <button class="sm-top-media-btn" id="smTopImgBtn" title="이미지 삽입">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/><path d="M21 15l-5-5L5 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        이미지
-      </button>
-      <input type="file" accept="image/*" id="smTopImgInput" style="display:none">
-      <button class="sm-top-media-btn" id="smTopVidBtn" title="동영상 삽입">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polygon points="5,3 19,12 5,21" fill="currentColor" opacity=".7"/></svg>
-        동영상
-      </button>
-      <div id="smTopVidRow" class="sm-top-vid-row" style="display:none;">
-        <input class="sm-inline-video-inp" id="smTopVidInput" placeholder="YouTube URL 입력 후 Enter"
-          onkeydown="if(event.key==='Enter')smTopInsertVideo()">
-        <button class="sm-inline-video-go" onclick="smTopInsertVideo()">삽입</button>
-      </div>
-    </div>
-    <button class="sm-save-btn" onclick="smSave()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="white" stroke-width="2" stroke-linejoin="round"/><path d="M17 21v-8H7v8M7 3v5h8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      저장
-    </button>
+    <button class="tbtn prim" onclick="T('👁 미리보기 실행')" style="font-family:'Noto Sans KR',sans-serif;">미리보기</button>
+    <button class="tbtn save" onclick="smSave()" style="font-family:'Noto Sans KR',sans-serif;">저장하기</button>
   </div>
 
-  <!-- 힌트 바 -->
-  <div class="sm-hint-bar">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#92712A" stroke-width="1.8"/><path d="M12 8v4M12 16h.01" stroke="#92712A" stroke-width="2" stroke-linecap="round"/></svg>
-    텍스트를 클릭해 커서를 두면 바로 수정할 수 있어요. 입력 영역에 <strong style="color:#4B6EF5;">이미지/동영상</strong> 추가 및 교체가 가능합니다.
+  <!-- 툴바 핸들 (항상 보이는 탭, 클릭시 고급모드 툴바 토글) -->
+  <div id="smToolbarHandle" onclick="smToggleToolbar()"
+    style="display:flex;align-items:center;justify-content:center;gap:6px;height:24px;
+           background:white;border-bottom:1px solid #E8E7E2;cursor:pointer;flex-shrink:0;
+           transition:background .15s;"
+    onmouseover="this.style.background='#F5F7FF'"
+    onmouseout="this.style.background='white'">
+    <svg id="smToolbarHandleIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" style="transition:transform .22s;color:#B0B8CC;">
+      <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
   </div>
+
+  <!-- 툴바 플레이스홀더: mainToolbar가 여기 이동됨 -->
+  <div id="smToolbarPlaceholder"></div>
 
   <!-- 편집 본문 -->
-  <div class="sm-body">
+  <div class="sm-body" style="position:relative;">
+    <!-- 블록 카운터: 콘텐츠 영역 왼쪽 상단 고정 -->
+    <div id="smBlockCounter" style="display:none;position:absolute;top:16px;left:16px;z-index:50;pointer-events:none;">
+      <div style="display:inline-flex;align-items:center;gap:5px;
+                  background:white;border:1.5px solid #E8E7E2;border-radius:10px;
+                  padding:5px 12px;font-size:12px;font-weight:700;color:#1E2340;
+                  box-shadow:0 2px 8px rgba(0,0,0,.10);">
+        <span id="smBlockCur" style="color:#4B6EF5;">1</span>
+        <span style="color:#C8CDD8;font-weight:400;">/</span>
+        <span id="smBlockTotal">1</span>
+      </div>
+    </div>
     <div class="sm-canvas" id="smCanvas">
       <!-- JS로 동적 렌더 -->
     </div>
+  </div>
+
+  <!-- ★ 심플모드 플로팅 퀵메뉴 (고급모드 editorQuickMenu와 동일 구조) -->
+  <div id="smQuickMenu">
+    <div class="eqm-popup" id="smqmPopup" style="display:none;" onclick="event.stopPropagation()">
+      <div class="eqm-popup-header">
+        <div class="eqm-popup-title">
+          <span class="eqm-popup-title-badge">AI</span>
+          빠른 실행
+        </div>
+        <button class="eqm-popup-close" onclick="toggleSmqm()">✕</button>
+      </div>
+      <div class="eqm-scope-row">
+        <button class="eqm-scope-tab on" id="smqmTabCur" onclick="event.stopPropagation();smqmSetScope('current')">해당 콘텐츠</button>
+        <button class="eqm-scope-tab" id="smqmTabAll" onclick="event.stopPropagation();smqmSetScope('all')">전체</button>
+      </div>
+      <div class="eqm-btn-grid" id="smqmBtnsCur">
+        <!-- JS로 현재 블록 카테고리에 맞춰 동적 렌더 -->
+      </div>
+      <div class="eqm-btn-grid" id="smqmBtnsAll" style="display:none;">
+        <button class="eqm-grid-btn" onclick="event.stopPropagation();smQuickAction('regen','all')"><span class="eqm-grid-icon">🔄</span><span class="eqm-grid-label">전체 재생성</span></button>
+        <button class="eqm-grid-btn" onclick="event.stopPropagation();smQuickAction('hint','all')"><span class="eqm-grid-icon">💡</span><span class="eqm-grid-label">힌트/해설 재생성</span></button>
+        <button class="eqm-grid-btn" onclick="event.stopPropagation();smQuickAction('level','all')"><span class="eqm-grid-icon">📊</span><span class="eqm-grid-label">난이도</span></button>
+        <button class="eqm-grid-btn" onclick="event.stopPropagation();smQuickAction('similar','all')"><span class="eqm-grid-icon">📋</span><span class="eqm-grid-label">유사문항</span></button>
+        <button class="eqm-grid-btn" onclick="event.stopPropagation();smQuickAction('twin','all')"><span class="eqm-grid-icon">🔀</span><span class="eqm-grid-label">쌍둥이문항</span></button>
+        <button class="eqm-grid-btn eqm-grid-del" onclick="event.stopPropagation();smQuickAction('deleteAll','all')"><span class="eqm-grid-icon">🗑️</span><span class="eqm-grid-label">전체 삭제</span></button>
+      </div>
+      <div class="eqm-chat-divider"></div>
+      <div class="eqm-chat-msgs" id="smqmChatMsgs">
+        <div class="eqm-chat-placeholder" id="smqmChatPlaceholder">AI에게 자유롭게 요청해보세요</div>
+      </div>
+      <div class="eqm-chat-input-row">
+        <input class="eqm-chat-input" id="smqmChatInp"
+          placeholder="예: 발문을 더 쉽게 바꿔줘"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();smqmChatSend();}">
+        <button class="eqm-chat-send" onclick="event.stopPropagation();smqmChatSend()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+    <button class="eqm-fab" id="smqmFab" onclick="event.stopPropagation();toggleSmqm()" title="AI 빠른 실행">
+      <div class="eqm-fab-inner">
+        <span class="eqm-fab-text">AI</span>
+        <span class="eqm-fab-spark">✦</span>
+      </div>
+    </button>
   </div>
 
   <!-- 완료 토스트 -->
@@ -3276,6 +3639,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       <span style="font-size:11px;color:var(--g4);padding:0 3px;line-height:1;">100%</span>
       <button class="tico" onclick="T('확대')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="ico-lbl">확대</span></button>
     </div>
+    <div class="sp"></div>
   </div>
 
   <!-- 줄2: 속성 패널 — 블록 유형에 따라 1~2줄로 교체 -->
@@ -4805,7 +5169,17 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       <span id="blockCounterTotal">1</span>
     </div>
   </div>
-  <div class="canvas-wrap" id="canvasWrap" onclick="bgClick(event)">
+  <div class="canvas-wrap" id="canvasWrap" onclick="bgClick(event)" style="position:relative;">
+  <!-- rpFloatBar/Pop → 안 B 인라인 액션바로 교체됨 -->
+  <div id="rpFloatBar" style="display:none;"></div>
+  <div id="rpFloatPop" style="display:none;">
+    <div id="rfpMsgs" style="display:none;"></div>
+    <input id="rfpInp" style="display:none;">
+    <div id="rfpScopeC" style="display:none;"></div>
+    <div id="rfpScopeA" style="display:none;"></div>
+    <div id="rfpQuickCur" style="display:none;"></div>
+    <div id="rfpQuickAll" style="display:none;"></div>
+  </div>
     <div id="slide1" style="display:flex;flex-direction:column;align-items:center;gap:0;">
       <div id="emptySlate" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:60px 20px;text-align:center;">
         <div>
@@ -4817,18 +5191,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
         </div>
       </div>
       <div class="add-area" id="addArea" style="display:none;">
-        <div class="tmpl-bar" id="tmplBar">
-          <div class="tmpl-bar-inner">
-            <div class="tmpl-bar-card" onclick="quickAddTmpl('선택형')"><div class="tmpl-bar-ico" style="background:#EEF1FF;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="18" r="3" stroke="#4B6EF5" stroke-width="2"/><path d="M20 18h14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="28" r="3" fill="#4B6EF5"/><path d="M20 28h14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="38" r="3" stroke="#4B6EF5" stroke-width="2"/><path d="M20 38h14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/></svg></div><span class="tmpl-bar-lbl">선택형</span></div>
-            <div class="tmpl-bar-card" onclick="quickAddTmpl('단답형')"><div class="tmpl-bar-ico" style="background:#E8FFF5;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><rect x="8" y="10" width="32" height="10" rx="2" stroke="#22C98B" stroke-width="2"/><rect x="8" y="26" width="32" height="14" rx="2" stroke="#22C98B" stroke-width="2" stroke-dasharray="3 2"/></svg></div><span class="tmpl-bar-lbl">단답형</span></div>
-            <div class="tmpl-bar-card" onclick="quickAddTmpl('OX형')"><div class="tmpl-bar-ico" style="background:#FFF0F3;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><circle cx="16" cy="24" r="8" stroke="#FF4F6A" stroke-width="2.5"/><path d="M27 18l10 10M37 18L27 28" stroke="#FF4F6A" stroke-width="2.5" stroke-linecap="round"/></svg></div><span class="tmpl-bar-lbl">OX형</span></div>
-            <div class="tmpl-bar-card" onclick="quickAddTmpl('TF형')"><div class="tmpl-bar-ico" style="background:#F3EEFF;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><text x="4" y="30" font-size="18" font-weight="900" fill="#7C4DFF" font-family="Arial">T/F</text></svg></div><span class="tmpl-bar-lbl">T/F형</span></div>
-            <div class="tmpl-bar-card" onclick="quickAddTmpl('연결형')"><div class="tmpl-bar-ico" style="background:#FFF6EF;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="16" r="4" stroke="#FF8C42" stroke-width="2"/><circle cx="14" cy="32" r="4" stroke="#FF8C42" stroke-width="2"/><circle cx="34" cy="20" r="4" stroke="#FF8C42" stroke-width="2"/><circle cx="34" cy="32" r="4" stroke="#FF8C42" stroke-width="2"/><path d="M18 16 Q26 18 30 20M18 32 Q26 28 30 20" stroke="#FF8C42" stroke-width="1.5" stroke-dasharray="3 2"/></svg></div><span class="tmpl-bar-lbl">연결형</span></div>
-            <div class="tmpl-bar-card" onclick="quickAddTmpl('서술형')"><div class="tmpl-bar-ico" style="background:#EEF5FF;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><rect x="8" y="8" width="32" height="32" rx="3" stroke="#4B7CF4" stroke-width="2"/><path d="M14 18h20M14 25h14M14 32h18" stroke="#4B7CF4" stroke-width="2" stroke-linecap="round"/></svg></div><span class="tmpl-bar-lbl">서술형</span></div>
-            <div class="tmpl-bar-card" onclick="quickAddTmpl('순서입력형')"><div class="tmpl-bar-ico" style="background:#E8FFFE;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><rect x="8" y="10" width="10" height="8" rx="2" fill="#22b8c9" opacity=".3" stroke="#22b8c9" stroke-width="2"/><rect x="22" y="10" width="10" height="8" rx="2" stroke="#22b8c9" stroke-width="2"/><rect x="36" y="10" width="10" height="8" rx="2" stroke="#22b8c9" stroke-width="2"/><path d="M13 26l5 5 10-10" stroke="#22b8c9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="tmpl-bar-lbl">순서입력형</span></div>
-            <div class="tmpl-bar-card tmpl-bar-more" onclick="openTmplModal()"><div class="tmpl-bar-ico" style="background:var(--g1);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="var(--g4)" stroke-width="2.2" stroke-linecap="round"/></svg></div><span class="tmpl-bar-lbl" style="color:var(--g4);">전체 보기</span></div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -4836,142 +5198,394 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <div class="resize-handle" id="handleRight" onmousedown="startResize(event,'right')"></div>
 
   <div class="right-panel" id="rightPanel">
-    <!-- 탭 헤더 (항상 표시) -->
-    <div class="rp-tabs" id="rpTabs">
-      <button class="rp-tab attr on" id="tab-attr" onclick="switchRp(0,this)">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="2"/></svg>
-        속성
-      </button>
-      <button class="rp-tab aitab" id="tab-ai-cur" onclick="switchRp(1,this)" title="AI 편집 탭 — 명세서 보기: 우측 AI 패널">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="currentColor"/></svg>
-        AI 편집
-      </button>
-      <!-- 수정기록 버튼 -->
-      <button id="rpHistBtn" onclick="showEditHistoryPanel()" title="수정기록 — 명세서: 우측 AI 패널"
-        title="수정 기록"
-        style="width:32px;height:42px;border:none;background:none;cursor:pointer;
-               display:flex;align-items:center;justify-content:center;
-               color:var(--g3);transition:color .15s;flex-shrink:0;"
-        onmouseover="this.style.color='var(--ai)'"
-        onmouseout="this.style.color='var(--g3)'">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-          <path d="M10 7.5V10.5L12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M14.5 14.5L20 20" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
-        </svg>
-      </button>
-      <!-- ★ 기능명세서 동시 보기 버튼 (기획 완료 전 비노출) -->
-      <button id="rpSpecBtn" onclick="toggleDescPanel()" title="기능명세서 열기/닫기"
-        style="display:none;"
-        onmouseover="this.style.color='var(--blue)'"
-        onmouseout="this.style.color='var(--g3)'">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
-          <path d="M12 8v4l2 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-      </button>
+    <!-- 속성 핸들 (심플모드 툴바 핸들과 동일한 방식) -->
+    <div id="rpAttrHandle" onclick="toggleRpAttrPane()"
+      title="속성 패널 열기/닫기">
+      <svg id="rpAttrArrow" width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </div>
-    <!-- 속성 탭 -->
-    <div id="rpAttrPane" style="flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;">
-      <div id="rpEmpty" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center;">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/></svg>
-        <div style="font-size:11px;color:var(--g3);line-height:1.7;">콘텐츠를 선택하면<br>속성을 확인할 수 있어요</div>
+    <!-- 패널 내용 영역 -->
+    <div id="rpContentArea">
+      <!-- JS 호환용 숨김 유지 -->
+      <div id="rpTabs" style="display:none;"></div>
+      <div id="tab-attr" style="display:none;"></div>
+      <div id="tab-ai-cur" style="display:none;"></div>
+      <div id="rpSpecBtn" style="display:none;"></div>
+      <div id="rpAttrToggleRow" style="display:none;"></div>
+      <!-- 속성 내용 -->
+      <div id="rpAttrPane" style="display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;">
+        <div id="rpEmpty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;text-align:center;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/></svg>
+          <div style="font-size:11px;color:var(--g3);line-height:1.7;">콘텐츠를 선택하면<br>속성을 확인할 수 있어요</div>
+        </div>
+        <div class="rp-body" id="rpBody" style="display:none;flex:1;overflow-y:auto;"></div>
       </div>
-      <div class="rp-body" id="rpBody" style="display:none;"></div>
+      <!-- JS 호환용 숨김 요소 -->
+      <div id="rpAiPane" style="display:none;"></div>
+      <div id="rpAiEmpty" style="display:none;"></div>
+      <div id="rpAiMsgs" style="display:none;"></div>
+      <div id="rpAiSuggestArea" style="display:none;"></div>
+      <div id="rpAiActions" style="display:none;"></div>
+      <div id="rpAiInputArea" style="display:none;">
+        <input id="rpAiInp" style="display:none;">
+      </div>
+      <div id="rpHistoryPane" style="display:none;"></div>
     </div>
-    <!-- AI 편집 탭 — 단일 채팅 + 컨텍스트 뱃지 (③ 아이디어) -->
-    <div id="rpAiPane" style="flex:1;display:none;flex-direction:column;overflow:hidden;background:#F8F9FB;">
+  </div><!-- /#rightPanel -->
 
-      <!-- 단일 채팅 메시지 영역 (해당 콘텐츠 + 전체 통합) -->
-      <div id="rpAiEmpty" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center;">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" stroke="#C8CDD8" stroke-width="1.5"/></svg>
-        <div style="font-size:11px;color:var(--g3);line-height:1.7;">콘텐츠를 선택하면<br>AI 편집을 사용할 수 있어요</div>
+  <!-- ★ 편집영역 플로팅 퀵메뉴 (absolute — 편집영역 우측 하단) -->
+  <div id="editorQuickMenu">
+    <div class="eqm-popup" id="eqmPopup" style="display:none;" onclick="event.stopPropagation()">
+      <div class="eqm-popup-header">
+        <div class="eqm-popup-title">
+          <span class="eqm-popup-title-badge">AI</span>
+          빠른 실행
+        </div>
+        <button class="eqm-popup-close" onclick="toggleEqm()">✕</button>
       </div>
-      <div id="rpAiMsgs" style="flex:1;overflow-y:auto;padding:14px 12px;display:none;flex-direction:column;gap:10px;"></div>
-      <!-- 블록 제안 카드 고정 영역 — 채팅 히스토리와 분리 -->
-      <div id="rpAiSuggestArea" style="display:none;padding:8px 12px 4px;flex-shrink:0;border-top:0.5px solid var(--g2);background:#FAFBFF;"></div>
-
-      <!-- 빠른 실행 (해당/전체 범위에 따라 버튼 변경) -->
-      <div class="rp-ai-actions" id="rpAiActions" style="display:none;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
-          <div class="rp-ai-actions-title" style="margin-bottom:0;">빠른 실행</div>
-          <!-- 범위 표시 뱃지 -->
-          <div style="display:flex;gap:3px;">
-            <button id="rpQuickScopeBtn0" onclick="setRpChatScope('current')"
-              style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;border:none;cursor:pointer;
-                     background:#E8F0FF;color:var(--blue);transition:all .15s;" >해당 콘텐츠</button>
-            <button id="rpQuickScopeBtn1" onclick="setRpChatScope('all')"
-              style="font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;border:none;cursor:pointer;
-                     background:var(--g1);color:var(--g4);transition:all .15s;">전체</button>
-          </div>
-        </div>
-        <div id="rpQuickBtnsCur" style="display:flex;flex-wrap:wrap;gap:4px;">
-          <button class="rp-ai-action-btn" onclick="rpAiQuick('regen')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            콘텐츠 재생성
-          </button>
-          <button class="rp-ai-action-btn" onclick="rpAiQuick('hint')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            힌트,해설 재생성
-          </button>
-          <button class="rp-ai-action-btn" onclick="rpAiQuick('level')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M18 20V10M12 20V4M6 20v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            난이도
-          </button>
-          <button class="rp-ai-action-btn" onclick="rpAiQuick('similar')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="8" y="2" width="8" height="4" rx="1" stroke="currentColor" stroke-width="2"/></svg>
-            유사문항
-          </button>
-          <button class="rp-ai-action-btn" onclick="rpAiQuick('twin')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2M16 8h2a2 2 0 012 2v8a2 2 0 01-2 2H10a2 2 0 01-2-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            쌍둥이문항
-          </button>
-          <button class="rp-ai-action-btn" onclick="rpAiQuick('convert')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            템플릿 변환
-          </button>
-        </div>
-        <div id="rpQuickBtnsAll" style="display:none;flex-wrap:wrap;gap:4px;">
-          <button class="rp-ai-action-btn" onclick="rpAiQuickAll('regen')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            전체 재생성
-          </button>
-          <button class="rp-ai-action-btn" onclick="rpAiQuickAll('hint')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            힌트,해설 재생성
-          </button>
-          <button class="rp-ai-action-btn" onclick="rpAiQuickAll('level')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M18 20V10M12 20V4M6 20v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            난이도
-          </button>
-          <button class="rp-ai-action-btn" onclick="rpAiQuickAll('similar')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="8" y="2" width="8" height="4" rx="1" stroke="currentColor" stroke-width="2"/></svg>
-            유사문항
-          </button>
-          <button class="rp-ai-action-btn" onclick="rpAiQuickAll('twin')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2M16 8h2a2 2 0 012 2v8a2 2 0 01-2 2H10a2 2 0 01-2-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            쌍둥이문항
-          </button>
-          <button class="rp-ai-action-btn danger" onclick="rpAiQuick('deleteAll')">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            전체 삭제
-          </button>
-        </div>
+      <div class="eqm-scope-row">
+        <button class="eqm-scope-tab on" id="eqmTabCur" onclick="event.stopPropagation();eqmSetScope('current')">해당 콘텐츠</button>
+        <button class="eqm-scope-tab" id="eqmTabAll" onclick="event.stopPropagation();eqmSetScope('all')">전체</button>
       </div>
-
-      <!-- 통합 입력창 -->
-      <div class="rp-ai-input-area" id="rpAiInputArea" style="display:none;">
-        <div class="rp-ai-input-row">
-          <input class="rp-ai-inp" id="rpAiInp" placeholder="이 문항에 대해 입력하세요..."
-            onkeydown="if(event.key==='Enter')sendRpAiUnified()">
-          <button class="rp-ai-send" onclick="sendRpAiUnified()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
+      <div class="eqm-btn-grid" id="eqmBtnsCur">
+        <!-- JS로 현재 블록 카테고리에 맞춰 동적 렌더 -->
+      </div>
+      <div class="eqm-btn-grid" id="eqmBtnsAll" style="display:none;">
+        <button class="eqm-grid-btn" onclick="event.stopPropagation();cbQuickAction('regen','all')"><span class="eqm-grid-icon">🔄</span><span class="eqm-grid-label">전체 재생성</span></button>
+        <button class="eqm-grid-btn" onclick="event.stopPropagation();cbQuickAction('hint','all')"><span class="eqm-grid-icon">💡</span><span class="eqm-grid-label">힌트/해설 재생성</span></button>
+        <button class="eqm-grid-btn" onclick="event.stopPropagation();cbQuickAction('level','all')"><span class="eqm-grid-icon">📊</span><span class="eqm-grid-label">난이도</span></button>
+        <button class="eqm-grid-btn" onclick="event.stopPropagation();cbQuickAction('similar','all')"><span class="eqm-grid-icon">📋</span><span class="eqm-grid-label">유사문항</span></button>
+        <button class="eqm-grid-btn" onclick="event.stopPropagation();cbQuickAction('twin','all')"><span class="eqm-grid-icon">🔀</span><span class="eqm-grid-label">쌍둥이문항</span></button>
+        <button class="eqm-grid-btn eqm-grid-del" onclick="event.stopPropagation();cbQuickAction('deleteAll','all')"><span class="eqm-grid-icon">🗑️</span><span class="eqm-grid-label">전체 삭제</span></button>
+      </div>
+      <div class="eqm-chat-divider"></div>
+      <div class="eqm-chat-msgs" id="eqmChatMsgs">
+        <div class="eqm-chat-placeholder" id="eqmChatPlaceholder">AI에게 자유롭게 요청해보세요</div>
+      </div>
+      <div class="eqm-chat-input-row">
+        <input class="eqm-chat-input" id="eqmChatInp"
+          placeholder="예: 발문을 더 쉽게 바꿔줘"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();eqmChatSend();}">
+        <button class="eqm-chat-send" onclick="event.stopPropagation();eqmChatSend()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
     </div>
+    <button class="eqm-fab" id="eqmFab" onclick="event.stopPropagation();toggleEqm()" title="AI 빠른 실행">
+      <div class="eqm-fab-inner">
+        <span class="eqm-fab-text">AI</span>
+        <span class="eqm-fab-spark">✦</span>
+      </div>
+    </button>
   </div>
-</div>
+</div><!-- /.editor-body -->
+
+<style>
+/* ══ 안 B: 블록 인라인 액션바 ══ */
+.cb-inline-bar{
+  display:none !important; /* 인라인바 → 플로팅 퀵메뉴로 대체 */
+}
+@keyframes cbBarIn{ from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+.cb-ib-btn{
+  display:flex;align-items:center;gap:3px;
+  height:24px;padding:0 9px;
+  border-radius:6px;border:1.5px solid var(--g2);background:white;
+  font-size:10px;font-weight:700;color:var(--g5);
+  cursor:pointer;transition:all .12s;
+  font-family:'Noto Sans KR',sans-serif;
+  white-space:nowrap;
+}
+.cb-ib-btn:hover{ border-color:var(--blue);color:var(--blue);background:var(--blue-lt); }
+.cb-ib-ai{
+  display:flex;align-items:center;gap:4px;
+  height:24px;padding:0 10px;
+  border-radius:6px;border:none;
+  background:linear-gradient(135deg,#4B6EF5,#7C4DFF);
+  color:white;font-size:10px;font-weight:800;
+  cursor:pointer;font-family:'Noto Sans KR',sans-serif;
+  transition:all .14s;
+}
+.cb-ib-ai:hover{ opacity:.88; }
+
+/* ══ 편집영역 우측 하단 플로팅 퀵메뉴 ══ */
+#editorQuickMenu{
+  position:absolute;      /* editor-body(position:relative) 기준 우측 하단 */
+  bottom:20px;
+  right:calc(28px + 28px); /* 우측 패널 닫힘 기준(28px) + 28px 여백 (심플모드와 시각적 여백 일치) */
+  z-index:50;
+  display:none;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+  pointer-events:none;
+  transition:right .22s cubic-bezier(.4,0,.2,1);
+}
+#editorQuickMenu.eqm-visible{ display:flex; }
+
+/* FAB 버튼 */
+.eqm-fab{
+  width:48px;height:48px;border-radius:14px;
+  background:linear-gradient(135deg,#4B6EF5 0%,#7C4DFF 60%,#E040FB 100%);
+  padding:2.5px;border:none;cursor:pointer;
+  box-shadow:0 3px 14px rgba(124,77,255,.55);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s cubic-bezier(.34,1.56,.64,1),box-shadow .15s;
+  pointer-events:auto;
+}
+.eqm-fab:hover{ transform:scale(1.08);box-shadow:0 5px 22px rgba(124,77,255,.7); }
+.eqm-fab.open{ box-shadow:0 5px 22px rgba(124,77,255,.7); }
+.eqm-fab-inner{
+  width:100%;height:100%;border-radius:11.5px;background:white;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;gap:1px;pointer-events:none;
+}
+.eqm-fab-text{
+  font-size:13px;font-weight:900;letter-spacing:-.5px;
+  background:linear-gradient(135deg,#4B6EF5,#A040FF);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;
+}
+.eqm-fab-spark{ position:absolute;top:5px;right:5px;color:#7C4DFF;font-size:9px; }
+
+/* ── 통합 팝업 카드 ── */
+.eqm-popup{
+  width:300px !important;
+  box-sizing:border-box;
+  background:white;
+  border:1.5px solid #E0E6FF;
+  border-radius:18px;
+  box-shadow:0 8px 32px rgba(75,110,245,.18),0 2px 8px rgba(0,0,0,.08);
+  overflow:hidden;
+  pointer-events:auto;
+  animation:eqmPopIn .2s cubic-bezier(.34,1.2,.64,1);
+}
+@keyframes eqmPopIn{
+  from{ opacity:0;transform:translateY(12px) scale(.96); }
+  to{   opacity:1;transform:translateY(0)   scale(1);    }
+}
+@keyframes eqmIn{
+  from{ opacity:0;transform:translateY(8px); }
+  to{   opacity:1;transform:none; }
+}
+
+/* 팝업 헤더 */
+.eqm-popup-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 14px 10px;
+  background:linear-gradient(135deg,#F4F6FF,#FAF0FF);
+  border-bottom:1px solid #EEF0FF;
+}
+.eqm-popup-title{
+  display:flex;align-items:center;gap:7px;
+  font-size:12px;font-weight:900;color:#1E2340;
+}
+.eqm-popup-title-badge{
+  background:linear-gradient(135deg,#4B6EF5,#7C4DFF);
+  color:white;font-size:9px;font-weight:800;
+  padding:2px 7px;border-radius:8px;
+}
+.eqm-popup-close{
+  width:22px;height:22px;border-radius:50%;border:none;
+  background:#EEF0FF;color:#8A93A8;cursor:pointer;font-size:11px;
+  display:flex;align-items:center;justify-content:center;transition:all .12s;
+}
+.eqm-popup-close:hover{ background:#FFE5E5;color:#FF4F6A; }
+
+/* 범위 탭 */
+.eqm-scope-row{
+  display:flex;gap:0;
+  padding:10px 14px 8px;
+  border-bottom:1px solid #F4F4F8;
+}
+.eqm-scope-tab{
+  flex:1;height:28px;border:1.5px solid #E0E6FF;
+  font-size:11px;font-weight:700;color:#8A93A8;
+  cursor:pointer;transition:all .13s;background:white;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.eqm-scope-tab:first-child{ border-radius:8px 0 0 8px;border-right-width:.75px; }
+.eqm-scope-tab:last-child{  border-radius:0 8px 8px 0;border-left-width:.75px; }
+.eqm-scope-tab.on{ background:#4B6EF5;color:white;border-color:#4B6EF5;z-index:1; }
+
+/* 버튼 그리드 */
+.eqm-btn-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr !important;
+  gap:6px !important;
+  padding:10px 14px 12px;
+  box-sizing:border-box;
+}
+.eqm-btn-grid[style*="display:none"]{ display:none !important; }
+.eqm-btn-grid > .eqm-grid-btn{
+  width:100% !important;
+  min-width:0;
+  min-height:68px;
+  box-sizing:border-box;
+  justify-self:stretch;
+}
+.eqm-grid-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  padding:8px 4px;border-radius:10px;border:1.5px solid #EAECF8;
+  background:#FAFBFF;cursor:pointer;transition:all .13s;
+  font-family:'Noto Sans KR',sans-serif;
+  min-width:0;
+  width:auto;
+}
+.eqm-grid-btn:hover{ border-color:#4B6EF5;background:#EEF1FF; }
+.eqm-grid-btn:hover .eqm-grid-icon{ color:#4B6EF5; }
+.eqm-grid-btn:hover .eqm-grid-label{ color:#4B6EF5; }
+.eqm-grid-icon{ font-size:16px;line-height:1;color:#555E75; }
+.eqm-grid-label{ font-size:10px;font-weight:700;color:#555E75;text-align:center;line-height:1.3; }
+.eqm-grid-btn.eqm-grid-ai{
+  border-color:#D6DFFF;background:linear-gradient(135deg,#EEF1FF,#F3EEFF);
+}
+.eqm-grid-btn.eqm-grid-ai .eqm-grid-icon,
+.eqm-grid-btn.eqm-grid-ai .eqm-grid-label{ color:#4B6EF5; }
+.eqm-grid-btn.eqm-grid-ai:hover{ border-color:#4B6EF5;background:linear-gradient(135deg,#E0E8FF,#EDE0FF); }
+
+/* 전체 삭제 버튼 (위험 액션) */
+.eqm-grid-btn.eqm-grid-del{
+  border-color:#FECACA;background:#FFF5F5;
+}
+.eqm-grid-btn.eqm-grid-del .eqm-grid-icon,
+.eqm-grid-btn.eqm-grid-del .eqm-grid-label{ color:#DC2626; }
+.eqm-grid-btn.eqm-grid-del:hover{ border-color:#DC2626;background:#FEE2E2; }
+.eqm-grid-btn.eqm-grid-del:hover .eqm-grid-icon,
+.eqm-grid-btn.eqm-grid-del:hover .eqm-grid-label{ color:#B91C1C; }
+
+/* 채팅 영역 */
+.eqm-chat-divider{
+  height:1px;background:#F0F2F8;margin:0 14px;
+}
+.eqm-chat-msgs{
+  min-height:60px;max-height:200px;overflow-y:auto;
+  padding:10px 14px 6px;display:flex;flex-direction:column;gap:6px;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.eqm-chat-msgs::-webkit-scrollbar{width:3px;}
+.eqm-chat-msgs::-webkit-scrollbar-thumb{background:#D8D7D0;border-radius:2px;}
+.eqm-chat-placeholder{
+  color:#C8CDD8;font-size:11px;text-align:center;padding:10px 0;
+  font-family:'Noto Sans KR',sans-serif;
+}
+/* 프롬프트 전용 패턴: 사용자 메시지는 DOM에 남기지 않음 (히스토리 없음)
+   응답은 단일 "결과 카드" 형태로 표시 (Cursor Cmd+K / Notion AI 인라인 스타일) */
+.eqm-cmsg-ai{
+  align-self:stretch;
+  background:linear-gradient(135deg,#F6F7FF,#F9F6FF);
+  border:1px solid #E0E6FF;
+  color:#1E2340;
+  border-radius:10px;padding:10px 12px;
+  font-size:11.5px;font-weight:500;line-height:1.55;word-break:break-word;
+  animation:eqmIn .18s ease;
+  position:relative;
+}
+.eqm-cmsg-ai::before{
+  content:'AI';
+  display:inline-block;
+  background:linear-gradient(135deg,#4B6EF5,#7C4DFF);
+  color:white;font-size:8.5px;font-weight:800;
+  padding:2px 6px;border-radius:6px;margin-right:6px;
+  vertical-align:middle;
+}
+.eqm-cmsg-loading{
+  align-self:stretch;
+  background:#F4F5FF;color:#8A93A8;
+  border-radius:10px;padding:10px 12px;font-size:11px;
+  display:flex;align-items:center;gap:8px;
+}
+.eqm-cmsg-loading::before{
+  content:'';
+  width:12px;height:12px;border-radius:50%;
+  border:2px solid #D6DFFF;border-top-color:#4B6EF5;
+  animation:eqmSpin .7s linear infinite;
+  flex-shrink:0;
+}
+@keyframes eqmSpin{ to{ transform:rotate(360deg); } }
+.eqm-chat-input-row{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 14px 12px;
+}
+.eqm-chat-input{
+  flex:1;height:32px;border-radius:10px;
+  border:1.5px solid #E0E6FF;padding:0 10px;
+  font-size:11px;color:#1E2340;font-family:'Noto Sans KR',sans-serif;
+  outline:none;transition:border-color .13s;background:white;
+}
+.eqm-chat-input:focus{ border-color:#4B6EF5; }
+.eqm-chat-input::placeholder{ color:#C8CDD8; }
+.eqm-chat-send{
+  width:32px;height:32px;border-radius:10px;border:none;cursor:pointer;flex-shrink:0;
+  background:linear-gradient(135deg,#4B6EF5,#7C4DFF);
+  display:flex;align-items:center;justify-content:center;
+  transition:all .13s;box-shadow:0 2px 8px rgba(75,110,245,.3);
+}
+.eqm-chat-send:hover{ opacity:.88;transform:scale(1.05); }
+
+/* 범위 탭 호환 */
+.eqm-scope-tabs{ display:none; }
+.eqm-item{ display:none; } /* 구형 pill 버튼 숨김 */
+
+/* AI 수정 팝오버 — 블록 하단 기준 */
+.cb-ai-pop{
+  position:absolute;
+  left:0;right:0;
+  background:white;
+  border:1px solid var(--g2);
+  border-top:none;
+  border-radius:0 0 14px 14px;
+  box-shadow:0 8px 24px rgba(0,0,0,.1);
+  z-index:50;overflow:hidden;
+  font-family:'Noto Sans KR',sans-serif;
+  animation:cbBarIn .15s ease;
+}
+.cb-aip-scope{
+  display:flex;gap:4px;padding:8px 12px 0;
+}
+.cb-aip-scope-btn{
+  padding:3px 10px;border-radius:20px;
+  font-size:10px;font-weight:700;
+  border:1.5px solid var(--g2);background:white;
+  cursor:pointer;transition:all .12s;
+  font-family:'Noto Sans KR',sans-serif;color:var(--g4);
+}
+.cb-aip-scope-btn.on{ background:#EEF1FF;border-color:#4B6EF5;color:#4B6EF5; }
+.cb-aip-quick{
+  display:flex;flex-wrap:wrap;gap:4px;
+  padding:6px 12px;
+}
+.cb-aip-q-btn{
+  display:flex;align-items:center;gap:3px;
+  height:24px;padding:0 8px;border-radius:7px;
+  border:1.5px solid var(--g2);background:white;
+  font-size:10px;font-weight:700;color:var(--g5);
+  cursor:pointer;transition:all .12s;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.cb-aip-q-btn:hover{ border-color:#4B6EF5;color:#4B6EF5;background:#EEF1FF; }
+.cb-aip-msgs{
+  max-height:160px;overflow-y:auto;
+  padding:6px 12px;display:flex;flex-direction:column;gap:6px;
+}
+.cb-aip-inp-row{
+  display:flex;gap:6px;padding:7px 12px 9px;
+  border-top:1px solid var(--g2);
+}
+.cb-aip-inp{
+  flex:1;height:32px;border:1.5px solid var(--g2);border-radius:8px;
+  padding:0 10px;font-size:11px;color:var(--text);outline:none;
+  font-family:'Noto Sans KR',sans-serif;transition:border-color .14s;
+  background:#FAFAF8;
+}
+.cb-aip-inp:focus{ border-color:#4B6EF5;background:white; }
+.cb-aip-inp::placeholder{ color:var(--g3); }
+.cb-aip-send{
+  width:32px;height:32px;border-radius:8px;border:none;
+  background:linear-gradient(135deg,#4B6EF5,#7C4DFF);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+
+</style>
 
 <div class="statusbar">
   <div class="sbi"><div class="sdot"></div>자동저장됨</div>
@@ -5996,7 +6610,11 @@ function lgInsertContent(id){
 function landingOpenEditor(){
   const screen = document.getElementById('landingScreen');
   screen.classList.add('out');
-  setTimeout(()=>{ screen.style.display='none'; }, 400);
+  setTimeout(()=>{
+    screen.style.display='none';
+    // 블록 있으면 퀵메뉴 동기화
+    if(typeof eqmSyncVisibility === 'function') eqmSyncVisibility();
+  }, 400);
 }
 
 // [직접 생성하기] → 에디터 + 템플릿 모달
@@ -9586,7 +10204,7 @@ async function aclGenerateScoringRubric(meta){
   if(!rpAiInited){ initRpAiChat(); }
   setRpAiContentVisible(true);
   forceOpenAiTab();
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   if(!msgs) return;
 
   const rubricHtml = `
@@ -9940,9 +10558,26 @@ function checkSlideEmpty(){
   const addArea=document.getElementById('addArea');
   if(blocks.length===0){ if(empty)empty.style.display='flex'; if(addArea)addArea.style.display='none'; }
   else{ if(empty)empty.style.display='none'; if(addArea)addArea.style.display='flex'; }
-  // 카운터 total 갱신
   const totalEl = document.getElementById('blockCounterTotal');
   if(totalEl) totalEl.textContent = blocks.length;
+  // 퀵메뉴: 고급모드이고 블록이 있을 때만 표시
+  const eqm = document.getElementById('editorQuickMenu');
+  const landing = document.getElementById('landingScreen');
+  const simpleMode = document.getElementById('simpleMode');
+  const isEditor = landing && landing.style.display==='none'
+                   && simpleMode && !simpleMode.classList.contains('show');
+  if(eqm){
+    if(isEditor && blocks.length > 0){
+      eqm.classList.add('eqm-visible');
+    } else {
+      eqm.classList.remove('eqm-visible');
+      window._eqmOpen = false;
+      const items = document.getElementById('eqmItems');
+      const fab   = document.getElementById('eqmFab');
+      if(items) items.style.display = 'none';
+      if(fab)   fab.classList.remove('open');
+    }
+  }
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
@@ -9958,13 +10593,31 @@ window.addEventListener('DOMContentLoaded',()=>{
   // 우측패널 탭은 항상 표시
   const rpTabs = document.getElementById('rpTabs');
   if(rpTabs) rpTabs.style.display='flex';
-  // 속성 탭 초기 상태
+  // 속성 패널 초기: 닫힌 상태 (핸들 클릭 시 열림)
   const attrPane  = document.getElementById('rpAttrPane');
   const aiPane    = document.getElementById('rpAiPane');
   const aiAllPane = document.getElementById('rpAiAllPane');
-  if(attrPane)  attrPane.style.display='flex';
+  if(attrPane)  attrPane.style.display='none';
   if(aiPane)    aiPane.style.display='none';
   if(aiAllPane) aiAllPane.style.display='none';
+
+  // add-area에 tmpl-bar 삽입 (고급모드 콘텐츠 하단 빠른 추가 버튼)
+  const addArea = document.getElementById('addArea');
+  if(addArea && !addArea.querySelector('.tmpl-bar')){
+    addArea.innerHTML = `
+    <div class="tmpl-bar">
+      <div class="tmpl-bar-inner">
+        <div class="tmpl-bar-card" onclick="confirmTmpl('선택형')"><div class="tmpl-bar-ico" style="background:#EEF1FF;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="18" r="3" stroke="#4B6EF5" stroke-width="2"/><path d="M20 18h14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="28" r="3" fill="#4B6EF5"/><path d="M20 28h14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="38" r="3" stroke="#4B6EF5" stroke-width="2"/><path d="M20 38h14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/></svg></div><span class="tmpl-bar-lbl">선택형</span></div>
+        <div class="tmpl-bar-card" onclick="confirmTmpl('단답형')"><div class="tmpl-bar-ico" style="background:#E8FFF5;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><rect x="8" y="10" width="32" height="10" rx="2" stroke="#22C98B" stroke-width="2"/><rect x="8" y="26" width="32" height="14" rx="2" stroke="#22C98B" stroke-width="2" stroke-dasharray="3 2"/></svg></div><span class="tmpl-bar-lbl">단답형</span></div>
+        <div class="tmpl-bar-card" onclick="confirmTmpl('OX형')"><div class="tmpl-bar-ico" style="background:#FFF0F3;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><circle cx="16" cy="24" r="8" stroke="#FF4F6A" stroke-width="2.5"/><path d="M27 18l10 10M37 18L27 28" stroke="#FF4F6A" stroke-width="2.5" stroke-linecap="round"/></svg></div><span class="tmpl-bar-lbl">OX형</span></div>
+        <div class="tmpl-bar-card" onclick="confirmTmpl('TF형')"><div class="tmpl-bar-ico" style="background:#F3EEFF;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><text x="4" y="30" font-size="18" font-weight="900" fill="#7C4DFF" font-family="Arial">T/F</text></svg></div><span class="tmpl-bar-lbl">T/F형</span></div>
+        <div class="tmpl-bar-card" onclick="confirmTmpl('연결형')"><div class="tmpl-bar-ico" style="background:#FFF6EF;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="16" r="4" stroke="#FF8C42" stroke-width="2"/><circle cx="14" cy="32" r="4" stroke="#FF8C42" stroke-width="2"/><circle cx="34" cy="20" r="4" stroke="#FF8C42" stroke-width="2"/><circle cx="34" cy="32" r="4" stroke="#FF8C42" stroke-width="2"/><path d="M18 16 Q26 18 30 20M18 32 Q26 28 30 20" stroke="#FF8C42" stroke-width="1.5" stroke-dasharray="3 2"/></svg></div><span class="tmpl-bar-lbl">연결형</span></div>
+        <div class="tmpl-bar-card" onclick="confirmTmpl('서술형')"><div class="tmpl-bar-ico" style="background:#EEF5FF;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><rect x="8" y="8" width="32" height="32" rx="3" stroke="#4B7CF4" stroke-width="2"/><path d="M14 18h20M14 25h14M14 32h18" stroke="#4B7CF4" stroke-width="2" stroke-linecap="round"/></svg></div><span class="tmpl-bar-lbl">서술형</span></div>
+        <div class="tmpl-bar-card" onclick="confirmTmpl('순서입력형')"><div class="tmpl-bar-ico" style="background:#E8FFFE;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><rect x="8" y="10" width="10" height="8" rx="2" fill="#22b8c9" opacity=".3" stroke="#22b8c9" stroke-width="2"/><rect x="22" y="10" width="10" height="8" rx="2" stroke="#22b8c9" stroke-width="2"/><rect x="36" y="10" width="10" height="8" rx="2" stroke="#22b8c9" stroke-width="2"/><path d="M13 26l5 5 10-10" stroke="#22b8c9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="tmpl-bar-lbl">순서입력형</span></div>
+        <div class="tmpl-bar-card tmpl-bar-more" onclick="openTmplModal()"><div class="tmpl-bar-ico" style="background:#F3F4F6;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#8A93A8" stroke-width="2.2" stroke-linecap="round"/></svg></div><span class="tmpl-bar-lbl">전체 보기</span></div>
+      </div>
+    </div>`;
+  }
 
   // 텍스트 속성 패널은 oninput 시 표시 (selBlock에서 ctxHideAll)
 });
@@ -10043,39 +10696,27 @@ function renderCtx(type){
 }
 
 function showRightPanel(){
-  if(rpTab===0){
-    const empty = document.getElementById('rpEmpty');
-    const body  = document.getElementById('rpBody');
-    if(empty) empty.style.display='none';
-    if(body)  body.style.display='flex';
-    renderRp();
-  } else if(rpTab===1){
-    setRpAiContentVisible(true);
-    if(!rpAiInited){ initRpAiChat(); rpAiInited=true; }
-    if(curBlock && curBlock.id) loadRpAiChatForBlock(curBlock.id);
+  // 속성 패널 자동 열기 제거 — 사용자가 핸들로 직접 열어야 함 (기본 닫힘 상태 유지)
+  // 패널이 이미 열려 있는 경우에만 내용 갱신
+  const panel = document.querySelector('.right-panel');
+  const isOpen = panel && panel.classList.contains('rp-open');
+  const empty = document.getElementById('rpEmpty');
+  const body  = document.getElementById('rpBody');
+  if(isOpen){
+    if(empty) empty.style.display = 'none';
+    if(body)  body.style.display  = 'flex';
   }
+  renderRp();
 }
 function hideRightPanel(){
-  if(rpTab===0){
-    const empty = document.getElementById('rpEmpty');
-    const body  = document.getElementById('rpBody');
-    if(empty) empty.style.display='flex';
-    if(body)  body.style.display='none';
-  } else if(rpTab===1){
-    setRpAiContentVisible(false);
-  }
-  
+  closeRpAttrPane();
+  cbInlineBarRemove();
 }
 
 function setRpAiContentVisible(show){
-  const emptyEl   = document.getElementById('rpAiEmpty');
-  const msgsEl    = document.getElementById('rpAiMsgs');
-  const actionsEl = document.getElementById('rpAiActions');
-  const inputEl   = document.getElementById('rpAiInputArea');
-  if(emptyEl)   emptyEl.style.display   = show ? 'none' : 'flex';
-  if(msgsEl)    msgsEl.style.display    = show ? 'flex' : 'none';
-  if(actionsEl) actionsEl.style.display = show ? '' : 'none';
-  if(inputEl)   inputEl.style.display   = show ? '' : 'none';
+  // AI 탭 제거됨 — rfpMsgs(플로팅 팝오버) 기준으로만 처리
+  const rfpMsgs = document.getElementById('rfpMsgs');
+  if(rfpMsgs && show) rfpMsgs.style.display = 'flex';
 }
 
 // ── 속성 패널 교체 (PPT 방식 — 고정 높이, 내용만 교체) ──
@@ -10132,9 +10773,11 @@ function selBlock(el){
   // 비선택 블록 흐림
   document.getElementById('slide1').classList.add('has-sel');
   curBlock=el; curType=el.dataset.type;
+  window.curBlock = el; window.curType = curType; // 퀵메뉴 카테고리 감지용
   renderCtx(curType);
   document.getElementById('sbSel').textContent={'question':'문제 블록 선택됨','image':'이미지 블록 선택됨','table':'표 블록 선택됨','concept':'개념 설명 블록 선택됨'}[curType]||'블록 선택됨';
   showRightPanel();
+  // cbInlineBarShow 제거 — 플로팅 퀵메뉴(#editorQuickMenu)가 역할 대체
   // 동적 툴바 컨텍스트 패널
   const ctxTypeMap = { text:'textbox', image:'image', table:'table', video:'video', audio:'video', formula:'formula', shape:'shape', link:'link', textbox:'textbox', passage:'passage', tool:'tool', syntax:'syntax', opinion:'opinion', 'record-audio':'record', 'record-video':'record', draw:'draw', quiz:'quiz', math2d:'math2d', squarebox:'squarebox', list:'list', specialchar:'list', tab:'tab', bullet:'bullet' };
   if(ctxTypeMap[curType]) ctxShowPanel(ctxTypeMap[curType]);
@@ -10165,6 +10808,8 @@ let _selBlockSuggestTimer = null;
 let _lastSuggestBlockId = '';
 
 function _showBlockAiSuggestion(el){
+  // AI 탭 제거됨 — suggestArea 미사용, 함수 비활성화
+  return;
   if(!el) return;
 
   // 전용 제안 영역 사용 (채팅 히스토리와 분리)
@@ -10373,8 +11018,7 @@ function _showBlockAiSuggestion(el){
   const shown = suggestions.slice(0,5);
 
   // 제안이 있으면 AI 탭 자동 전환 + 채팅 영역 표시
-  if(rpTab !== 1) switchRp(1, document.getElementById('tab-ai-cur'));
-  setRpAiContentVisible(true);
+    setRpAiContentVisible(true);
   loadRpAiChatForBlock(el.id);
 
   const wrapper = document.createElement('div');
@@ -10411,6 +11055,7 @@ function _showBlockAiSuggestion(el){
 
 function bgClick(e){
   if(e.target===document.getElementById('canvasWrap')){
+    cbInlineBarRemove();
     document.querySelectorAll('.cb').forEach(b=>{
       b.classList.remove('sel');
       b.querySelector('.cb-editing-badge')?.remove();
@@ -10421,6 +11066,7 @@ function bgClick(e){
     if(banner) banner.style.display = 'none';
     ctxHideAll();
     curBlock=null; curType=null; renderCtx(null);
+    window.curBlock = null; window.curType = null; // 퀵메뉴 동기화
   const _r1=document.querySelector('.tb-row1'); if(_r1) _r1.classList.remove('tab-mode');
     document.getElementById('sbSel').textContent='오브젝트 미선택';
     hideRightPanel();
@@ -10499,6 +11145,9 @@ function insertBlock(type){
         <div class="ai-bar"></div>`;
       el.dataset.tmpl = qtype;
       slide.insertBefore(el, addArea);
+      // 퀵메뉴 카테고리 감지용 즉시 동기화
+      window.curBlock = el;
+      window.curType = el.dataset.type;
       setTimeout(()=>selBlock(el),30);
       checkSlideEmpty();
       addBlockToCurrentGroup(el.id, type);
@@ -10706,6 +11355,9 @@ function insertBlock(type){
     T(`✅ ${type} 블록 추가됨`);
   }
   slide.insertBefore(el, addArea);
+  // 퀵메뉴 카테고리 감지용 즉시 동기화 (selBlock setTimeout 전)
+  window.curBlock = el;
+  window.curType = el.dataset.type;
   setTimeout(()=>selBlock(el),30);
   checkSlideEmpty();
   // 직접 추가한 블록도 현재 활성 그룹(aiHistory 최신)에 포함
@@ -10792,6 +11444,7 @@ function rmBlock(btn){
   const owner=aiHistory.find(h=>h.blockIds.includes(bid));
   if(owner){ if(!owner.deleted)owner.deleted=[]; owner.deleted.push({id:bid}); renderHistory(); }
   el.remove(); checkSlideEmpty(); curBlock=null; curType=null; renderCtx(null);
+  window.curBlock = null; window.curType = null; // 퀵메뉴 동기화
   document.getElementById('slide1').classList.remove('has-sel');
   document.getElementById('blockCounter').style.display = 'none';
   document.getElementById('sbSel').textContent='오브젝트 미선택';
@@ -10885,7 +11538,7 @@ function sendRpAiUnified(){
 }
 
 function _addUnifiedUserMsg(msg, scope){
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   if(!msgs) return;
   const badge = scope === 'all'
     ? `<span style="display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:#E8FFF5;color:#0B7A4F;margin-right:5px;">전체</span>`
@@ -10901,31 +11554,21 @@ function switchRpScope(n){ /* 구버전 호환 — 미사용 */ }
 
 function switchRp(n,el){
   rpTab=n;
-  document.querySelectorAll('.rp-tab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');
-  const attrPane  = document.getElementById('rpAttrPane');
-  const aiPane    = document.getElementById('rpAiPane');
-  const aiAllPane = document.getElementById('rpAiAllPane');
-  if(n===0){
-    if(attrPane) attrPane.style.display='flex';
-    if(aiPane)   aiPane.style.display='none';
-    if(aiAllPane) aiAllPane.style.display='none';
-    renderRp();
-  } else {
-    if(attrPane) attrPane.style.display='none';
-    if(aiPane){  aiPane.style.display='flex'; if(!rpAiInited){ initRpAiChat(); rpAiInited=true; } }
-    if(aiAllPane) aiAllPane.style.display='none';
-    if(curBlock){
-      setRpAiContentVisible(true);
-      loadRpAiChatForBlock(curBlock.id);
-    } else { setRpAiContentVisible(false); }
-    // 기본 해당 콘텐츠 탭 표시
-    switchRpScope(rpAiScope);
-  }
+  // AI 탭 제거됨 — 속성 패널만 유지
+  const attrPane = document.getElementById('rpAttrPane');
+  if(attrPane) attrPane.style.display='flex';
+  renderRp();
 }
 
 function renderRp(){
   const b=document.getElementById('rpBody');
+  // rpAttrPane·rpBody 강제 표시, rpEmpty 숨김
+  const pane  = document.getElementById('rpAttrPane');
+  const empty = document.getElementById('rpEmpty');
+  if(pane)  pane.style.display  = 'flex';
+  if(empty) empty.style.display = 'none';
+  if(b)     b.style.display     = 'flex';
+  if(!b) return;
 
   // 텍스트 블록이면 서식 패널 표시
   if(curType === 'text'){
@@ -11119,12 +11762,13 @@ let _rpAiGlobalMsgsHtml = ''; // 전체 범위 메시지 공통 저장
 function initRpAiChat(){
   if(rpAiInited) return;
   rpAiInited = true;
+  // rfpMsgs(플로팅 팝오버)를 기본 채팅 영역으로 사용
 }
 
 function initRpAiAllChat(){
   if(rpAiAllInited) return;
   rpAiAllInited = true;
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   if(!msgs) return;
   const wrap = document.createElement('div');
   wrap.className = 'rp-ai-msg-ai';
@@ -11133,7 +11777,7 @@ function initRpAiAllChat(){
 }
 
 function addRpAiAllMsg(role, html){
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   if(!msgs) return;
   const wrap = document.createElement('div');
   if(role==='ai'){
@@ -11150,7 +11794,7 @@ function addRpAiAllMsg(role, html){
 async function sendRpAiAllChatDirect(msg){
   addEditLog(`💬 [전체] ${msg.slice(0,30)}${msg.length>30?'…':''}`, 'ai-all');
   const loadId = 'allchat-'+Date.now();
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   const lw = document.createElement('div');
   const allBadge = `<span style="display:inline-flex;align-items:center;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;background:#E8FFF5;color:#0B7A4F;margin-right:5px;">전체</span>`;
   lw.className='rp-ai-msg-ai'; lw.id=loadId;
@@ -11192,7 +11836,7 @@ async function sendRpAiAllChat(){
   addRpAiAllMsg('user', msg);
   addEditLog(`💬 ${msg.slice(0,30)}${msg.length>30?'…':''}`, 'ai-all');
   const loadId = 'allchat-'+Date.now();
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   const lw = document.createElement('div');
   lw.className='rp-ai-msg-ai'; lw.id=loadId;
   lw.innerHTML=`<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble" style="color:var(--g3);">처리 중...</div>`;
@@ -11217,7 +11861,8 @@ async function sendRpAiAllChat(){
 
 // 블록 선택 시 해당 블록의 채팅 기록 불러오기 (없으면 웰컴 메시지)
 function loadRpAiChatForBlock(blockId){
-  const msgs = document.getElementById('rpAiMsgs');
+  if(!document.getElementById('rpAiMsgs') || document.getElementById('rpAiMsgs').style.display==='none') return;
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   if(!msgs) return;
   msgs.innerHTML = '';
   // 항상 전체 공통 메시지 먼저 표시
@@ -11237,7 +11882,7 @@ function loadRpAiChatForBlock(blockId){
 // 현재 블록 채팅 상태 저장 — 전체 메시지와 블록 전용 메시지 분리 저장
 function saveRpAiChatForBlock(blockId){
   if(!blockId) return;
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   if(!msgs) return;
   // 전체 뱃지가 있는 메시지는 global, 없는 것만 block 전용 저장
   const allNodes = [...msgs.children];
@@ -11254,7 +11899,7 @@ function saveRpAiChatForBlock(blockId){
 }
 
 function addRpAiMsg(role, html){
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   if(!msgs) return;
   const wrap = document.createElement('div');
   if(role==='ai'){
@@ -11328,6 +11973,21 @@ const RP_QUICK_GUIDE = {
     icon: '🔁',
     desc: '현재 콘텐츠를 선택형·단답형·서술형·OX형 등 다른 유형으로 변환해요. 발문은 유지되고 형식만 바뀌어요.',
   },
+  imggen: {
+    label: '이미지 추천',
+    icon: '🖼️',
+    desc: '개념 설명에 어울리는 이미지를 AI가 추천하거나 생성해요. 시각 자료로 이해를 도와요.',
+  },
+  videogen: {
+    label: '동영상 추천',
+    icon: '🎬',
+    desc: '개념과 관련된 학습 영상을 추천해요. 외부 영상 링크 또는 요약된 설명 스크립트를 제시해요.',
+  },
+  shuffleChoices: {
+    label: '선택지 순서변경',
+    icon: '🎲',
+    desc: '문항의 선택지 순서를 무작위로 섞어요. 정답 위치는 유지되거나 함께 업데이트됩니다.',
+  },
 };
 
 let rpAiPendingAction = '';
@@ -11337,20 +11997,25 @@ function rpAiQuickAll(action){
   rpAiPendingAction = action;
   const guide = RP_QUICK_GUIDE[action];
   if(!guide) return;
-  // 채팅창 표시 보장
-  setRpAiContentVisible(true);
   if(!rpAiInited){ initRpAiChat(); rpAiInited=true; }
-  rpShowQuickGuide(action, guide, 'all', 'rpAiMsgs');
+  const pop = document.getElementById('rpFloatPop');
+  if(pop){ pop.classList.add('show'); }
+  const rfpMsgs = document.getElementById('rfpMsgs');
+  if(rfpMsgs){ rfpMsgs.style.display = 'flex'; }
+  rpShowQuickGuide(action, guide, 'all', 'rfpMsgs');
 }
 
 function rpAiQuick(action){
   rpAiPendingAction = action;
   const guide = RP_QUICK_GUIDE[action];
   if(!guide) return;
-  // 채팅창 표시 보장
-  setRpAiContentVisible(true);
   if(!rpAiInited){ initRpAiChat(); rpAiInited=true; }
-  rpShowQuickGuide(action, guide, 'current', 'rpAiMsgs');
+  // 플로팅 팝오버 열고 결과를 rfpMsgs로 전달
+  const pop = document.getElementById('rpFloatPop');
+  if(pop){ pop.classList.add('show'); }
+  const rfpMsgs = document.getElementById('rfpMsgs');
+  if(rfpMsgs){ rfpMsgs.style.display = 'flex'; }
+  rpShowQuickGuide(action, guide, 'current', 'rfpMsgs');
 }
 
 function rpShowQuickGuide(action, guide, forcedScope, targetMsgsId){
@@ -11499,9 +12164,8 @@ function rpShowQuickGuide(action, guide, forcedScope, targetMsgsId){
     </div>`;
 
   // 가이드 카드를 올바른 채팅창에 추가
-  const msgsEl = document.getElementById(targetMsgsId || 'rpAiMsgs');
+  const msgsEl = document.getElementById(targetMsgsId || 'rfpMsgs');
   if(!msgsEl) return;
-  // display:none이면 flex로 전환
   if(msgsEl.style.display === 'none') msgsEl.style.display = 'flex';
   const emptyEl = document.getElementById('rpAiEmpty');
   if(emptyEl) emptyEl.style.display = 'none';
@@ -11532,7 +12196,7 @@ function rpAiApply(scope){
     return;
   }
   if(action === 'similar'){
-    const msgsTarget = document.getElementById(scope==='all' ? 'rpAiMsgs' : 'rpAiMsgs');
+    const msgsTarget = document.getElementById('rfpMsgs');
     const simUserWrap = document.createElement('div');
     simUserWrap.className='rp-ai-msg-user';
     simUserWrap.innerHTML=`<div class="rp-ai-msg-user-bubble">유사문항 생성 (${scopeLabel})</div>`;
@@ -11557,7 +12221,7 @@ function rpAiApply(scope){
     return;
   }
   if(action === 'twin'){
-    const msgsTarget2 = document.getElementById(scope==='all' ? 'rpAiMsgs' : 'rpAiMsgs');
+    const msgsTarget2 = document.getElementById('rfpMsgs');
     const twUserWrap = document.createElement('div');
     twUserWrap.className='rp-ai-msg-user';
     twUserWrap.innerHTML=`<div class="rp-ai-msg-user-bubble">쌍둥이문항 생성 (${scopeLabel})</div>`;
@@ -11614,7 +12278,7 @@ function rpAiApply(scope){
 
   // 로딩 메시지
   const loadId = 'rpa-'+Date.now();
-  const msgsTarget = document.getElementById(scope==='all' ? 'rpAiMsgs' : 'rpAiMsgs');
+  const msgsTarget = document.getElementById('rfpMsgs');
   const loadWrap = document.createElement('div');
   loadWrap.className='rp-ai-msg-ai'; loadWrap.id=loadId;
   loadWrap.innerHTML=`<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble" style="color:var(--g3);">처리 중...</div>`;
@@ -11645,7 +12309,7 @@ function rpAiApply(scope){
         const doneWrap = document.createElement('div');
         doneWrap.className = 'rp-ai-msg-ai';
         doneWrap.innerHTML = `<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble">✅ ${cnt}개 콘텐츠를 초기화했어요. 발문·선택지를 직접 수정하거나 AI 채팅으로 내용을 채워보세요!</div>`;
-        const msgsEl = document.getElementById('rpAiMsgs');
+        const msgsEl = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
         if(msgsEl){ msgsEl.appendChild(doneWrap); msgsEl.scrollTop = msgsEl.scrollHeight; }
       }, 400);
     }, 400);
@@ -11707,7 +12371,7 @@ function rpAiApply(scope){
 async function rpAiApplyLevel(lv, scope){
   const scopeLabel = scope==='current' ? '현재 콘텐츠' : '전체 콘텐츠';
   const source = scope==='current' ? 'ai-current' : 'ai-all';
-  const msgsEl = document.getElementById(scope==='all' ? 'rpAiMsgs' : 'rpAiMsgs');
+  const msgsEl = document.getElementById('rfpMsgs');
   const addScopedMsg2 = (role, html) => {
     if(!msgsEl) return;
     const w = document.createElement('div');
@@ -11740,7 +12404,7 @@ async function rpAiApplyLevel(lv, scope){
     const doneWrap = document.createElement('div');
     doneWrap.className = 'rp-ai-msg-ai';
     doneWrap.innerHTML = `<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble">✅ ${cnt}개 콘텐츠를 난이도 "${lv}"으로 변경했어요!</div>`;
-    const msgsEl = document.getElementById('rpAiMsgs');
+    const msgsEl = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
     if(msgsEl){ msgsEl.appendChild(doneWrap); msgsEl.scrollTop=msgsEl.scrollHeight; }
   }, 300);
   addEditLog(`🏷 난이도 "${lv}" 변경`, source);
@@ -12072,7 +12736,7 @@ async function sendRpAiChat(){
 
   // 로딩
   const loadId = 'rpac-'+Date.now();
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   const loadWrap = document.createElement('div');
   loadWrap.className='rp-ai-msg-ai'; loadWrap.id=loadId;
   loadWrap.innerHTML=`<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble" style="color:var(--g3);">생각하는 중...</div>`;
@@ -12255,7 +12919,7 @@ function showContentCompleteSuggestion(h){
   if(!h) return;
   if(_completeSuggestShown) return;
   _completeSuggestShown = true;
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   if(!msgs) return;
 
   const blocks = [...document.querySelectorAll('#slide1 .cb')];
@@ -12323,7 +12987,7 @@ function rpShowMediaSuggest(mediaType){
     </div>`;
 
   addRpAiMsg('ai', html);
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   if(msgs) msgs.scrollTop = msgs.scrollHeight;
 }
 
@@ -12415,7 +13079,7 @@ function showAiEditSuggestion(text, blockType){
   const rpAiAllPane = document.getElementById('rpAiAllPane');
   if(rpAiPane) rpAiPane.style.display = 'flex';
   if(rpAiAllPane) rpAiAllPane.style.display = 'none';
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   if(!msgs) return;
   msgs.style.display = 'flex';
   const emptyEl = document.getElementById('rpAiEmpty');
@@ -13148,7 +13812,7 @@ function showImageInsertSuggestion(){
     </div>`;
 
   addRpAiMsg('ai', html);
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   if(msgs) msgs.scrollTop = msgs.scrollHeight;
 }
 
@@ -13178,7 +13842,7 @@ async function rpAiGenerateImage(scope){
   addRpAiMsg('user', `이미지 생성 (${scopeLabel})`);
 
   const loadId = 'imgload-'+Date.now();
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   const lw = document.createElement('div');
   lw.className='rp-ai-msg-ai'; lw.id=loadId;
   lw.innerHTML=`<div class="rp-ai-msg-avatar">AI</div><div class="rp-ai-msg-bubble"><span style="color:var(--orange);">🎨 이미지를 생성하고 있어요...</span><br><span style="font-size:10px;color:var(--g4);">콘텐츠 분석 중: ${context.slice(0,30)}...</span></div>`;
@@ -13418,7 +14082,7 @@ function rpInsertVideoNearCurrent(){
         </button>
       </div>
     </div>`);
-  const msgs = document.getElementById('rpAiMsgs');
+  const msgs = document.getElementById('rfpMsgs') || document.getElementById('rpAiMsgs');
   if(msgs) msgs.scrollTop = msgs.scrollHeight;
 }
 
@@ -13894,8 +14558,14 @@ function tmplRecSelect(id){
 
 
 
-function confirmTmpl(){
+function confirmTmpl(tmplArg){
   closeTmplModal();
+
+  // tmpl-bar-card에서 "confirmTmpl('서술형')" 형태로 호출된 경우 파라미터 우선 적용
+  if(tmplArg && typeof tmplArg === 'string'){
+    selectedTmplName = tmplArg;
+    selectedTmplIsOcr = false;
+  }
 
   // 다른 템플릿으로 변환 — 기존 블록 변환 (새 블록 추가 아님)
   if(window._convertTargetBlock){
@@ -14362,6 +15032,15 @@ if(!document.getElementById('fadeDownStyle')){
 // TOAST
 let tt;
 function T(msg){ const el=document.getElementById('toastEl'); document.getElementById('toastTxt').textContent=msg; el.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('show'),2200); }
+
+function toggleToolbar(){
+  const tb = document.getElementById('mainToolbar');
+  const btn = document.getElementById('toolbarToggleBtn');
+  const icon = document.getElementById('toolbarToggleIcon');
+  const isOpen = tb.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  icon.style.transform = isOpen ? 'rotate(90deg)' : '';
+}
 
 // ── 이미지 드래그 리사이즈 ──
 function imgResizeStart(e, handle, dir){
@@ -16335,23 +17014,127 @@ function _miniThumbSet(s){
   </div>`;
 }
 
+// ── 콘텐츠 복수선택 ──
+// ── 콘텐츠 복수선택 ──
+const _lsSelected = new Map(); // key → {type,uidx,cidx/sidx,name}
+window.lsToggleSelect = function(e, el){
+  e.stopPropagation();
+  if(!_lsContMultiMode) return; // 복수선택 모드가 아니면 무시
+  const type = el.dataset.type || '';
+  const uidx = el.dataset.uidx || '0';
+  const subIdx = el.dataset.cidx || el.dataset.sidx || '0';
+  const key = type + '-' + uidx + '-' + subIdx;
+  const u = LS_UNITS[parseInt(uidx)];
+  let name = '';
+  if(u){
+    if(type==='content') name = u.contents[parseInt(subIdx)]?.name || '';
+    else if(type==='set') name = u.sets[parseInt(subIdx)]?.name || '';
+  }
+  if(_lsSelected.has(key)){
+    _lsSelected.delete(key);
+    el.classList.remove('ls-card-sel');
+  } else {
+    _lsSelected.set(key, {type, uidx:parseInt(uidx), subIdx:parseInt(subIdx), name});
+    el.classList.add('ls-card-sel');
+  }
+  lsUpdateMultiBar();
+};
+window.lsUpdateMultiBar = function(){
+  const bar = document.getElementById('lsContMultiBar');
+  const countEl = document.getElementById('lsContCountNum');
+  const pillsEl = document.getElementById('lsContPills');
+  const insertBtn = document.getElementById('lsContInsertBtn');
+  const cnt = _lsSelected.size;
+  if(cnt === 0){
+    bar.classList.remove('show');
+    return;
+  }
+  bar.classList.add('show');
+  if(countEl) countEl.textContent = cnt;
+  if(insertBtn) insertBtn.disabled = false;
+  if(pillsEl){
+    pillsEl.innerHTML = Array.from(_lsSelected.entries()).slice(0,5).map(([k,v], i)=>`
+      <div class="ls-tmpl-pill">
+        <span class="ls-tmpl-pill-num">${i+1}</span>
+        <span style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;">${v.name||v.type}</span>
+      </div>`).join('');
+  }
+};
+window.lsClearSelection = function(){
+  _lsSelected.clear();
+  document.querySelectorAll('.ls-card-sel').forEach(el=>el.classList.remove('ls-card-sel'));
+  lsUpdateMultiBar();
+};
+window.lsInsertSelected = function(){
+  const items = [];
+  _lsSelected.forEach(function(v){
+    const u = LS_UNITS[v.uidx];
+    if(!u) return;
+    if(v.type==='content'){
+      const c = u.contents[v.subIdx];
+      if(c) items.push({type:'content', item:c, unitNum:u.num});
+    } else if(v.type==='set'){
+      const s = u.sets[v.subIdx];
+      if(s) items.push({type:'set', item:s, unitNum:u.num});
+    }
+  });
+  lsClearSelection();
+  lsClosePreview();
+  if(items.length === 0) return;
+  // 첫 번째 콘텐츠로 심플모드 열기
+  setTimeout(function(){
+    smOpen(items[0]);
+    // 여러 개일 때: 나머지는 smCanvas에 블록 추가
+    if(items.length > 1){
+      setTimeout(function(){
+        items.slice(1).forEach(function(info){
+          const canvas = document.getElementById('smCanvas');
+          if(!canvas) return;
+          const tmplBarWrap = canvas.querySelector('.tmpl-bar') ? canvas.querySelector('.tmpl-bar').parentElement : null;
+          let extraHtml = '';
+          if(info.type === 'content') extraHtml = _blocksForContent(info.item);
+          else if(info.type === 'set') extraHtml = _blocksForSet(info.item, info.unitNum);
+          if(!extraHtml) return;
+          const tmp = document.createElement('div');
+          tmp.innerHTML = extraHtml;
+          while(tmp.firstChild){
+            if(tmplBarWrap) canvas.insertBefore(tmp.firstChild, tmplBarWrap);
+            else canvas.appendChild(tmp.firstChild);
+          }
+        });
+        // AI 버튼 재연결
+        smAttachAiButtons();
+      }, 300);
+    }
+  }, 240);
+};
+
 // ── 콘텐츠 카드 렌더 ──
 function _contCardHtml(c, idx, unitIdx){
   const badgeCls = c.badge==='ai'?'ai':c.badge==='new'?'new':'hot';
   const typeChip = _contTypeChip(c.contType);
   const dataAttr = `data-type="content" data-uidx="${unitIdx}" data-cidx="${idx}"`;
+  const wishId = `wish-c-${unitIdx}-${idx}`;
   return `
-  <div class="ls-cont-card" ${dataAttr} onclick="lsOpenPreview(this)" style="cursor:pointer;">
-    <div class="ls-cont-card-thumb" style="background:${c.thumbBg};">
+  <div class="ls-cont-card" ${dataAttr} style="cursor:pointer;position:relative;">
+    <div class="ls-card-check-btn" onclick="lsToggleSelect(event,this.closest('[data-type]'))" title="선택">
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="ls-cont-card-thumb" style="background:${c.thumbBg};" onclick="lsOpenPreview(this.closest('[data-type]'))">
       <span style="font-size:42px;line-height:1;">${c.thumb}</span>
     </div>
-    <div class="ls-cont-card-body">
+    <div class="ls-cont-card-body" onclick="lsOpenPreview(this.closest('[data-type]'))">
       <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px;">
         <span class="ls-cont-badge ${badgeCls}">${c.badgeLabel}</span>
         ${typeChip}
       </div>
       <div class="ls-cont-name">${c.name}</div>
     </div>
+    <button class="ls-wish-btn" id="${wishId}" onclick="lsToggleWish(event,'${wishId}')" title="찜하기">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#C8CDD8" stroke-width="1.6" fill="none" class="wish-heart"/>
+      </svg>
+    </button>
   </div>`;
 }
 
@@ -16360,11 +17143,19 @@ function _setCardHtml(s, featured, unitIdx, setIdx){
   const badge = _badgeHtml(s.badge, s.badge==='ai'?'AI 추천':s.badge==='new'?'신규':'인기');
   const bkHtml = _breakdownHtml(s.breakdown);
   const dataAttr = `data-type="set" data-uidx="${unitIdx}" data-sidx="${setIdx}"`;
+  const wishId = `wish-s-${unitIdx}-${setIdx}`;
   return `
-  <div class="ls-set-card${featured?' featured':''}" ${dataAttr} onclick="lsOpenPreview(this)" style="cursor:pointer;">
-    ${badge}
-    <div class="ls-set-name">${s.name}</div>
-    <div class="ls-set-breakdown">${bkHtml}</div>
+  <div class="ls-set-card${featured?' featured':''}" ${dataAttr} style="cursor:pointer;position:relative;">
+    <div onclick="lsOpenPreview(this.closest('[data-type]'))" style="display:flex;flex-direction:column;gap:10px;flex:1;">
+      ${badge}
+      <div class="ls-set-name">${s.name}</div>
+      <div class="ls-set-breakdown">${bkHtml}</div>
+    </div>
+    <button class="ls-wish-btn" id="${wishId}" onclick="lsToggleWish(event,'${wishId}')" title="찜하기">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#C8CDD8" stroke-width="1.6" fill="none" class="wish-heart"/>
+      </svg>
+    </button>
   </div>`;
 }
 
@@ -17431,6 +18222,38 @@ window.lsOpenPreview = function(el){
   requestAnimationFrame(()=>{ bd.classList.add('show'); });
 };
 
+// ── 찜 토글 ──
+const _lsWished = new Set();
+window.lsToggleWish = function(e, wishId){
+  e.stopPropagation();
+  const btn = document.getElementById(wishId);
+  if(!btn) return;
+  const heart = btn.querySelector('.wish-heart');
+  if(_lsWished.has(wishId)){
+    _lsWished.delete(wishId);
+    btn.classList.remove('on');
+    heart.setAttribute('stroke','#C8CDD8');
+    heart.setAttribute('fill','none');
+  } else {
+    _lsWished.add(wishId);
+    btn.classList.add('on');
+    heart.setAttribute('stroke','#F59E0B');
+    heart.setAttribute('fill','#FBBF24');
+  }
+};
+
+// ── 더보기 (전체 탭) ──
+const _lsMoreState = { cont: 8, set: 8 };
+window.lsLoadMore = function(kind){
+  const btn = document.getElementById('lsMore-' + kind);
+  if(btn) btn.classList.add('loading');
+  setTimeout(()=>{
+    window._lsMoreState[kind] += 8;
+    const el = document.getElementById('lsMainContent');
+    if(el) el.innerHTML = _renderAll();
+  }, 300);
+};
+
 window.lsClosePreview = function(){
   const bd = document.getElementById('lsPreviewBackdrop');
   bd.classList.remove('show');
@@ -17615,10 +18438,19 @@ window.smTopInsertVideo = function(){
 // simpleMode 닫을 때 topbar 미디어 영역 초기화
 const _origSmClose = window.smClose;
 window.smClose = function(){
+  // 심플모드 툴바 클론 정리
+  const clone = document.getElementById('smToolbarClone');
+  if(clone){ if(clone._obs) clone._obs.disconnect(); clone.remove(); }
+  const handle = document.getElementById('smToolbarHandle');
+  const handleIcon = document.getElementById('smToolbarHandleIcon');
+  if(handle) handle.style.borderBottom = '1px solid #E8E7E2';
+  if(handleIcon) handleIcon.style.transform = '';
+  // 미디어 영역 정리
   const area = document.getElementById('smTopMediaArea');
   if(area) area.style.display = 'none';
   window._smActiveTextEl = null;
-  if(_origSmClose) _origSmClose();
+  // simpleMode 닫기
+  document.getElementById('simpleMode')?.classList.remove('show');
 };
 window.smRestoreCursor = function(){
   if(!window._smSavedRange) return false;
@@ -17803,10 +18635,8 @@ let _smBlockId = 0;
 function bid(){ return 'smb' + (++_smBlockId); }
 
 function _titleBlock(placeholder, value){
-  const id=bid();
-  return `<div class="sm-block"><div class="sm-block-label">제목</div>
-    <div id="${id}" class="sm-title-block" contenteditable="true" data-placeholder="${placeholder}">${value||''}</div>
-  </div>`;
+  // 심플모드에서는 제목 블록 표시 안 함
+  return '';
 }
 function _choiceBlock(nums, labels){
   const items = nums.map((n,i)=>`
@@ -18249,58 +19079,10 @@ function _activityBlock(label){
 // ── 블록별 미니 베리에이션 바 ──
 // blockType: 'concept' | 'activity' | 'question' | 'choice' (선택지 있는 문항)
 
+// 블록별 varBar — hidden type 마커만 반환 (AI 버튼은 JS로 블록 옆에 배치)
 function _smBlockVarBar(blockKey, blockType){
-  const uid = 'bvar-' + blockKey + '-' + Math.random().toString(36).slice(2,6);
-  const bt = _inferBlockType(blockKey, blockType);
-
-  // ── AI 추천 바 공통 헬퍼 ──
-  const aiBar = (chips, uid2) => `<div class="sm-block-var-bar sm-block-var-bar-ai" id="${uid2||uid}" style="background:#F3EEFF;border-color:#C4B5FD;">
-    <div class="sm-block-var-label" style="color:#7C4DFF;">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="currentColor"/></svg>
-      AI 추천
-    </div>
-    <div class="sm-block-var-chips">${chips}</div>
-    <div class="sm-block-var-opts" id="${uid2||uid}-opts" style="display:none;"></div>
-  </div>`;
-
-  const contBar = (chips) => `<div class="sm-block-var-bar" id="${uid}">
-    <div class="sm-block-var-label">
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="currentColor"/></svg>
-      콘텐츠 추가하기
-    </div>
-    <div class="sm-block-var-chips">${chips}</div>
-    <div class="sm-block-var-opts" id="${uid}-opts" style="display:none;"></div>
-  </div>`;
-
-  if(bt === 'concept'){
-    // 개념: AI 추천 바만 (이미지·동영상)
-    return aiBar(`
-      <button class="sm-block-var-chip" onclick="smBlockVarSelect(this,'${uid}','media_image')">🖼️ 이미지 추천</button>
-      <button class="sm-block-var-chip" onclick="smBlockVarSelect(this,'${uid}','media_video')">▶️ 동영상 추천</button>`);
-
-  } else if(bt === 'activity'){
-    // 활동: 콘텐츠 추가하기 (난이도)
-    return contBar(`
-      <button class="sm-block-var-chip" onclick="smBlockVarSelect(this,'${uid}','level')">📊 난이도</button>`);
-
-  } else if(bt === 'choice'){
-    // 선택지 있는 문항: 콘텐츠 추가하기 + 별도 AI 추천 (선택지 순서 변경)
-    const uid2 = 'bvar-ai-' + blockKey + '-' + Math.random().toString(36).slice(2,6);
-    const main = contBar(`
-      <button class="sm-block-var-chip" onclick="smBlockVarSelect(this,'${uid}','similar')">🔁 유사문항</button>
-      <button class="sm-block-var-chip" onclick="smBlockVarSelect(this,'${uid}','twin')">👯 쌍둥이문항</button>
-      <button class="sm-block-var-chip" onclick="smBlockVarSelect(this,'${uid}','level')">📊 난이도</button>`);
-    const ai = aiBar(`
-      <button class="sm-block-var-chip" onclick="smBlockVarSelect(this,'${uid2}','shuffle')">🔀 선택지 순서 변경</button>`, uid2);
-    return main + ai;
-
-  } else {
-    // 선택지 없는 문항: 콘텐츠 추가하기 (유사·쌍둥이·난이도)
-    return contBar(`
-      <button class="sm-block-var-chip" onclick="smBlockVarSelect(this,'${uid}','similar')">🔁 유사문항</button>
-      <button class="sm-block-var-chip" onclick="smBlockVarSelect(this,'${uid}','twin')">👯 쌍둥이문항</button>
-      <button class="sm-block-var-chip" onclick="smBlockVarSelect(this,'${uid}','level')">📊 난이도</button>`);
-  }
+  const t = _inferBlockType(blockKey, blockType);
+  return `<div class="sm-vartype" data-vartype="${t}" style="display:none;"></div>`;
 }
 
 // ── 덧셈과 뺄셈 도입 세트: 내용이 채워진 삽입 블록 ──
@@ -18861,14 +19643,588 @@ window.smOpen = function(itemInfo){
   badge.textContent = badgeText;
   badge.className = 'sm-topbar-badge ' + badgeCls;
 
-  // 템플릿은 각 블록 내 varBar 포함 → 전체 varBar 불필요
-  const varBarHtml = '';
-  document.getElementById('smCanvas').innerHTML = blocksHtml + varBarHtml;
+  // 추천콘텐츠/세트지: 블록 옆 AI 버튼 + 하단 tmpl-bar, 템플릿: 각 블록 내 varBar
+  const tmplBarHtml = (type === 'content' || type === 'set') ? `
+  <div style="padding:20px 0 8px;">
+    <div class="tmpl-bar" style="width:100%;max-width:100%;border-radius:12px;background:white;border:1.5px solid #EAECF0;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+      <div class="tmpl-bar-inner" style="overflow-x:auto;flex-wrap:nowrap;">
+        <div class="tmpl-bar-card" onclick="smQuickAdd('선택형')"><div class="tmpl-bar-ico" style="background:#EEF1FF;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="18" r="3" stroke="#4B6EF5" stroke-width="2"/><path d="M20 18h14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="28" r="3" fill="#4B6EF5"/><path d="M20 28h14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="38" r="3" stroke="#4B6EF5" stroke-width="2"/><path d="M20 38h14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/></svg></div><span class="tmpl-bar-lbl" style="font-size:10px;font-weight:700;color:#555E75;">선택형</span></div>
+        <div class="tmpl-bar-card" onclick="smQuickAdd('단답형')"><div class="tmpl-bar-ico" style="background:#E8FFF5;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><rect x="8" y="10" width="32" height="10" rx="2" stroke="#22C98B" stroke-width="2"/><rect x="8" y="26" width="32" height="14" rx="2" stroke="#22C98B" stroke-width="2" stroke-dasharray="3 2"/></svg></div><span class="tmpl-bar-lbl" style="font-size:10px;font-weight:700;color:#555E75;">단답형</span></div>
+        <div class="tmpl-bar-card" onclick="smQuickAdd('OX형')"><div class="tmpl-bar-ico" style="background:#FFF0F3;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><circle cx="16" cy="24" r="8" stroke="#FF4F6A" stroke-width="2.5"/><path d="M27 18l10 10M37 18L27 28" stroke="#FF4F6A" stroke-width="2.5" stroke-linecap="round"/></svg></div><span class="tmpl-bar-lbl" style="font-size:10px;font-weight:700;color:#555E75;">OX형</span></div>
+        <div class="tmpl-bar-card" onclick="smQuickAdd('TF형')"><div class="tmpl-bar-ico" style="background:#F3EEFF;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><text x="4" y="30" font-size="18" font-weight="900" fill="#7C4DFF" font-family="Arial">T/F</text></svg></div><span class="tmpl-bar-lbl" style="font-size:10px;font-weight:700;color:#555E75;">T/F형</span></div>
+        <div class="tmpl-bar-card" onclick="smQuickAdd('연결형')"><div class="tmpl-bar-ico" style="background:#FFF6EF;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="16" r="4" stroke="#FF8C42" stroke-width="2"/><circle cx="14" cy="32" r="4" stroke="#FF8C42" stroke-width="2"/><circle cx="34" cy="20" r="4" stroke="#FF8C42" stroke-width="2"/><circle cx="34" cy="32" r="4" stroke="#FF8C42" stroke-width="2"/><path d="M18 16 Q26 18 30 20M18 32 Q26 28 30 20" stroke="#FF8C42" stroke-width="1.5" stroke-dasharray="3 2"/></svg></div><span class="tmpl-bar-lbl" style="font-size:10px;font-weight:700;color:#555E75;">연결형</span></div>
+        <div class="tmpl-bar-card" onclick="smQuickAdd('서술형')"><div class="tmpl-bar-ico" style="background:#EEF5FF;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><rect x="8" y="8" width="32" height="32" rx="3" stroke="#4B7CF4" stroke-width="2"/><path d="M14 18h20M14 25h14M14 32h18" stroke="#4B7CF4" stroke-width="2" stroke-linecap="round"/></svg></div><span class="tmpl-bar-lbl" style="font-size:10px;font-weight:700;color:#555E75;">서술형</span></div>
+        <div class="tmpl-bar-card" onclick="smQuickAdd('순서입력형')"><div class="tmpl-bar-ico" style="background:#E8FFFE;"><svg width="22" height="22" viewBox="0 0 48 48" fill="none"><rect x="8" y="10" width="10" height="8" rx="2" fill="#22b8c9" opacity=".3" stroke="#22b8c9" stroke-width="2"/><rect x="22" y="10" width="10" height="8" rx="2" stroke="#22b8c9" stroke-width="2"/><rect x="36" y="10" width="10" height="8" rx="2" stroke="#22b8c9" stroke-width="2"/><path d="M13 26l5 5 10-10" stroke="#22b8c9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><span class="tmpl-bar-lbl" style="font-size:10px;font-weight:700;color:#555E75;">순서입력형</span></div>
+        <div class="tmpl-bar-card tmpl-bar-more" onclick="T('전체 템플릿 보기')"><div class="tmpl-bar-ico" style="background:#F3F4F6;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#8A93A8" stroke-width="2.2" stroke-linecap="round"/></svg></div><span class="tmpl-bar-lbl" style="font-size:10px;font-weight:700;color:#8A93A8;">전체 보기</span></div>
+      </div>
+    </div>
+  </div>` : '';
+
+  document.getElementById('smCanvas').innerHTML = blocksHtml + tmplBarHtml;
+  if(type === 'content' || type === 'set'){
+    smAttachAiButtons();
+  }
 
   const el = document.getElementById('simpleMode');
   el.classList.add('show');
   document.getElementById('smCanvas').scrollTop = 0;
   document.querySelector('.sm-body').scrollTop = 0;
+};
+
+window.smAiBottomOpen = function(){ T('AI 추천 기능을 준비 중입니다!'); };
+
+// 심플모드 하단 빠른 추가
+window.smQuickAdd = function(tmplName){
+  const canvas = document.getElementById('smCanvas');
+  if(!canvas) return;
+  const aiBtnEl = document.getElementById('smGlobalAiBtn');
+  // tmpl-bar 래퍼 앞에 삽입
+  const tmplBarWrap = canvas.querySelector('.tmpl-bar') ? canvas.querySelector('.tmpl-bar').parentElement : null;
+  // 빈 블록 생성
+  const block = document.createElement('div');
+  block.className = 'sm-block sm-var-inserted';
+  block.dataset.vartype = 'choice';
+  block.innerHTML = '<div class="sm-block-label">' + tmplName + ' 문항</div>' +
+    '<div class="sm-text-block" contenteditable="true" data-placeholder="문제를 입력하세요" onkeyup="smSaveCursor()" onmouseup="smSaveCursor()"></div>' +
+    (tmplName==='단답형'||tmplName==='서술형' ? '<div class="sm-short-wrap"><input class="sm-short-input" placeholder="정답을 입력하세요"></div>' :
+    '<div class="sm-block-label">선택지</div><div class="sm-choice-wrap">' +
+    ['①','②','③','④'].map(n=>'<div class="sm-choice-item"><div class="sm-choice-num">'+n+'</div><input class="sm-choice-input" placeholder="선택지 내용을 입력하세요"></div>').join('') +
+    '</div>');
+  const row = document.createElement('div');
+  row.className = 'sm-block-row';
+  row.appendChild(block);
+  block.style.opacity = '0'; block.style.transform = 'translateY(8px)';
+  if(tmplBarWrap) canvas.insertBefore(row, tmplBarWrap);
+  else canvas.appendChild(row);
+  setTimeout(function(){ block.style.transition='opacity .25s,transform .25s'; block.style.opacity='1'; block.style.transform=''; }, 20);
+  window._smFirstInsertedRow = {row, block};
+  // 새 블록 이벤트 연결 + 첫 번째만 활성화
+  const allRows = canvas.querySelectorAll('.sm-block-row');
+  const total = allRows.length;
+  const tot = document.getElementById('smBlockTotal');
+  if(tot) tot.textContent = total;
+  allRows.forEach(function(row, idx){
+    const block = row.querySelector('.sm-block');
+    if(!block || block.dataset.smIdx !== undefined) return;
+    block.dataset.smIdx = String(idx);
+    const onSel = function(){ smSelectBlock(row, block, total, aiBtnEl); };
+    block.addEventListener('mousedown', function(e){
+      if(e.target.closest('[contenteditable]')||['INPUT','TEXTAREA','BUTTON'].includes(e.target.tagName)) return;
+      onSel();
+    });
+    block.querySelectorAll('[contenteditable],input,textarea').forEach(el=>el.addEventListener('focus',onSel));
+  });
+  const first = window._smFirstInsertedRow;
+  if(first && first.row && first.block){
+    setTimeout(function(){ smSelectBlock(first.row, first.block, total, aiBtnEl); first.block.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 80);
+  }
+};
+
+// ── 블록 옆 AI 버튼 (단일, 포커스 블록만 표시) ──
+window.smAttachAiButtons = function(){
+  const canvas = document.getElementById('smCanvas');
+  if(!canvas) return;
+  // 제목 블록(data-is-title) 제외한 실제 콘텐츠 블록만
+  const blocks = Array.from(canvas.children).filter(el=>
+    el.classList.contains('sm-block') && !el.dataset.isTitle
+  );
+  const total = blocks.length;
+
+  let aiBtnEl = document.getElementById('smGlobalAiBtn');
+  if(aiBtnEl) aiBtnEl.remove();
+  aiBtnEl = document.createElement('button');
+  aiBtnEl.id = 'smGlobalAiBtn';
+  aiBtnEl.className = 'sm-ai-icon-btn';
+  aiBtnEl.title = 'AI 추천';
+  aiBtnEl.style.cssText = 'display:none;position:absolute;right:12px;z-index:30;';
+  aiBtnEl.innerHTML = '<div class="sm-ai-icon-inner"><span class="sm-ai-icon-text">AI</span><span class="sm-ai-icon-spark">✦</span></div>';
+  document.getElementById('simpleMode').appendChild(aiBtnEl);
+
+  // 제목 블록은 그냥 래핑만 (선택 불가)
+  Array.from(canvas.children).filter(el=>
+    el.classList.contains('sm-block') && el.dataset.isTitle
+  ).forEach(block=>{
+    if(block.parentElement === canvas){
+      const row = document.createElement('div');
+      row.className = 'sm-block-row sm-title-row';
+      canvas.insertBefore(row, block);
+      row.appendChild(block);
+    }
+  });
+
+  let idx = 0;
+  blocks.forEach((block) => {
+    const marker = block.nextElementSibling;
+    const vartype = (marker && marker.classList.contains('sm-vartype'))
+      ? (marker.dataset.vartype||'question') : smDetectBlockType(block);
+    block.dataset.vartype = vartype;
+    block.dataset.smIdx = String(idx);
+    const titleEl = block.querySelector('[contenteditable],[data-placeholder]');
+    block.dataset.smName = (titleEl?(titleEl.textContent.trim()||titleEl.dataset.placeholder||''):'').slice(0,20);
+    idx++;
+
+    if(block.parentElement === canvas){
+      const row = document.createElement('div');
+      row.className = 'sm-block-row';
+      canvas.insertBefore(row, block);
+      row.appendChild(block);
+      if(marker && marker.classList.contains('sm-vartype')) row.appendChild(marker);
+    }
+    const row = block.closest('.sm-block-row');
+    const onSel = () => smSelectBlock(row, block, total, aiBtnEl);
+    block.addEventListener('mousedown', function(e){
+      if(e.target.closest('[contenteditable]') || ['INPUT','TEXTAREA','BUTTON'].includes(e.target.tagName)) return;
+      onSel();
+    });
+    block.querySelectorAll('[contenteditable],input,textarea').forEach(el=>{
+      el.addEventListener('focus', onSel);
+    });
+  });
+
+  // 인디케이터 total 업데이트
+  const tot = document.getElementById('smBlockTotal');
+  if(tot) tot.textContent = total;
+
+  // 첫 번째 콘텐츠 블록 자동 선택
+  if(blocks.length > 0){
+    const firstRow = blocks[0].closest('.sm-block-row');
+    if(firstRow) setTimeout(()=>smSelectBlock(firstRow, blocks[0], total, aiBtnEl), 50);
+  }
+};
+
+window.smSelectBlock = function(row, block, total, aiBtnEl){
+  const canvas = document.getElementById('smCanvas');
+  if(!canvas) return;
+  canvas.querySelectorAll('.sm-block-row').forEach(r=>r.classList.remove('sm-row-sel'));
+  canvas.querySelectorAll('.sm-editing-badge').forEach(b=>b.remove());
+  canvas.querySelectorAll('.sm-bctrl').forEach(b=>b.remove());
+  row.classList.add('sm-row-sel');
+  canvas.classList.add('has-sel');
+
+  // 편집 중 뱃지
+  const badge = document.createElement('div');
+  badge.className = 'sm-editing-badge';
+  badge.textContent = '편집 중';
+  block.style.position = 'relative';
+  block.appendChild(badge);
+
+  // 블록 컨트롤 버튼 (고급모드 동일)
+  const ctrl = document.createElement('div');
+  ctrl.className = 'sm-bctrl';
+  ctrl.innerHTML = `
+    <button onclick="event.stopPropagation();smBlockMoveUp(this)" title="위로">▲</button>
+    <button onclick="event.stopPropagation();smBlockMoveDown(this)" title="아래로">▼</button>
+    <button onclick="event.stopPropagation();smBlockAddBelow(this)" title="아래에 추가">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <button onclick="event.stopPropagation();smBlockCopy(this)" title="복사">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="1.8"/></svg>
+    </button>
+    <button class="sm-bctrl-del" onclick="event.stopPropagation();smBlockDelete(this)" title="삭제">✕</button>`;
+  row.appendChild(ctrl);
+
+  // 카운터 업데이트 (항상 현재 실제 블록 수 사용)
+  const canvas2 = document.getElementById('smCanvas');
+  const actualTotal = canvas2 ? canvas2.querySelectorAll('.sm-block-row:not(.sm-title-row)').length : total;
+  const idx = parseInt(block.dataset.smIdx||'0');
+  const counter = document.getElementById('smBlockCounter');
+  if(counter) counter.style.display = 'inline-flex';
+  const cur = document.getElementById('smBlockCur');
+  const tot = document.getElementById('smBlockTotal');
+  if(cur) cur.textContent = idx + 1;
+  if(tot) tot.textContent = actualTotal;
+
+  // AI 버튼 위치
+  if(!aiBtnEl) aiBtnEl = document.getElementById('smGlobalAiBtn');
+  if(aiBtnEl){
+    const vartype = block.dataset.vartype || 'question';
+    aiBtnEl.dataset.vartype = vartype;
+    aiBtnEl.style.display = 'block';
+    aiBtnEl.onclick = function(e){ e.stopPropagation(); smAiPopover(aiBtnEl, vartype); };
+    const smEl = document.getElementById('simpleMode');
+    const smRect = smEl.getBoundingClientRect();
+    const rowRect = row.getBoundingClientRect();
+    aiBtnEl.style.top = (rowRect.top - smRect.top + 4) + 'px';
+  }
+
+  // 속성 패널 업데이트 (고급모드와 동일하게 text 패널 표시)
+  if(typeof ctxShowPanel === 'function') ctxShowPanel('text');
+};
+
+window.smDetectBlockType = function(block){
+  if(block.querySelector('.sm-choice-wrap,.sm-oxquiz-choices,.sm-match-wrap,.sm-oxquiz-block')) return 'choice';
+  const fc = block.firstElementChild;
+  const bg = fc ? (fc.style.background||'') : '';
+  if(bg.includes('#EEF1FF')||bg.includes('#E8EAF6')||bg.includes('#C5CAE9')) return 'concept';
+  if(bg.includes('#E8F5E9')||bg.includes('#C8E6C9')||bg.includes('#F1F8E9')||bg.includes('#E0F7FA')) return 'activity';
+  if(block.querySelector('.sm-essay-wrap') && !block.querySelector('.sm-short-wrap,.sm-choice-wrap')) return 'activity';
+  return 'question';
+};
+
+let _smAiPopEl = null;
+window.smAiPopover = function(btn, vartype){
+  smCloseAiPop();
+  const pop = document.createElement('div');
+  pop.className = 'sm-ai-pop';
+  pop.style.minWidth = '240px';
+  const starSvg = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="currentColor"/></svg>';
+
+  // 서브패널 (개수 선택 + 직접 입력 + 생성 버튼)
+  const mkSubPanel = (action, label) => {
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px dashed #E8E7E2;';
+
+    if(action !== 'level'){
+      // 개수 선택 행
+      const cntRow = document.createElement('div');
+      cntRow.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px;';
+      const cntLabel = document.createElement('span');
+      cntLabel.style.cssText = 'font-size:11px;color:#8A93A8;font-weight:600;white-space:nowrap;';
+      cntLabel.textContent = '몇 개?';
+      cntRow.appendChild(cntLabel);
+      window._smVarCnt = 2;
+      let directInput;
+      [1,2,3].forEach(n => {
+        const b = document.createElement('button');
+        b.className = 'sm-ai-pop-chip';
+        b.textContent = n + '개';
+        b.style.cssText = 'padding:3px 10px;font-size:11px;' + (n===2?'background:#EEF1FF;border-color:#4B6EF5;color:#4B6EF5;':'');
+        b.addEventListener('click', function(e){
+          e.stopPropagation();
+          cntRow.querySelectorAll('button[data-cnt]').forEach(x=>{
+            x.style.background='white';x.style.borderColor='#D6DFFF';x.style.color='#555E75';
+          });
+          b.style.cssText = 'padding:3px 10px;font-size:11px;background:#EEF1FF;border-color:#4B6EF5;color:#4B6EF5;';
+          window._smVarCnt = n;
+          if(directInput) directInput.value = '';
+        });
+        b.dataset.cnt = n;
+        cntRow.appendChild(b);
+      });
+      // 직접 입력
+      directInput = document.createElement('input');
+      directInput.type = 'number';
+      directInput.min = '1';
+      directInput.max = '10';
+      directInput.placeholder = '직접';
+      directInput.style.cssText = 'width:56px;height:28px;border-radius:8px;border:1.5px solid #E5E7EB;text-align:center;font-size:11px;font-weight:700;color:#374151;font-family:\'Noto Sans KR\',sans-serif;outline:none;padding:0 4px;box-sizing:border-box;';
+      directInput.addEventListener('click', e=>e.stopPropagation());
+      directInput.addEventListener('focus', e=>e.stopPropagation());
+      directInput.addEventListener('input', function(){
+        if(this.value){
+          cntRow.querySelectorAll('button[data-cnt]').forEach(x=>{
+            x.style.background='white';x.style.borderColor='#D6DFFF';x.style.color='#555E75';
+          });
+          window._smVarCnt = parseInt(this.value)||1;
+        }
+      });
+      cntRow.appendChild(directInput);
+      wrap.appendChild(cntRow);
+    } else {
+      // 난이도 선택 행
+      const lvRow = document.createElement('div');
+      lvRow.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px;';
+      const lvLabel = document.createElement('span');
+      lvLabel.style.cssText = 'font-size:11px;color:#8A93A8;font-weight:600;white-space:nowrap;';
+      lvLabel.textContent = '난이도';
+      lvRow.appendChild(lvLabel);
+      window._smVarLv = '중';
+      [['하','🟢'],['중','🟡'],['상','🔴']].forEach(function(pair){
+        const lv = pair[0], em = pair[1];
+        const b = document.createElement('button');
+        b.className = 'sm-ai-pop-chip';
+        b.textContent = lv + ' ' + em;
+        b.style.cssText = 'padding:3px 10px;font-size:11px;' + (lv==='중'?'background:#EEF1FF;border-color:#4B6EF5;color:#4B6EF5;':'');
+        b.addEventListener('click', function(e){
+          e.stopPropagation();
+          lvRow.querySelectorAll('button[data-lv]').forEach(x=>{
+            x.style.background='white';x.style.borderColor='#D6DFFF';x.style.color='#555E75';
+          });
+          b.style.cssText = 'padding:3px 10px;font-size:11px;background:#EEF1FF;border-color:#4B6EF5;color:#4B6EF5;';
+          window._smVarLv = lv;
+        });
+        b.dataset.lv = lv;
+        lvRow.appendChild(b);
+      });
+      wrap.appendChild(lvRow);
+
+      // 개수 선택 행 (level에도 추가)
+      const cntRow2 = document.createElement('div');
+      cntRow2.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:8px;';
+      const cntLabel2 = document.createElement('span');
+      cntLabel2.style.cssText = 'font-size:11px;color:#8A93A8;font-weight:600;white-space:nowrap;';
+      cntLabel2.textContent = '몇 개?';
+      cntRow2.appendChild(cntLabel2);
+      window._smVarCnt = 2;
+      let directInput2;
+      [1,2,3].forEach(function(n){
+        const b = document.createElement('button');
+        b.className = 'sm-ai-pop-chip';
+        b.textContent = n + '개';
+        b.dataset.cnt = n;
+        b.style.cssText = 'padding:3px 10px;font-size:11px;' + (n===2?'background:#EEF1FF;border-color:#4B6EF5;color:#4B6EF5;':'');
+        b.addEventListener('click', function(e){
+          e.stopPropagation();
+          cntRow2.querySelectorAll('button[data-cnt]').forEach(function(x){
+            x.style.background='white';x.style.borderColor='#D6DFFF';x.style.color='#555E75';
+          });
+          b.style.cssText = 'padding:3px 10px;font-size:11px;background:#EEF1FF;border-color:#4B6EF5;color:#4B6EF5;';
+          window._smVarCnt = n;
+          if(directInput2) directInput2.value = '';
+        });
+        cntRow2.appendChild(b);
+      });
+      directInput2 = document.createElement('input');
+      directInput2.type = 'number';
+      directInput2.min = '1';
+      directInput2.max = '10';
+      directInput2.placeholder = '직접';
+      directInput2.style.cssText = 'width:56px;height:28px;border-radius:8px;border:1.5px solid #E5E7EB;text-align:center;font-size:11px;font-weight:700;color:#374151;font-family:\'Noto Sans KR\',sans-serif;outline:none;padding:0 4px;box-sizing:border-box;';
+      directInput2.addEventListener('click', function(e){ e.stopPropagation(); });
+      directInput2.addEventListener('focus', function(e){ e.stopPropagation(); });
+      directInput2.addEventListener('input', function(){
+        if(this.value){
+          cntRow2.querySelectorAll('button[data-cnt]').forEach(function(x){
+            x.style.background='white';x.style.borderColor='#D6DFFF';x.style.color='#555E75';
+          });
+          window._smVarCnt = parseInt(this.value)||1;
+        }
+      });
+      cntRow2.appendChild(directInput2);
+      wrap.appendChild(cntRow2);
+    }
+
+    const genBtn = document.createElement('button');
+    genBtn.style.cssText = 'width:100%;height:32px;border-radius:9px;border:none;background:linear-gradient(135deg,#4B6EF5,#7C4DFF);color:white;font-size:12px;font-weight:800;cursor:pointer;font-family:\'Noto Sans KR\',sans-serif;display:flex;align-items:center;justify-content:center;gap:5px;';
+    genBtn.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="white"/></svg> 생성하기';
+    genBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      smCloseAiPop();
+      if(typeof smVarGenerate === 'function') smVarGenerate(action);
+      else T('AI 생성 기능을 사용할 수 없습니다.');
+    });
+    wrap.appendChild(genBtn);
+    return wrap;
+  };
+
+  let _activeSubPanel = null;
+  const mkSection = (cls, label, chipsData) => {
+    const sec = document.createElement('div');
+    sec.className = 'sm-ai-pop-section';
+    const lbl = document.createElement('div');
+    lbl.className = 'sm-ai-pop-label ' + cls;
+    lbl.innerHTML = starSvg + label;
+    const row = document.createElement('div');
+    row.className = 'sm-ai-pop-chips';
+    chipsData.forEach(function(c){
+      const b = document.createElement('button');
+      b.className = 'sm-ai-pop-chip' + (c.cls?' '+c.cls:'');
+      b.textContent = c.icon + ' ' + c.text;
+      b.addEventListener('click', function(e){
+        e.stopPropagation();
+        // shuffle: 즉시 실행
+        if(c.action === 'shuffle'){
+          smCloseAiPop();
+          if(typeof smVarGenerate === 'function') smVarGenerate('shuffle');
+          return;
+        }
+        // media: 즉시 토스트
+        if(c.action === 'media_image' || c.action === 'media_video'){
+          smCloseAiPop();
+          T('이미지/동영상 삽입 기능을 준비 중입니다!');
+          return;
+        }
+        // similar/twin/level: 서브패널 토글
+        b.classList.toggle('on');
+        if(_activeSubPanel){ _activeSubPanel.remove(); _activeSubPanel = null; }
+        else {
+          _activeSubPanel = mkSubPanel(c.action, c.text);
+          sec.appendChild(_activeSubPanel);
+        }
+      });
+      row.appendChild(b);
+    });
+    sec.appendChild(lbl);
+    sec.appendChild(row);
+    return sec;
+  };
+  const mkDiv = () => { const d=document.createElement('div'); d.className='sm-ai-pop-div'; return d; };
+
+  if(vartype === 'concept'){
+    pop.appendChild(mkSection('purple','AI 추천',[
+      {text:'이미지 추천',icon:'🖼️',cls:'purple-chip',action:'media_image'},
+      {text:'동영상 추천',icon:'▶️',cls:'purple-chip',action:'media_video'}
+    ]));
+  } else if(vartype === 'activity'){
+    pop.appendChild(mkSection('blue','콘텐츠 추가하기',[
+      {text:'난이도',icon:'📊',cls:'',action:'level'}
+    ]));
+  } else if(vartype === 'choice'){
+    pop.appendChild(mkSection('blue','콘텐츠 추가하기',[
+      {text:'유사문항',icon:'🔁',cls:'',action:'similar'},
+      {text:'쌍둥이문항',icon:'👯',cls:'',action:'twin'},
+      {text:'난이도',icon:'📊',cls:'',action:'level'}
+    ]));
+    pop.appendChild(mkDiv());
+    pop.appendChild(mkSection('purple','AI 추천',[
+      {text:'선택지 순서 변경',icon:'🔀',cls:'purple-chip',action:'shuffle'}
+    ]));
+  } else {
+    pop.appendChild(mkSection('blue','콘텐츠 추가하기',[
+      {text:'유사문항',icon:'🔁',cls:'',action:'similar'},
+      {text:'쌍둥이문항',icon:'👯',cls:'',action:'twin'},
+      {text:'난이도',icon:'📊',cls:'',action:'level'}
+    ]));
+  }
+
+  const rect = btn.getBoundingClientRect();
+  pop.style.cssText += ';position:fixed;z-index:9999;top:' + (rect.bottom+8) + 'px;right:12px;left:auto;';
+  document.body.appendChild(pop);
+  _smAiPopEl = pop;
+  setTimeout(function(){ document.addEventListener('click', smCloseAiPop, {once:true}); }, 0);
+};
+
+window.smCloseAiPop = function(){
+  if(_smAiPopEl){ _smAiPopEl.remove(); _smAiPopEl = null; }
+};
+
+window.smAiAction = function(action){
+  smCloseAiPop();
+  if(action === 'shuffle' || action === 'similar' || action === 'twin' || action === 'level'){
+    if(typeof smVarGenerate === 'function') smVarGenerate(action);
+  } else {
+    T('해당 기능을 준비 중입니다!');
+  }
+};
+// ── 심플모드 블록 컨트롤 함수 ──
+window.smBlockMoveUp = function(btn){
+  const row = btn.closest('.sm-block-row');
+  const canvas = document.getElementById('smCanvas');
+  if(!row || !canvas) return;
+  const prev = row.previousElementSibling;
+  if(prev && prev.classList.contains('sm-block-row')) canvas.insertBefore(row, prev);
+  smReindexBlocks();
+};
+window.smBlockMoveDown = function(btn){
+  const row = btn.closest('.sm-block-row');
+  const canvas = document.getElementById('smCanvas');
+  if(!row || !canvas) return;
+  const next = row.nextElementSibling;
+  if(next && next.classList.contains('sm-block-row')) canvas.insertBefore(next, row);
+  smReindexBlocks();
+};
+window.smBlockAddBelow = function(btn){
+  const row = btn.closest('.sm-block-row');
+  const canvas = document.getElementById('smCanvas');
+  if(!row || !canvas) return;
+  const newBlock = document.createElement('div');
+  newBlock.className = 'sm-block sm-var-inserted';
+  newBlock.dataset.vartype = 'choice';
+  newBlock.innerHTML = '<div class="sm-block-label">선택형 문항</div>' +
+    '<div class="sm-text-block" contenteditable="true" data-placeholder="문제를 입력하세요" onkeyup="smSaveCursor()" onmouseup="smSaveCursor()"></div>' +
+    '<div class="sm-block-label">선택지</div><div class="sm-choice-wrap">' +
+    ['①','②','③','④'].map(n=>'<div class="sm-choice-item"><div class="sm-choice-num">'+n+'</div><input class="sm-choice-input" placeholder="선택지 내용을 입력하세요"></div>').join('') +
+    '</div>';
+  const newRow = document.createElement('div');
+  newRow.className = 'sm-block-row';
+  newRow.appendChild(newBlock);
+  canvas.insertBefore(newRow, row.nextSibling);
+  smReindexBlocks();
+  const aiBtnEl = document.getElementById('smGlobalAiBtn');
+  const total = canvas.querySelectorAll('.sm-block-row').length;
+  const onSel = function(){ smSelectBlock(newRow, newBlock, total, aiBtnEl); };
+  newBlock.addEventListener('mousedown', function(e){
+    if(e.target.closest('[contenteditable]')||['INPUT','TEXTAREA','BUTTON'].includes(e.target.tagName)) return;
+    onSel();
+  });
+  newBlock.querySelectorAll('[contenteditable],input,textarea').forEach(el=>el.addEventListener('focus', onSel));
+  setTimeout(onSel, 50);
+};
+window.smBlockCopy = function(btn){
+  const row = btn.closest('.sm-block-row');
+  const canvas = document.getElementById('smCanvas');
+  if(!row || !canvas) return;
+  const clone = row.cloneNode(true);
+  clone.querySelectorAll('.sm-bctrl,.sm-editing-badge,.sm-ai-icon-btn').forEach(e=>e.remove());
+  clone.classList.remove('sm-row-sel');
+  const block = clone.querySelector('.sm-block');
+  canvas.insertBefore(clone, row.nextSibling);
+  smReindexBlocks();
+  const aiBtnEl = document.getElementById('smGlobalAiBtn');
+  const total = canvas.querySelectorAll('.sm-block-row').length;
+  if(block){
+    const onSel = function(){ smSelectBlock(clone, block, total, aiBtnEl); };
+    block.addEventListener('mousedown', function(e){
+      if(e.target.closest('[contenteditable]')||['INPUT','TEXTAREA','BUTTON'].includes(e.target.tagName)) return;
+      onSel();
+    });
+    block.querySelectorAll('[contenteditable],input,textarea').forEach(el=>el.addEventListener('focus', onSel));
+    setTimeout(onSel, 50);
+  }
+};
+window.smBlockDelete = function(btn){
+  const row = btn.closest('.sm-block-row');
+  const canvas = document.getElementById('smCanvas');
+  if(!row || !canvas) return;
+  row.style.opacity = '0'; row.style.transform = 'scale(.96)'; row.style.transition = 'all .18s';
+  setTimeout(function(){
+    row.remove();
+    canvas.classList.remove('has-sel');
+    const aiBtnEl = document.getElementById('smGlobalAiBtn');
+    if(aiBtnEl) aiBtnEl.style.display = 'none';
+    smReindexBlocks();
+  }, 180);
+};
+window.smReindexBlocks = function(){
+  const canvas = document.getElementById('smCanvas');
+  if(!canvas) return;
+  const rows = canvas.querySelectorAll('.sm-block-row');
+  const total = rows.length;
+  rows.forEach(function(row, i){
+    const block = row.querySelector('.sm-block');
+    if(block) block.dataset.smIdx = String(i);
+  });
+  const tot = document.getElementById('smBlockTotal');
+  if(tot) tot.textContent = total;
+};
+
+window.smToggleToolbar = function(){
+  const handleIcon = document.getElementById('smToolbarHandleIcon');
+  const placeholder = document.getElementById('smToolbarPlaceholder');
+  const handle = document.getElementById('smToolbarHandle');
+  let clone = document.getElementById('smToolbarClone');
+
+  if(clone){
+    // 닫기
+    if(clone._obs) clone._obs.disconnect();
+    clone.remove();
+    if(handleIcon) handleIcon.style.transform = '';
+    if(handle) handle.style.borderBottom = '1px solid #E8E7E2';
+    return;
+  }
+  // 열기: mainToolbar 클론 생성
+  const tb = document.getElementById('mainToolbar');
+  if(!tb) return;
+  clone = tb.cloneNode(true);
+  clone.id = 'smToolbarClone';
+  clone.style.cssText = 'border-top:1px solid #E8E7E2;overflow:visible;display:block;animation:tbSlideDown .2s ease;';
+  placeholder.parentNode.insertBefore(clone, placeholder.nextSibling);
+  if(handleIcon) handleIcon.style.transform = 'rotate(180deg)';
+  if(handle) handle.style.borderBottom = 'none';
+
+  // 클론 열릴 때 속성패널은 초기 상태 (선택 없음)
+  const cloneProps = clone.querySelector('.tb-props');
+  if(cloneProps) cloneProps.innerHTML = '<div class="tb-props-row" style="padding:0 16px;"><span style="font-size:11px;color:var(--g3);">블록을 선택하면 속성을 편집할 수 있어요</span></div>';
+
+  // 원본 tbProps 변경 시 클론도 동기화
+  const origProps = document.getElementById('tbProps');
+  if(origProps && cloneProps){
+    const obs = new MutationObserver(function(){
+      cloneProps.innerHTML = origProps.innerHTML;
+    });
+    obs.observe(origProps, {childList:true, subtree:true, characterData:true});
+    clone._obs = obs;
+  }
 };
 
 // ── 베리에이션 바 HTML 생성 ──
@@ -18947,9 +20303,11 @@ function _smVariationBarHtml(item, type){
 
 // ── 칩 선택 처리 ──
 window.smVarSelect = function(btn, varType){
-  document.querySelectorAll('.sm-var-chip').forEach(c => c.classList.remove('on'));
+  const myBar = btn.closest('.sm-var-bar');
+  if(myBar) myBar.querySelectorAll('.sm-var-chip').forEach(c => c.classList.remove('on'));
+  else document.querySelectorAll('.sm-var-chip').forEach(c => c.classList.remove('on'));
   btn.classList.add('on');
-  const optArea = document.getElementById('smVarOptions');
+  const optArea = myBar ? myBar.querySelector('.sm-var-options') : document.getElementById('smVarOptions');
   if(!optArea) return;
   optArea.style.display = 'block';
 
@@ -18969,14 +20327,19 @@ window.smVarSelect = function(btn, varType){
       </button></div>`;
     window._smVarCnt = 2;
   } else if(varType === 'level'){
-    optArea.innerHTML = `<div class="sm-var-opt-row">
+    optArea.innerHTML = `<div class="sm-var-opt-row" style="flex-wrap:wrap;gap:8px;">
       <span class="sm-var-opt-label">난이도</span>
       <div class="sm-var-cnt-btns">
         <button class="sm-var-cnt-btn sm-var-lv-btn" onclick="smVarSetLv(this,'하')" data-lv="하">하 🟢</button>
         <button class="sm-var-cnt-btn sm-var-lv-btn on" onclick="smVarSetLv(this,'중')" data-lv="중">중 🟡</button>
         <button class="sm-var-cnt-btn sm-var-lv-btn" onclick="smVarSetLv(this,'상')" data-lv="상">상 🔴</button>
       </div>
-      ${cntRow}
+      <span class="sm-var-opt-label" style="margin-left:4px;">몇 개?</span>
+      <div class="sm-var-cnt-btns">
+        ${[1,2,3,5].map(n=>`<button class="sm-var-cnt-btn${n===2?' on':''}" onclick="smVarSetCnt(this,${n})" data-n="${n}">${n}</button>`).join('')}
+      </div>
+      <input type="number" min="1" max="30" placeholder="직접 입력" class="sm-var-cnt-input"
+        oninput="smVarSetCntInput(this)">
       <button class="sm-var-gen-btn" onclick="smVarGenerate('level')">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="white"/></svg>
         생성하기
@@ -19061,14 +20424,19 @@ window.smBlockVarSelect = function(btn, barId, varType){
         생성하기
       </button></div>`;
   } else if(varType === 'level'){
-    opts.innerHTML = `<div class="sm-var-opt-row">
+    opts.innerHTML = `<div class="sm-var-opt-row" style="flex-wrap:wrap;gap:8px;">
       <span class="sm-var-opt-label">난이도</span>
       <div class="sm-var-cnt-btns">
         <button class="sm-var-cnt-btn sm-var-lv-btn" onclick="smBlockVarSetLv(this,'하','${barId}')">하 🟢</button>
         <button class="sm-var-cnt-btn sm-var-lv-btn on" onclick="smBlockVarSetLv(this,'중','${barId}')">중 🟡</button>
         <button class="sm-var-cnt-btn sm-var-lv-btn" onclick="smBlockVarSetLv(this,'상','${barId}')">상 🔴</button>
       </div>
-      ${cntRowB}
+      <span class="sm-var-opt-label" style="margin-left:4px;">몇 개?</span>
+      <div class="sm-var-cnt-btns">
+        ${[1,2,3,5].map(n=>`<button class="sm-var-cnt-btn${n===2?' on':''}" onclick="smBlockVarSetCnt(this,${n},'${barId}')" data-n="${n}">${n}</button>`).join('')}
+      </div>
+      <input type="number" min="1" max="30" placeholder="직접 입력" class="sm-var-cnt-input"
+        oninput="smBlockVarSetCntInput(this,'${barId}')">
       <button class="sm-var-gen-btn" onclick="smBlockVarGenerate('level','${barId}')">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="white"/></svg>
         생성하기
@@ -19231,7 +20599,8 @@ window.smBlockVarGenerate = async function(varType, barId){
       body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})
     });
     const d = await res.json();
-    const txt = d.content?.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+    if(d.error || !d.content) throw new Error(d.error?.message || 'API error');
+    const txt = d.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
     items = JSON.parse(txt).items || [];
   } catch(e){
     items = Array.from({length:cnt},(_,i)=>({num:i+1,question:`${title} 관련 문제 ${i+1}`,type:'선택형',choices:['보기 ①','보기 ②','보기 ③','보기 ④','보기 ⑤'],answer:1}));
@@ -19291,7 +20660,29 @@ window.smVarGenerate = async function(varType){
   const title = document.getElementById('smTopTitle')?.textContent || '이 콘텐츠';
   const unitInfo = (typeof lgCurrentUnit !== 'undefined' && lgCurrentUnit) ? lgCurrentUnit : '초등 수학';
 
-  // 버튼 로딩 상태
+  // 심플모드 로딩 오버레이
+  const isSimpleMode = document.getElementById('simpleMode')?.classList.contains('show');
+  let loadingEl = null;
+  if(isSimpleMode){
+    loadingEl = document.createElement('div');
+    loadingEl.id = 'smAiLoading';
+    loadingEl.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(255,255,255,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;';
+    loadingEl.innerHTML = `
+      <div style="width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#00D2FF,#845EC2);padding:3px;">
+        <div style="width:100%;height:100%;border-radius:13px;background:white;display:flex;align-items:center;justify-content:center;">
+          <span style="font-size:15px;font-weight:900;background:linear-gradient(135deg,#00B4D8,#7C4DFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">AI</span>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:14px;font-weight:800;color:#1E2340;margin-bottom:6px;">AI가 콘텐츠를 생성 중이에요</div>
+        <div style="font-size:12px;color:#8A93A8;">잠시만 기다려주세요...</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        ${[0,1,2].map(i=>`<div style="width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#4B6EF5,#7C4DFF);animation:smDot .9s ${i*0.3}s infinite alternate;"></div>`).join('')}
+      </div>`;
+    document.getElementById('simpleMode').appendChild(loadingEl);
+  }
+  // 고급모드 버튼 로딩 상태
   const genBtn = document.querySelector('#smVarBar .sm-var-gen-btn');
   if(genBtn){ genBtn.textContent = '생성 중...'; genBtn.disabled = true; genBtn.style.opacity='.6'; }
 
@@ -19316,10 +20707,13 @@ window.smVarGenerate = async function(varType){
         messages: [{ role: 'user', content: prompt }] })
     });
     const d = await res.json();
-    const txt = d.content?.map(i => i.text || '').join('').replace(/```json|```/g, '').trim();
+    if(d.error || !d.content) throw new Error(d.error?.message || 'API error');
+    const txt = d.content.map(i => i.text || '').join('').replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(txt);
+    if(loadingEl) loadingEl.remove();
     _smVarInsertBlocks(parsed.items || [], varType, reqLv);
   } catch(e){
+    if(loadingEl) loadingEl.remove();
     // 폴백
     const fallback = Array.from({length: cnt}, (_,i) => ({
       num: i+1, question: `${title} 관련 ${varType==='level'?lv+' 난이도 ':'' }문제 ${i+1}`, type: '선택형',
@@ -19330,16 +20724,57 @@ window.smVarGenerate = async function(varType){
 };
 
 function _smVarInsertBlocks(items, varType, lv){
-  // 베리에이션 바 위에 생성된 블록 결과 카드 삽입
   const bar = document.getElementById('smVarBar');
-  if(!bar) return;
+  const selRow = window._smSelRow || document.querySelector('#smCanvas .sm-row-sel');
+  const isSimpleMode = document.getElementById('simpleMode')?.classList.contains('show');
 
   const labelMap = { similar:'유사문항', twin:'쌍둥이문항', level:`난이도 ${lv} 문항` };
   const colorMap = { similar:'#4B6EF5', twin:'#7C4DFF', level: lv==='하'?'#22C98B':lv==='상'?'#FF4F6A':'#FF8C42' };
   const label = labelMap[varType] || '변형 문항';
   const accent = colorMap[varType] || '#4B6EF5';
 
-  // 기존 결과 제거
+  window._smVarLastItems = items;
+
+  // 심플모드: 바로 삽입 (미리보기 카드 없음)
+  if(isSimpleMode && !bar){
+    const anchor = selRow ? selRow.nextSibling : null;
+    const canvas = document.getElementById('smCanvas');
+    _smInsertItemsBeforeAnchor(items, anchor);
+    const aiBtnEl = document.getElementById('smGlobalAiBtn');
+    const allRows = canvas ? canvas.querySelectorAll('.sm-block-row') : [];
+    const total = allRows.length;
+    const tot = document.getElementById('smBlockTotal');
+    if(tot) tot.textContent = total;
+    // 즉시: 모든 선택 초기화 + has-sel 적용 (모든 블록 흐리게)
+    if(canvas){
+      canvas.querySelectorAll('.sm-block-row').forEach(r=>r.classList.remove('sm-row-sel'));
+      canvas.querySelectorAll('.sm-editing-badge').forEach(b=>b.remove());
+      canvas.classList.add('has-sel');
+    }
+    if(aiBtnEl) aiBtnEl.style.display = 'none';
+    // 새 블록에 이벤트 연결
+    if(canvas) canvas.querySelectorAll('.sm-block-row').forEach(function(row, rowIdx){
+      const block = row.querySelector('.sm-block');
+      if(!block || block.dataset.smIdx !== undefined) return;
+      block.dataset.smIdx = String(rowIdx);
+      const onSel = function(){ smSelectBlock(row, block, total, aiBtnEl); };
+      block.addEventListener('mousedown', function(e){
+        if(e.target.closest('[contenteditable]')||['INPUT','TEXTAREA','BUTTON'].includes(e.target.tagName)) return;
+        onSel();
+      });
+      block.querySelectorAll('[contenteditable],input,textarea').forEach(el=>el.addEventListener('focus', onSel));
+    });
+    const first = window._smFirstInsertedRow;
+    if(first && first.row && first.block){
+      setTimeout(function(){
+        smSelectBlock(first.row, first.block, total, aiBtnEl);
+        first.block.scrollIntoView({behavior:'smooth', block:'nearest'});
+      }, 150);
+    }
+    return;
+  }
+
+  // 고급모드 / smVarBar 있는 경우: 미리보기 카드 표시
   const prev = document.getElementById('smVarResult');
   if(prev) prev.remove();
 
@@ -19373,10 +20808,15 @@ function _smVarInsertBlocks(items, varType, lv){
     </button>
     <button class="sm-var-retry-btn" onclick="smVarGenerate('${varType}')">다시 생성</button>
   </div></div>`;
-  window._smVarLastItems = items;
 
-  bar.insertAdjacentHTML('beforebegin', html);
-  document.getElementById('smVarResult').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  if(bar){
+    bar.insertAdjacentHTML('beforebegin', html);
+  } else if(selRow){
+    selRow.insertAdjacentHTML('afterend', html);
+  } else {
+    document.getElementById('smCanvas')?.insertAdjacentHTML('beforeend', html);
+  }
+  document.getElementById('smVarResult')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
   // 생성 버튼 복원
   const genBtn = document.querySelector('#smVarBar .sm-var-gen-btn');
@@ -19391,12 +20831,14 @@ window.smVarAddToCanvas = function(){
 function _smInsertItemsBeforeAnchor(items, anchor){
   const canvas = document.getElementById('smCanvas');
   if(!canvas || !items || !items.length) return;
+  const firstBlock = {el: null};
   items.forEach(function(item, idx){
     const qType = item.type || '선택형';
     const qNum = idx + 1;
-    // 1. 문항 블록 생성
+    // 문항 블록 생성
     const block = document.createElement('div');
     block.className = 'sm-block sm-var-inserted';
+    block.dataset.vartype = 'choice';
     const qText = item.question || '';
     let innerHtml = `<div class="sm-block-label">문항 ${qNum}</div>
       <div class="sm-text-block" contenteditable="true"
@@ -19415,36 +20857,20 @@ function _smInsertItemsBeforeAnchor(items, anchor){
       innerHtml += `<div class="sm-short-wrap"><input class="sm-short-input" placeholder="정답을 입력하세요"></div>`;
     }
     block.innerHTML = innerHtml;
-    // 2. 콘텐츠 추가하기 바 생성
-    const uid = 'bvar-ins-' + idx + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
-    const varBarEl = document.createElement('div');
-    varBarEl.className = 'sm-block-var-bar';
-    varBarEl.id = uid;
-    varBarEl.innerHTML = `<div class="sm-block-var-label">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="currentColor"/></svg>
-        콘텐츠 추가하기
-      </div>
-      <div class="sm-block-var-chips">
-        <button class="sm-block-var-chip" onclick="smBlockVarSelect(this,'${uid}','similar')">🔁 유사문항</button>
-        <button class="sm-block-var-chip" onclick="smBlockVarSelect(this,'${uid}','twin')">👯 쌍둥이문항</button>
-        <button class="sm-block-var-chip" onclick="smBlockVarSelect(this,'${uid}','level')">📊 난이도</button>
-      </div>
-      <div class="sm-block-var-opts" id="${uid}-opts" style="display:none;"></div>`;
-    // 3. DOM에 삽입
-    if(anchor) {
-      canvas.insertBefore(block, anchor);
-      canvas.insertBefore(varBarEl, anchor);
-    } else {
-      canvas.appendChild(block);
-      canvas.appendChild(varBarEl);
-    }
-    // 4. 삽입 애니메이션
-    block.style.opacity = '0'; block.style.transform = 'translateY(8px)';
-    setTimeout(function(){
-      block.style.transition = 'opacity .25s, transform .25s';
-      block.style.opacity = '1'; block.style.transform = '';
-    }, 20 * (idx + 1));
+    // sm-block-row 래퍼 (AI 버튼 지원)
+    const row = document.createElement('div');
+    row.className = 'sm-block-row';
+    row.appendChild(block);
+    // DOM에 삽입
+    if(anchor) canvas.insertBefore(row, anchor);
+    else canvas.appendChild(row);
+    // 삽입 애니메이션 (opacity는 인라인 스타일 사용 금지 → CSS가 제어)
+    row.style.transform = 'translateY(8px)';
+    row.style.transition = 'transform .25s';
+    setTimeout(function(){ row.style.transform = ''; }, 20 * (idx + 1));
+    if(idx === 0) firstBlock.el = {row, block};
   });
+  window._smFirstInsertedRow = firstBlock.el;
 }
 
 // 전체 바에서 삽입: 원콘텐츠 "콘텐츠 추가하기" 바 앞에 삽입
@@ -19454,8 +20880,43 @@ window.smVarInsertBelow = function(){
   const varBar = document.getElementById('smVarBar');
   _smInsertItemsBeforeAnchor(items, varBar || null);
   document.getElementById('smVarResult')?.remove();
-  // 삽입된 마지막 바 뒤로 스크롤
-  if(varBar) varBar.previousElementSibling?.scrollIntoView({behavior:'smooth', block:'nearest'});
+
+  const canvas = document.getElementById('smCanvas');
+  if(canvas){
+    // 심플모드: 새로 삽입된 모든 sm-block-row에 이벤트 연결
+    const aiBtnEl = document.getElementById('smGlobalAiBtn');
+    const allRows = canvas.querySelectorAll('.sm-block-row');
+    const total = allRows.length;
+    // 총 개수 업데이트
+    const tot = document.getElementById('smBlockTotal');
+    if(tot) tot.textContent = total;
+
+    // 새 블록(sm-var-inserted)의 row에 idx 부여 및 이벤트 연결
+    canvas.querySelectorAll('.sm-block-row').forEach(function(row, rowIdx){
+      const block = row.querySelector('.sm-block');
+      if(!block) return;
+      if(block.dataset.smIdx !== undefined) return; // 이미 연결됨
+      block.dataset.smIdx = String(rowIdx);
+      block.dataset.vartype = block.dataset.vartype || 'choice';
+      const onSel = function(){ smSelectBlock(row, block, total, aiBtnEl); };
+      block.addEventListener('mousedown', function(e){
+        if(e.target.closest('[contenteditable]')||['INPUT','TEXTAREA','BUTTON'].includes(e.target.tagName)) return;
+        onSel();
+      });
+      block.querySelectorAll('[contenteditable],input,textarea').forEach(el=>{
+        el.addEventListener('focus', onSel);
+      });
+    });
+
+    // 첫 번째 삽입된 블록만 활성화
+    const firstInserted = window._smFirstInsertedRow;
+    if(firstInserted && firstInserted.row && firstInserted.block){
+      setTimeout(function(){
+        smSelectBlock(firstInserted.row, firstInserted.block, total, aiBtnEl);
+        firstInserted.block.scrollIntoView({behavior:'smooth', block:'nearest'});
+      }, 100);
+    }
+  }
 };
 
 // 블록별 바에서 삽입: anchor 바 다음에 삽입 (원콘텐츠 바는 자리 유지)
@@ -19498,20 +20959,17 @@ function _smVarItemToBlock(item, idx){
     inner = `<div class="sm-short-wrap"><input class="sm-short-input" placeholder="정답을 입력하세요"></div>`;
   }
   const blockKey = 'inserted-' + idx + '-' + Math.random().toString(36).slice(2,5);
-  const varBar = _smBlockVarBar(blockKey);
-  return `<div class="sm-block sm-var-inserted">
+  return `<div class="sm-block sm-var-inserted" data-vartype="choice">
     <div class="sm-block-label">문항 ${qNum}</div>
     <div class="sm-text-block" contenteditable="true"
       data-placeholder="문제를 입력하세요"
       onfocus="smTopMediaActivate(this,'var-q${idx}')" onkeyup="smSaveCursor()" onmouseup="smSaveCursor()">${item.question||''}</div>
     ${inner}
-  </div>${varBar}`;
+  </div>`;
 }
 
 // ── 심플모드 닫기 ──
-window.smClose = function(){
-  document.getElementById('simpleMode').classList.remove('show');
-};
+// smClose는 19707 위치의 함수가 담당
 
 // ── 완료 ──
 window.smSave = function(){
@@ -19527,48 +20985,89 @@ window.smSave = function(){
 window._blocksForTemplate = _blocksForTemplate;
 window._titleBlock = _titleBlock;
 
+// ── 랜딩 렌더 함수 전역 노출 ──
+window.LS_UNITS = LS_UNITS;
+window._contCardHtml = _contCardHtml;
+window._setCardHtml = _setCardHtml;
+window._tmplGridHtml = _tmplGridHtml;
+window._kwHtml = _kwHtml;
+window._badgeHtml = _badgeHtml;
+window._breakdownHtml = _breakdownHtml;
+window._contTypeChip = _contTypeChip;
+window._lsMoreState = _lsMoreState;
+
 })();
 
 // ── 전체 탭 렌더 ──
 function _renderAll(){
+  // 콘텐츠 수집
+  const allConts = [];
+  for(let ui=0; ui<LS_UNITS.length; ui++){
+    const u = LS_UNITS[ui];
+    for(let ci=0; ci<u.contents.length; ci++){
+      allConts.push({c: u.contents[ci], ci, ui});
+    }
+  }
+  const _ms = window._lsMoreState || {cont:8, set:8};
+  const contLimit = _ms.cont;
+  const contVisible = allConts.slice(0, contLimit);
+  const contHasMore = allConts.length > contLimit;
+
+  // 세트지 수집
+  const allSets = [];
+  for(let ui=0; ui<LS_UNITS.length; ui++){
+    const u = LS_UNITS[ui];
+    for(let si=0; si<u.sets.length; si++){
+      allSets.push({s: {...u.sets[si], name:`[${u.num}단원] ${u.sets[si].name}`}, si, ui});
+    }
+  }
+  const setLimit = _ms.set;
+  const setVisible = allSets.slice(0, setLimit);
+  const setHasMore = allSets.length > setLimit;
+
   let html = '';
+
+  // ── 추천 콘텐츠 ──
   html += `
   <div class="ls-sec">
     <div class="ls-sec-header">
       <div class="ls-sec-title">추천 콘텐츠 <span class="ls-sec-title-em">— 전체 단원</span></div>
-      <span class="ls-sec-more">전체 보기</span>
+      <button class="ls-multi-toggle" id="lsContMultiToggle" onclick="lsContToggleMode()" title="여러 콘텐츠를 선택해서 삽입">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 8l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        복수 선택
+      </button>
     </div>
     <div class="ls-cont-grid ls-sec-content">`;
-  (function(){
-    let count = 0;
-    for(let ui=0; ui<LS_UNITS.length && count<8; ui++){
-      const u = LS_UNITS[ui];
-      for(let ci=0; ci<u.contents.length && count<8; ci++){
-        html += _contCardHtml(u.contents[ci], ci, ui);
-        count++;
-      }
-    }
-  })();
-  html += `</div></div>`;
+  contVisible.forEach(({c, ci, ui})=>{ html += _contCardHtml(c, ci, ui); });
+  html += `</div>`;
+  if(contHasMore){
+    html += `<div class="ls-loadmore-wrap">
+      <button class="ls-loadmore-btn" id="lsMore-cont" onclick="lsLoadMore('cont')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        콘텐츠 더보기
+      </button>
+    </div>`;
+  }
+  html += `</div>`;
 
+  // ── 추천 세트지 ──
   html += `
   <div class="ls-sec">
     <div class="ls-sec-header">
       <div class="ls-sec-title">추천 세트지 <span class="ls-sec-title-em">— 전체 단원</span></div>
-      <span class="ls-sec-more">전체 보기</span>
     </div>
-    <div class="ls-set-grid ls-sec-content">`;
-  (function(){
-    let count = 0;
-    for(let ui=0; ui<LS_UNITS.length && count<8; ui++){
-      const u = LS_UNITS[ui];
-      for(let si=0; si<u.sets.length && count<8; si++){
-        html += _setCardHtml({...u.sets[si], name:`[${u.num}단원] ${u.sets[si].name}`}, si===0 && ui===0, ui, si);
-        count++;
-      }
-    }
-  })();
-  html += `</div></div>`;
+    <div class="ls-set-grid ls-sec-content" id="lsSetGrid-all">`;
+  setVisible.forEach(({s, si, ui})=>{ html += _setCardHtml(s, si===0 && ui===0, ui, si); });
+  html += `</div>`;
+  if(setHasMore){
+    html += `<div class="ls-loadmore-wrap">
+      <button class="ls-loadmore-btn" id="lsMore-set" onclick="lsLoadMore('set')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        세트지 더보기
+      </button>
+    </div>`;
+  }
+  html += `</div>`;
 
   html += `
   <div class="ls-sec">
@@ -19592,6 +21091,7 @@ function _renderUnit(u){
   const contCards = u.contents.map((c,ci)=>_contCardHtml(c, ci, u.id)).join('');
   const setCards  = u.sets.map((s,si)=>_setCardHtml(s, si===0, u.id, si)).join('');
   const kws = _kwHtml(u.keywords);
+  const uid = u.id;
   return `
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;padding:18px 22px;
               background:white;border-radius:18px;border:1.5px solid #E8E7E2;" class="ls-sec-content">
@@ -19604,12 +21104,20 @@ function _renderUnit(u){
     <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:340px;justify-content:flex-end;">${kws}</div>
   </div>
   <div class="ls-sec">
-    <div class="ls-sec-header"><div class="ls-sec-title">추천 콘텐츠</div><span class="ls-sec-more">전체 보기</span></div>
+    <div class="ls-sec-header">
+      <div class="ls-sec-title">추천 콘텐츠</div>
+      <button class="ls-multi-toggle" id="lsContMultiToggle" onclick="lsContToggleMode()" title="여러 콘텐츠를 선택해서 삽입">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 8l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        복수 선택
+      </button>
+    </div>
     <div class="ls-cont-grid ls-sec-content">${contCards}</div>
   </div>
   <div class="ls-sec">
-    <div class="ls-sec-header"><div class="ls-sec-title">추천 세트지</div><span class="ls-sec-more">전체 보기</span></div>
-    <div class="ls-set-grid ls-sec-content">${setCards}</div>
+    <div class="ls-sec-header">
+      <div class="ls-sec-title">추천 세트지</div>
+    </div>
+    <div class="ls-set-grid ls-sec-content" id="lsSetGrid-${uid}">${setCards}</div>
   </div>
   <div class="ls-sec">
     <div class="ls-sec-header">
@@ -19683,6 +21191,23 @@ function _lsTmplUpdateBar(){
   });
 }
 
+// ── 콘텐츠 복수선택 모드 토글 ──
+let _lsContMultiMode = false;
+window.lsContToggleMode = function(){
+  _lsContMultiMode = !_lsContMultiMode;
+  // 버튼 상태
+  document.querySelectorAll('#lsContMultiToggle').forEach(function(btn){
+    btn.classList.toggle('on', _lsContMultiMode);
+  });
+  // 카드 체크 버튼 표시/숨김
+  document.querySelectorAll('.ls-card-check-btn').forEach(function(btn){
+    btn.style.opacity = _lsContMultiMode ? '1' : '0';
+    btn.style.pointerEvents = _lsContMultiMode ? 'auto' : 'none';
+  });
+  // 비활성화 시 선택 초기화
+  if(!_lsContMultiMode) lsClearSelection();
+};
+
 window.lsTmplToggleMode = function(){
   _lsTmplMultiMode = !_lsTmplMultiMode;
   if(!_lsTmplMultiMode){
@@ -19690,6 +21215,113 @@ window.lsTmplToggleMode = function(){
   }
   _lsTmplRerender();
   _lsTmplUpdateBar();
+};
+
+// ── 세트지 복수선택 모드 ──
+var _lsSetMultiMode = false;
+var _lsSetSelected = []; // {key, s, si, ui} 형태
+
+window.lsSetToggleMode = function(gridId){
+  _lsSetMultiMode = !_lsSetMultiMode;
+  if(!_lsSetMultiMode){
+    _lsSetSelected = [];
+    _lsSetUpdateBar();
+  }
+  // 토글 버튼 상태 갱신
+  document.querySelectorAll('[id^="lsSetMultiToggle"]').forEach(function(btn){
+    btn.classList.toggle('on', _lsSetMultiMode);
+    btn.innerHTML = _lsSetMultiMode
+      ? '<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3" fill="white" stroke="white" stroke-width="1"/><path d="M4 8l3 3 5-5" stroke="#4B6EF5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 선택 중'
+      : '<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 8l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 복수 선택';
+  });
+  // 카드 hover 스타일 갱신
+  document.querySelectorAll('.ls-set-card').forEach(function(card){
+    card.style.cursor = _lsSetMultiMode ? 'pointer' : '';
+  });
+  _lsSetUpdateBar();
+};
+
+window.lsSetCardClick = function(card, s, si, ui){
+  if(!_lsSetMultiMode){
+    // 단일 클릭: 기존 미리보기
+    lsOpenSetPreview(s, si, ui);
+    return;
+  }
+  const key = ui + '-' + si;
+  const pos = _lsSetSelected.findIndex(function(x){ return x.key === key; });
+  if(pos !== -1){
+    _lsSetSelected.splice(pos, 1);
+    card.classList.remove('ls-card-sel');
+    var ob = card.querySelector('.ls-card-check-btn');
+    if(ob){ ob.remove(); }
+    var wb = card.querySelector('.ls-tmpl-order-badge');
+    if(wb) wb.remove();
+  } else {
+    if(_lsSetSelected.length >= 5) return;
+    _lsSetSelected.push({key, s, si, ui});
+    card.classList.add('ls-card-sel');
+    var badge = document.createElement('div');
+    badge.className = 'ls-card-check-btn';
+    badge.style.cssText = 'position:absolute;top:8px;left:8px;width:22px;height:22px;border-radius:50%;background:#4B6EF5;border:2px solid white;color:white;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;z-index:3;box-shadow:0 1px 4px rgba(75,110,245,.4);';
+    badge.textContent = _lsSetSelected.length;
+    card.style.position = 'relative';
+    card.insertBefore(badge, card.firstChild);
+  }
+  // 번호 갱신
+  document.querySelectorAll('.ls-set-card.ls-card-sel').forEach(function(c){
+    var k2 = c.dataset.setkey;
+    var idx2 = _lsSetSelected.findIndex(function(x){ return x.key === k2; });
+    var b2 = c.querySelector('.ls-card-check-btn');
+    if(b2 && idx2 !== -1) b2.textContent = idx2 + 1;
+  });
+  _lsSetUpdateBar();
+};
+
+function _lsSetUpdateBar(){
+  var bar = document.getElementById('lsSetMultiBar');
+  if(!bar) return;
+  var n = _lsSetSelected.length;
+  bar.classList.toggle('show', _lsSetMultiMode);
+  var numEl = document.getElementById('lsSetCountNum');
+  if(numEl) numEl.textContent = n;
+  var insertBtn = document.getElementById('lsSetInsertBtn');
+  if(insertBtn) insertBtn.disabled = n === 0;
+  var pillsEl = document.getElementById('lsSetPills');
+  if(pillsEl){
+    pillsEl.innerHTML = _lsSetSelected.map(function(x, i){
+      return '<div class="ls-tmpl-pill"><span class="ls-tmpl-pill-num">'+(i+1)+'</span>'+(x.s.name||'세트지')+'</div>';
+    }).join('');
+  }
+}
+
+window.lsSetInsertAll = function(){
+  if(!_lsSetSelected.length) return;
+  var items = _lsSetSelected.slice();
+  _lsSetMultiMode = false;
+  _lsSetSelected = [];
+  _lsSetUpdateBar();
+  document.querySelectorAll('[id^="lsSetMultiToggle"]').forEach(function(btn){
+    btn.classList.remove('on');
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.5"/><path d="M4 8l3 3 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> 복수 선택';
+  });
+  document.querySelectorAll('.ls-set-card').forEach(function(c){ c.classList.remove('ls-card-sel'); });
+  lsClosePreview();
+  setTimeout(function(){
+    if(items.length === 1){
+      smOpen({type:'set', item: items[0].s}, items[0].ui, items[0].si);
+    } else {
+      smOpenMultiple(items.map(function(x){ return {type:'set', item: x.s}; }));
+    }
+  }, 200);
+};
+
+window.lsSetClearAll = function(){
+  _lsSetSelected = [];
+  document.querySelectorAll('.ls-set-card').forEach(function(c){
+    c.classList.remove('ls-card-sel');
+    var b = c.querySelector('.ls-card-check-btn'); if(b) b.remove();
+  });
+  _lsSetUpdateBar();
 };
 
 window.lsTmplCardClick = function(el, idx){
@@ -19923,6 +21555,832 @@ function _initResizeHandle(){
 }
 
 })();
+// ══════════════════════════════════════════════
+// ★ 안 A: 플로팅 AI 바 함수들
+// ══════════════════════════════════════════════
+
+// 툴바 속성 패널 토글 (tb-props)
+function toggleTbProps(){
+  const props = document.getElementById('tbProps');
+  const btn   = document.getElementById('tbPropsToggleBtn');
+  if(!props) return;
+  const isOpen = props.classList.contains('open');
+  if(isOpen){
+    props.classList.remove('open');
+    if(btn){ btn.style.background='white'; btn.style.color='var(--g4)'; btn.style.borderColor='var(--g2)'; }
+  } else {
+    props.classList.add('open');
+    if(btn){ btn.style.background='var(--blue-lt)'; btn.style.color='var(--blue)'; btn.style.borderColor='var(--blue)'; }
+  }
+}
+
+// 블록 선택 시 속성 패널 자동 열기
+function autoOpenTbProps(){
+  const props = document.getElementById('tbProps');
+  if(props && !props.classList.contains('open')){
+    props.classList.add('open');
+    const btn = document.getElementById('tbPropsToggleBtn');
+    if(btn){ btn.style.background='var(--blue-lt)'; btn.style.color='var(--blue)'; btn.style.borderColor='var(--blue)'; }
+  }
+}
+
+// ── 우측 속성 패널 열기/닫기 ──
+function openRpAttrPane(){
+  const panel  = document.querySelector('.right-panel');
+  const handle = document.getElementById('rpAttrHandle');
+  const pane   = document.getElementById('rpAttrPane');
+  if(panel)  panel.classList.add('rp-open');
+  if(handle) handle.classList.add('open');
+  if(pane)   pane.style.display = 'flex';
+  const eqm = document.getElementById('editorQuickMenu');
+  if(eqm) eqm.style.right = (260 + 28) + 'px';
+}
+function closeRpAttrPane(){
+  const panel  = document.querySelector('.right-panel');
+  const handle = document.getElementById('rpAttrHandle');
+  const pane   = document.getElementById('rpAttrPane');
+  if(panel)  panel.classList.remove('rp-open');
+  if(handle) handle.classList.remove('open');
+  if(pane)   pane.style.display = 'none';
+  const empty = document.getElementById('rpEmpty');
+  const body  = document.getElementById('rpBody');
+  if(empty) empty.style.display = 'flex';
+  if(body)  body.style.display  = 'none';
+  const eqm = document.getElementById('editorQuickMenu');
+  if(eqm) eqm.style.right = (28 + 28) + 'px';
+}
+function toggleRpAttrPane(){
+  const panel = document.querySelector('.right-panel');
+  if(!panel) return;
+  if(panel.classList.contains('rp-open')){
+    closeRpAttrPane();
+  } else {
+    openRpAttrPane();
+    const empty = document.getElementById('rpEmpty');
+    const body  = document.getElementById('rpBody');
+    if(window.curBlock){
+      if(empty) empty.style.display = 'none';
+      if(body)  body.style.display  = 'flex';
+    }
+    renderRp();
+  }
+}
+function toggleRpAttr(btn){ toggleRpAttrPane(); }
+window.rpSideTabSwitch = function(){ toggleRpAttrPane(); };
+
+// ── 편집영역 플로팅 퀵메뉴 ──
+window._eqmOpen = false;
+window._eqmScope = 'current';
+
+window.eqmSetScope = function(scope){
+  window._eqmScope = scope;
+  const tabCur = document.getElementById('eqmTabCur');
+  const tabAll = document.getElementById('eqmTabAll');
+  const btnsCur = document.getElementById('eqmBtnsCur');
+  const btnsAll = document.getElementById('eqmBtnsAll');
+  if(tabCur) tabCur.classList.toggle('on', scope==='current');
+  if(tabAll) tabAll.classList.toggle('on', scope==='all');
+  if(btnsCur) btnsCur.style.display = scope==='current' ? 'grid' : 'none';
+  if(btnsAll) btnsAll.style.display = scope==='all'     ? 'grid' : 'none';
+};
+
+window.toggleEqm = function(){
+  const popup = document.getElementById('eqmPopup');
+  const fab   = document.getElementById('eqmFab');
+  window._eqmOpen = !window._eqmOpen;
+  if(popup) popup.style.display = window._eqmOpen ? 'block' : 'none';
+  if(fab)   fab.classList.toggle('open', window._eqmOpen);
+  if(window._eqmOpen){
+    // 채팅 영역 초기화 (히스토리 유지 안 함)
+    resetQuickMenuChat('eqmChatMsgs', 'eqmChatPlaceholder', 'eqmChatInp');
+    // 현재 블록 카테고리에 맞춰 버튼 재렌더
+    renderQuickMenuCurrentButtons('eqmBtnsCur', 'advanced', 'cbQuickAction');
+    eqmSetScope(window._eqmScope || 'current');
+  }
+  eqmUpdatePosition();
+};
+
+// 채팅 영역 리셋 — 플레이스홀더만 남기고 메시지/입력값 모두 제거
+window.resetQuickMenuChat = function(msgsId, phId, inpId){
+  const msgs = document.getElementById(msgsId);
+  const ph   = document.getElementById(phId);
+  const inp  = document.getElementById(inpId);
+  if(msgs){
+    msgs.innerHTML = '';
+    if(ph){
+      ph.style.display = '';
+      msgs.appendChild(ph);
+    }
+  }
+  if(inp) inp.value = '';
+};
+
+// ══════════════════════════════════════════════════════════
+// ★ 공용: 블록 카테고리 감지 & 해당콘텐츠 버튼 동적 렌더링
+// ══════════════════════════════════════════════════════════
+// 카테고리: 'concept' | 'activity' | 'choice' | 'question'
+// 사용자 명세:
+//   개념: 빈 문서, 자료 이미지화
+//   활동: 서술형 활동 (template key = '서술형')
+//   문항(선택지O): 선택형, TF형, 순서입력형, 순서조합형, 연결형
+//   문항(선택지X): 단답형, OX형
+window.getBlockCategory = function(block){
+  if(!block) return 'question';
+
+  // 명시적 type
+  if(block.dataset && block.dataset.type === 'concept') return 'concept';
+
+  // 템플릿명 기반 (고급모드: dataset.tmpl, 심플모드: dataset.vartype)
+  const tmpl = (block.dataset && (block.dataset.tmpl || block.dataset.vartype)) || '';
+
+  // 개념 템플릿
+  const CONCEPT_TMPLS = ['빈 문서','자료 이미지화','concept'];
+  if(CONCEPT_TMPLS.includes(tmpl)) return 'concept';
+
+  // 활동 템플릿 (서술형은 코드상 '서술형' 키, 표시명만 '서술형 활동')
+  const ACTIVITY_TMPLS = ['서술형','서술형 활동','activity'];
+  if(ACTIVITY_TMPLS.includes(tmpl)) return 'activity';
+
+  // 문항 - 선택지 있음 (선택지 순서변경 버튼 노출)
+  const CHOICE_TMPLS = ['선택형','TF형','T/F형','순서입력형','순서조합형','연결형'];
+  if(CHOICE_TMPLS.includes(tmpl)) return 'choice';
+
+  // 문항 - 선택지 없음 (단답형, OX형, 기타)
+  const QUESTION_TMPLS = ['단답형','OX형'];
+  if(QUESTION_TMPLS.includes(tmpl)) return 'question';
+
+  // 심플모드에서 smDetectBlockType으로 보강 (템플릿명이 dataset에 없을 때)
+  if(typeof smDetectBlockType === 'function' && block.classList && block.classList.contains('sm-block')){
+    const v = smDetectBlockType(block);
+    if(v === 'concept') return 'concept';
+    if(v === 'activity') return 'activity';
+    if(v === 'choice'){
+      // OX 고정 선택지는 shuffle 대상 아님 → question
+      if(block.querySelector('.sm-oxquiz-block, .sm-oxquiz-choices')) return 'question';
+      return 'choice';
+    }
+  }
+
+  // 구조적 폴백: 선택지 DOM이 있으면 choice (OX 제외)
+  if(block.querySelector('.q-choices, .q-choice, .sm-choice-wrap, .sm-match-wrap')){
+    // OX 구조면 question으로 폴백
+    if(block.querySelector('.sm-oxquiz-block, .sm-oxquiz-choices')) return 'question';
+    return 'choice';
+  }
+
+  // 기본값: 문항 (선택지 없음)
+  return 'question';
+};
+
+// 카테고리별 해당콘텐츠 버튼 세트
+window.QUICK_MENU_BUTTONS = {
+  concept: [
+    { action:'regen',   icon:'🔄', label:'콘텐츠 재생성' },
+    { action:'imggen',  icon:'🖼️', label:'이미지 추천' },
+    { action:'videogen',icon:'🎬', label:'동영상 추천' },
+  ],
+  activity: [
+    { action:'regen',   icon:'🔄', label:'콘텐츠 재생성' },
+    { action:'level',   icon:'📊', label:'난이도' },
+  ],
+  choice: [
+    { action:'regen',   icon:'🔄', label:'콘텐츠 재생성' },
+    { action:'hint',    icon:'💡', label:'힌트/해설 재생성' },
+    { action:'level',   icon:'📊', label:'난이도' },
+    { action:'similar', icon:'📋', label:'유사문항' },
+    { action:'twin',    icon:'🔀', label:'쌍둥이문항' },
+    { action:'shuffleChoices', icon:'🎲', label:'선택지 순서변경' },
+  ],
+  question: [
+    { action:'regen',   icon:'🔄', label:'콘텐츠 재생성' },
+    { action:'hint',    icon:'💡', label:'힌트/해설 재생성' },
+    { action:'level',   icon:'📊', label:'난이도' },
+    { action:'similar', icon:'📋', label:'유사문항' },
+    { action:'twin',    icon:'🔀', label:'쌍둥이문항' },
+  ],
+};
+
+// 현재 선택된 블록 반환 (모드별)
+window.getCurrentBlockForMode = function(mode){
+  if(mode === 'simple'){
+    return (typeof smGetSelectedBlock === 'function') ? smGetSelectedBlock() : null;
+  }
+  return window.curBlock || null;
+};
+
+// 해당콘텐츠 버튼 그리드 렌더링
+window.renderQuickMenuCurrentButtons = function(containerId, mode, callbackName){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const block = getCurrentBlockForMode(mode);
+  const category = getBlockCategory(block);
+  const buttons = (window.QUICK_MENU_BUTTONS[category] || window.QUICK_MENU_BUTTONS.question);
+  el.innerHTML = buttons.map(b =>
+    '<button class="eqm-grid-btn" onclick="event.stopPropagation();'+callbackName+'(\''+b.action+'\',\'current\')">'
+    + '<span class="eqm-grid-icon">'+b.icon+'</span>'
+    + '<span class="eqm-grid-label">'+b.label+'</span>'
+    + '</button>'
+  ).join('');
+};
+
+// 퀵메뉴 위치: 우측 패널 너비에 맞게 동적 업데이트 (심플모드 여백감과 동일하게)
+window.eqmUpdatePosition = function(){
+  const eqm = document.getElementById('editorQuickMenu');
+  if(!eqm) return;
+  const panel = document.querySelector('.right-panel');
+  const rpW = (panel && panel.classList.contains('rp-open')) ? 260 : 28;
+  // 우측 패널 옆 기준 28px 여백 (심플모드는 뷰포트 기준 28px)
+  eqm.style.right = (rpW + 28) + 'px';
+};
+
+window.cbQuickAction = function(action, scope){
+  window._eqmOpen = false;
+  const popup = document.getElementById('eqmPopup');
+  const fab   = document.getElementById('eqmFab');
+  if(popup) popup.style.display = 'none';
+  if(fab)   fab.classList.remove('open');
+  const isAll = (scope === 'all');
+
+  // ── 즉시 처리 액션 ──
+  // 선택지 순서변경 (고급모드, current만)
+  if(action === 'shuffleChoices' && !isAll){
+    const b = window.curBlock;
+    if(!b){ showAiQuickToast('먼저 콘텐츠를 선택해주세요', 'warn'); return; }
+    const wrap = b.querySelector('.q-choices');
+    if(!wrap){ showAiQuickToast('이 콘텐츠에는 선택지가 없어요', 'warn'); return; }
+    const items = Array.from(wrap.querySelectorAll('.q-choice'));
+    if(items.length < 2){ showAiQuickToast('섞을 선택지가 부족해요', 'warn'); return; }
+    const shuffled = [...items].sort(()=>Math.random()-0.5);
+    shuffled.forEach(el => wrap.appendChild(el));
+    showAiQuickToast('선택지 순서를 변경했어요');
+    return;
+  }
+  // 전체 삭제 (고급모드, all만)
+  if(action === 'deleteAll' && isAll){
+    const slide = document.getElementById('slide1');
+    if(!slide){ return; }
+    const blocks = slide.querySelectorAll('.cb');
+    if(blocks.length === 0){ showAiQuickToast('삭제할 콘텐츠가 없어요', 'warn'); return; }
+    if(!confirm('전체 콘텐츠를 삭제할까요? 되돌릴 수 없어요.')) return;
+    blocks.forEach(b => b.remove());
+    window.curBlock = null;
+    if(typeof checkSlideEmpty === 'function') checkSlideEmpty();
+    showAiQuickToast('전체 콘텐츠가 삭제되었어요');
+    return;
+  }
+  // 템플릿 변환 — 기존 플로우 유지 (모달 직접 열기)
+  if(action === 'convert' && !isAll){
+    window._convertTargetBlock = window.curBlock;
+    if(typeof openTmplModal === 'function') openTmplModal();
+    return;
+  }
+
+  // ── 일반 AI 실행 — 심플모드 스타일 로딩 오버레이 + 토스트 ──
+  const actionLabels = {
+    regen:'재생성', hint:'힌트·해설 재생성', level:'난이도 변경',
+    similar:'유사문항 생성', twin:'쌍둥이문항 생성',
+    imggen:'이미지 추천', videogen:'동영상 추천',
+    deleteAll:'전체 삭제', convert:'템플릿 변환'
+  };
+  const label = actionLabels[action] || action;
+  const scopeLabel = isAll ? '전체' : '해당 콘텐츠';
+
+  if(!isAll && !window.curBlock){
+    showAiQuickToast('먼저 콘텐츠를 선택해주세요', 'warn');
+    return;
+  }
+  if(isAll){
+    const blocks = document.querySelectorAll('#slide1 .cb');
+    if(blocks.length === 0){ showAiQuickToast('적용할 콘텐츠가 없어요', 'warn'); return; }
+  }
+
+  showAiQuickLoading();
+  setTimeout(function(){
+    hideAiQuickLoading();
+    showAiQuickToast(scopeLabel + ' ' + label + ' 완료');
+  }, 1400);
+};
+
+// ══════════════════════════════════════════════════════════
+// ★ 공용 AI 실행 로딩 오버레이 & 토스트 (심플·고급 모드 공용)
+// ══════════════════════════════════════════════════════════
+window.showAiQuickLoading = function(){
+  document.querySelectorAll('.ai-quick-loading').forEach(el=>el.remove());
+  const el = document.createElement('div');
+  el.className = 'ai-quick-loading';
+  el.id = 'aiQuickLoading';
+  el.innerHTML =
+    '<div class="ai-quick-loading-icon">'
+    + '<div class="ai-quick-loading-icon-inner">'
+    +   '<span style="font-size:15px;font-weight:900;background:linear-gradient(135deg,#00B4D8,#7C4DFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">AI</span>'
+    + '</div></div>'
+    + '<div class="ai-quick-loading-text">'
+    +   '<div class="ai-quick-loading-text-main">AI가 콘텐츠를 생성 중이에요</div>'
+    +   '<div class="ai-quick-loading-text-sub">잠시만 기다려주세요...</div>'
+    + '</div>'
+    + '<div class="ai-quick-loading-dots">'
+    +   '<div class="ai-quick-loading-dot" style="animation-delay:0s"></div>'
+    +   '<div class="ai-quick-loading-dot" style="animation-delay:.3s"></div>'
+    +   '<div class="ai-quick-loading-dot" style="animation-delay:.6s"></div>'
+    + '</div>';
+  document.body.appendChild(el);
+};
+window.hideAiQuickLoading = function(){
+  document.querySelectorAll('.ai-quick-loading').forEach(el=>el.remove());
+};
+window.showAiQuickToast = function(text, variant){
+  document.querySelectorAll('.ai-quick-toast').forEach(el=>el.remove());
+  const el = document.createElement('div');
+  el.className = 'ai-quick-toast';
+  let iconHTML;
+  if(variant === 'warn'){
+    iconHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>';
+  } else {
+    iconHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  el.innerHTML = iconHTML + '<span>' + text + '</span>';
+  document.body.appendChild(el);
+  requestAnimationFrame(function(){ el.classList.add('show'); });
+  setTimeout(function(){
+    el.classList.remove('show');
+    setTimeout(function(){ el.remove(); }, 400);
+  }, 2200);
+};
+
+// ── 퀵메뉴 AI 채팅 (히스토리는 저장하지 않음 — 매 세션 새로 시작) ──
+// 주 구현은 아래 window.eqmChatSend
+
+// 블록 유무에 따라 퀵메뉴 표시/숨김
+window.eqmSyncVisibility = function(){
+  const eqm = document.getElementById('editorQuickMenu');
+  if(!eqm) return;
+  const slide = document.getElementById('slide1');
+  const hasBlocks = slide && slide.querySelectorAll('.cb').length > 0;
+  eqm.classList.toggle('eqm-visible', hasBlocks);
+  if(!hasBlocks){
+    window._eqmOpen = false;
+    const items = document.getElementById('eqmItems');
+    const fab   = document.getElementById('eqmFab');
+    if(items) items.style.display = 'none';
+    if(fab)   fab.classList.remove('open');
+  }
+  eqmUpdatePosition();
+};
+
+// 배경 클릭 시 퀵메뉴 닫기
+document.addEventListener('click', function(e){
+  if(window._eqmOpen && !e.target.closest('#editorQuickMenu')){
+    window._eqmOpen = false;
+    const popup = document.getElementById('eqmPopup');
+    const fab   = document.getElementById('eqmFab');
+    if(popup) popup.style.display = 'none';
+    if(fab)   fab.classList.remove('open');
+  }
+});
+
+// ── 퀵메뉴 채팅 ──
+window.eqmChatSend = async function(){
+  const inp  = document.getElementById('eqmChatInp');
+  const msgs = document.getElementById('eqmChatMsgs');
+  if(!inp || !msgs) return;
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = '';
+
+  // ── 프롬프트 전용 패턴 (Cursor Cmd+K / Notion AI 인라인 스타일) ──
+  // 1) 사용자 메시지는 DOM에 남기지 않음 (입력 필드가 곧 프롬프트)
+  // 2) 이전 AI 응답/로딩 모두 제거하고 "현재 결과"만 표시
+  // 3) 대화 히스토리 누적 없음
+  msgs.querySelectorAll('.eqm-cmsg-ai, .eqm-cmsg-loading').forEach(el=>el.remove());
+
+  // placeholder 숨기기
+  const ph = document.getElementById('eqmChatPlaceholder');
+  if(ph) ph.style.display = 'none';
+
+  // 로딩 카드 표시
+  const loadEl = document.createElement('div');
+  loadEl.className = 'eqm-cmsg-loading';
+  loadEl.textContent = '생성 중...';
+  msgs.appendChild(loadEl);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // 현재 선택 블록 정보
+  const scope = window._eqmScope || 'current';
+  let contextInfo = '';
+  if(scope === 'current' && window.curBlock){
+    const qt = window.curBlock.querySelector('.q-txt');
+    contextInfo = qt ? `현재 선택 콘텐츠: "${qt.textContent.slice(0,50)}"` : '현재 선택 콘텐츠 있음';
+  } else {
+    const blocks = [...document.querySelectorAll('#slide1 .cb')];
+    contextInfo = `전체 콘텐츠 ${blocks.length}개 있음`;
+  }
+
+  const prompt = `당신은 초등 수학 콘텐츠 저작툴 AI 어시스턴트입니다.
+${contextInfo}
+범위: ${scope === 'current' ? '해당 콘텐츠' : '전체'}
+사용자 요청: "${text}"
+짧고 친절하게 한국어로 답변하세요. (2-3문장 이내)`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 300,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.map(i=>i.text||'').join('').trim() || '응답 없음';
+    loadEl.remove();
+    const aiEl = document.createElement('div');
+    aiEl.className = 'eqm-cmsg-ai';
+    aiEl.textContent = reply;
+    msgs.appendChild(aiEl);
+    msgs.scrollTop = msgs.scrollHeight;
+  } catch(e) {
+    loadEl.remove();
+    const errEl = document.createElement('div');
+    errEl.className = 'eqm-cmsg-ai';
+    errEl.textContent = '오류가 발생했어요. 다시 시도해주세요.';
+    msgs.appendChild(errEl);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+};
+
+// ══════════════════════════════════════════════════════════
+// ★ 심플모드 플로팅 퀵메뉴 (editorQuickMenu와 동일 UX)
+// ══════════════════════════════════════════════════════════
+window._smqmOpen = false;
+window._smqmScope = 'current';
+
+window.smqmSetScope = function(scope){
+  window._smqmScope = scope;
+  const tabCur = document.getElementById('smqmTabCur');
+  const tabAll = document.getElementById('smqmTabAll');
+  const btnsCur = document.getElementById('smqmBtnsCur');
+  const btnsAll = document.getElementById('smqmBtnsAll');
+  if(tabCur) tabCur.classList.toggle('on', scope==='current');
+  if(tabAll) tabAll.classList.toggle('on', scope==='all');
+  if(btnsCur) btnsCur.style.display = scope==='current' ? 'grid' : 'none';
+  if(btnsAll) btnsAll.style.display = scope==='all'     ? 'grid' : 'none';
+};
+
+window.toggleSmqm = function(){
+  const popup = document.getElementById('smqmPopup');
+  const fab   = document.getElementById('smqmFab');
+  window._smqmOpen = !window._smqmOpen;
+  if(popup) popup.style.display = window._smqmOpen ? 'block' : 'none';
+  if(fab)   fab.classList.toggle('open', window._smqmOpen);
+  if(window._smqmOpen){
+    // 채팅 영역 초기화 (히스토리 유지 안 함)
+    if(typeof resetQuickMenuChat === 'function'){
+      resetQuickMenuChat('smqmChatMsgs', 'smqmChatPlaceholder', 'smqmChatInp');
+    }
+    // 현재 블록 카테고리에 맞춰 버튼 재렌더
+    if(typeof renderQuickMenuCurrentButtons === 'function'){
+      renderQuickMenuCurrentButtons('smqmBtnsCur', 'simple', 'smQuickAction');
+    }
+    smqmSetScope(window._smqmScope || 'current');
+  }
+};
+
+// 심플모드에서 현재 선택된 블록 찾기
+window.smGetSelectedBlock = function(){
+  const canvas = document.getElementById('smCanvas');
+  if(!canvas) return null;
+  const selRow = canvas.querySelector('.sm-block-row.sm-row-sel');
+  return selRow ? selRow.querySelector('.sm-block') : null;
+};
+
+// 퀵메뉴 액션 — 해당/전체 분기
+window.smQuickAction = function(action, scope){
+  // 팝업 닫기
+  window._smqmOpen = false;
+  const popup = document.getElementById('smqmPopup');
+  const fab   = document.getElementById('smqmFab');
+  if(popup) popup.style.display = 'none';
+  if(fab)   fab.classList.remove('open');
+
+  const isAll = (scope === 'all');
+  const selBlock = smGetSelectedBlock();
+
+  // ── 즉시 처리 액션 ──
+  // 선택지 순서변경 (심플모드, current만)
+  if(action === 'shuffleChoices' && !isAll){
+    if(!selBlock){ showAiQuickToast('먼저 콘텐츠를 선택해주세요', 'warn'); return; }
+    const choicesWrap = selBlock.querySelector('.sm-choice-wrap, .q-choices, .sm-match-wrap');
+    if(!choicesWrap){ showAiQuickToast('이 콘텐츠에는 선택지가 없어요', 'warn'); return; }
+    const items = Array.from(choicesWrap.children);
+    if(items.length < 2){ showAiQuickToast('섞을 선택지가 부족해요', 'warn'); return; }
+    const shuffled = [...items].sort(()=>Math.random()-0.5);
+    shuffled.forEach(el => choicesWrap.appendChild(el));
+    showAiQuickToast('선택지 순서를 변경했어요');
+    return;
+  }
+
+  // 전체 삭제
+  if(action === 'deleteAll'){
+    const canvas = document.getElementById('smCanvas');
+    if(!canvas) return;
+    const rows = canvas.querySelectorAll('.sm-block-row:not(.sm-title-row)');
+    if(rows.length === 0){ showAiQuickToast('삭제할 콘텐츠가 없어요', 'warn'); return; }
+    if(!confirm('전체 콘텐츠를 삭제할까요? 되돌릴 수 없어요.')) return;
+    rows.forEach(r => r.remove());
+    canvas.classList.remove('has-sel');
+    const tot = document.getElementById('smBlockTotal');
+    if(tot) tot.textContent = '0';
+    const cur = document.getElementById('smBlockCur');
+    if(cur) cur.textContent = '0';
+    showAiQuickToast('전체 콘텐츠가 삭제되었어요');
+    return;
+  }
+
+  // 템플릿 변환 — 모달 열기
+  if(action === 'convert' && !isAll){
+    if(typeof openTmplModal === 'function') openTmplModal();
+    return;
+  }
+
+  // ── 일반 AI 실행 — 공용 로딩 오버레이 + 토스트 ──
+  const actionLabels = {
+    regen:'재생성', hint:'힌트·해설 재생성', level:'난이도 변경',
+    similar:'유사문항 생성', twin:'쌍둥이문항 생성',
+    imggen:'이미지 추천', videogen:'동영상 추천'
+  };
+  const label = actionLabels[action] || action;
+  const scopeLabel = isAll ? '전체' : '해당 콘텐츠';
+
+  if(!isAll && !selBlock){
+    showAiQuickToast('먼저 콘텐츠를 선택해주세요', 'warn');
+    return;
+  }
+  if(isAll){
+    const canvas = document.getElementById('smCanvas');
+    const cnt = canvas ? canvas.querySelectorAll('.sm-block-row:not(.sm-title-row)').length : 0;
+    if(cnt === 0){ showAiQuickToast('적용할 콘텐츠가 없어요', 'warn'); return; }
+  }
+
+  showAiQuickLoading();
+  setTimeout(function(){
+    hideAiQuickLoading();
+    showAiQuickToast(scopeLabel + ' ' + label + ' 완료');
+  }, 1400);
+};
+
+// 가벼운 토스트 (sm-done-toast 재사용) — 하위호환용 (기존 호출 지점에서 쓰이는 경우)
+window.smqmToast = function(text){
+  showAiQuickToast(text);
+};
+
+// 채팅 전송 (eqmChatSend와 동일 로직)
+window.smqmChatSend = async function(){
+  const inp  = document.getElementById('smqmChatInp');
+  const msgs = document.getElementById('smqmChatMsgs');
+  if(!inp || !msgs) return;
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = '';
+
+  // ── 프롬프트 전용 패턴 (Cursor Cmd+K / Notion AI 인라인 스타일) ──
+  // 사용자 메시지는 DOM에 남기지 않음, 이전 결과 제거 후 새 결과만 표시
+  msgs.querySelectorAll('.eqm-cmsg-ai, .eqm-cmsg-loading').forEach(el=>el.remove());
+
+  const ph = document.getElementById('smqmChatPlaceholder');
+  if(ph) ph.style.display = 'none';
+
+  const loadEl = document.createElement('div');
+  loadEl.className = 'eqm-cmsg-loading';
+  loadEl.textContent = '생성 중...';
+  msgs.appendChild(loadEl);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const scope = window._smqmScope || 'current';
+  const selBlock = smGetSelectedBlock();
+  let contextInfo = '';
+  if(scope === 'current' && selBlock){
+    const t = selBlock.innerText?.slice(0,80) || '';
+    contextInfo = '현재 선택 콘텐츠: "' + t + '"';
+  } else {
+    const canvas = document.getElementById('smCanvas');
+    const cnt = canvas ? canvas.querySelectorAll('.sm-block-row:not(.sm-title-row)').length : 0;
+    contextInfo = '전체 콘텐츠 ' + cnt + '개 있음';
+  }
+
+  const prompt = '당신은 초등 수학 콘텐츠 저작툴 AI 어시스턴트입니다.\n'
+    + contextInfo + '\n'
+    + '범위: ' + (scope==='current' ? '해당 콘텐츠' : '전체') + '\n'
+    + '사용자 요청: "' + text + '"\n'
+    + '짧고 친절하게 한국어로 답변하세요. (2-3문장 이내)';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 300,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.map(i=>i.text||'').join('').trim() || '응답 없음';
+    loadEl.remove();
+    const aiEl = document.createElement('div');
+    aiEl.className = 'eqm-cmsg-ai';
+    aiEl.textContent = reply;
+    msgs.appendChild(aiEl);
+    msgs.scrollTop = msgs.scrollHeight;
+  } catch(e) {
+    loadEl.remove();
+    const errEl = document.createElement('div');
+    errEl.className = 'eqm-cmsg-ai';
+    errEl.textContent = '오류가 발생했어요. 다시 시도해주세요.';
+    msgs.appendChild(errEl);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+};
+
+// 심플모드 배경 클릭 시 퀵메뉴 닫기
+document.addEventListener('click', function(e){
+  if(window._smqmOpen && !e.target.closest('#smQuickMenu')){
+    window._smqmOpen = false;
+    const popup = document.getElementById('smqmPopup');
+    const fab   = document.getElementById('smqmFab');
+    if(popup) popup.style.display = 'none';
+    if(fab)   fab.classList.remove('open');
+  }
+});
+(function(){
+  const _orig_open = window.openRpAttrPane || function(){};
+  const _orig_close = window.closeRpAttrPane || function(){};
+  // toggleRpAttrPane 후 위치 업데이트
+  const _origToggle = window.toggleRpAttrPane;
+  if(_origToggle) window.toggleRpAttrPane = function(){
+    _origToggle();
+    setTimeout(eqmUpdatePosition, 250); // transition 완료 후
+  };
+})();
+
+// 블록 선택 시 플로팅 바 — 선택 블록 우측 상단에 배치
+// ══ 안 B: 블록 인라인 액션바 ══
+
+// 호환용 no-op (외부 참조 방어)
+function showRpFloatBar(show, targetBlock){
+  if(!show) cbInlineBarRemove();
+  // show는 selBlock에서 직접 cbInlineBarShow 호출
+}
+function closeRpFloatPop(){ cbAiPopClose(); }
+function toggleRpFloatPop(){ cbAiPopToggle(curBlock); }
+function rfpSetScope(scope, btn){}
+function rpFloatSend(text){ cbAiPopSend(text); }
+function rpFloatQuick(action){
+  if(!curBlock){ T('먼저 콘텐츠를 선택해주세요'); return; }
+  if(typeof rpAiQuick === 'function') rpAiQuick(action);
+}
+
+// ── 인라인 바 생성/제거 ──
+function cbInlineBarRemove(){
+  document.querySelectorAll('.cb-inline-bar,.cb-ai-pop').forEach(el=>el.remove());
+}
+
+function cbInlineBarShow(block){
+  if(!block) return;
+  cbInlineBarRemove();
+
+  const bar = document.createElement('div');
+  bar.className = 'cb-inline-bar';
+  bar.innerHTML = `
+    <button class="cb-ib-btn" onclick="event.stopPropagation();rpFloatQuick('regen')">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M1 4v6h6M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 013.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      재생성
+    </button>
+    <button class="cb-ib-btn" onclick="event.stopPropagation();rpFloatQuick('hint')">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      힌트/해설
+    </button>
+    <button class="cb-ib-btn" onclick="event.stopPropagation();rpFloatQuick('level')">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M18 20V10M12 20V4M6 20v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      난이도
+    </button>
+    <button class="cb-ib-btn" onclick="event.stopPropagation();rpFloatQuick('similar')">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="8" y="2" width="8" height="4" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+      유사문항
+    </button>
+    <button class="cb-ib-btn" onclick="event.stopPropagation();rpFloatQuick('twin')">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2M16 8h2a2 2 0 012 2v8a2 2 0 01-2 2H10a2 2 0 01-2-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      쌍둥이
+    </button>
+    <button class="cb-ib-btn" onclick="event.stopPropagation();rpFloatQuick('convert')">
+      <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      변환
+    </button>
+    <button class="cb-ib-ai" onclick="event.stopPropagation();cbAiPopToggle(this.closest('.cb'))">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="white"/></svg>
+      AI 수정
+    </button>`;
+  block.appendChild(bar);
+}
+
+// ── AI 수정 팝오버 ──
+let _cbAiPopScope = 'current';
+
+function cbAiPopToggle(block){
+  const b = block || curBlock;
+  if(!b) return;
+  const existing = b.querySelector('.cb-ai-pop');
+  if(existing){ existing.remove(); return; }
+  cbAiPopOpen(b);
+}
+
+function cbAiPopOpen(block){
+  if(!block) return;
+  document.querySelectorAll('.cb-ai-pop').forEach(el=>el.remove());
+
+  const pop = document.createElement('div');
+  pop.className = 'cb-ai-pop';
+  pop.innerHTML = `
+    <div class="cb-aip-scope">
+      <button class="cb-aip-scope-btn on" onclick="event.stopPropagation();cbAiScopeSet(this,'current')">해당 콘텐츠</button>
+      <button class="cb-aip-scope-btn" onclick="event.stopPropagation();cbAiScopeSet(this,'all')">전체</button>
+    </div>
+    <div class="cb-aip-quick" id="cbAipQuickCur">
+      <button class="cb-aip-q-btn" onclick="event.stopPropagation();cbAiPopSend('재생성해줘')">↺ 재생성</button>
+      <button class="cb-aip-q-btn" onclick="event.stopPropagation();cbAiPopSend('힌트와 해설을 재생성해줘')">💡 힌트/해설</button>
+      <button class="cb-aip-q-btn" onclick="event.stopPropagation();cbAiPopSend('난이도를 조정해줘')">📊 난이도</button>
+      <button class="cb-aip-q-btn" onclick="event.stopPropagation();cbAiPopSend('유사문항 2개 만들어줘')">🔁 유사문항</button>
+    </div>
+    <div class="cb-aip-quick" id="cbAipQuickAll" style="display:none;">
+      <button class="cb-aip-q-btn" onclick="event.stopPropagation();cbAiPopSend('전체 콘텐츠 재생성해줘')">↺ 전체 재생성</button>
+      <button class="cb-aip-q-btn" onclick="event.stopPropagation();cbAiPopSend('전체 난이도 조정해줘')">📊 전체 난이도</button>
+    </div>
+    <div class="cb-aip-msgs" style="display:none;"></div>
+    <div class="cb-aip-inp-row">
+      <input class="cb-aip-inp" placeholder="수정 요청을 입력하세요..."
+        onclick="event.stopPropagation()"
+        onkeydown="if(event.key==='Enter'){event.stopPropagation();cbAiPopSend(this.closest('.cb-ai-pop'),this.value);}">
+      <button class="cb-aip-send" onclick="event.stopPropagation();cbAiPopSend(this.closest('.cb-ai-pop'),this.closest('.cb-ai-pop').querySelector('.cb-aip-inp').value)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>`;
+  block.appendChild(pop);
+  setTimeout(()=>{ document.getElementById('cbAipInp')?.focus(); }, 80);
+}
+
+function cbAiPopClose(){
+  document.querySelectorAll('.cb-ai-pop').forEach(el=>el.remove());
+}
+
+function cbAiScopeSet(btn, scope){
+  _cbAiPopScope = scope;
+  const pop = btn.closest('.cb-ai-pop');
+  if(!pop) return;
+  pop.querySelectorAll('.cb-aip-scope-btn').forEach(b=>b.classList.toggle('on', b===btn));
+  pop.querySelector('.cb-aip-quick:first-of-type,#cbAipQuickCur,[id^=cbAipQuick]');
+  const qs = pop.querySelectorAll('.cb-aip-quick');
+  if(qs[0]) qs[0].style.display = scope==='current'?'flex':'none';
+  if(qs[1]) qs[1].style.display = scope==='all'?'flex':'none';
+}
+
+function cbAiPopSend(popOrText, text){
+  // 첫 인자가 element면 팝오버, string이면 구버전 호환
+  let pop = null, txt = '';
+  if(typeof popOrText === 'string'){ txt = popOrText; }
+  else { pop = popOrText; txt = text || ''; }
+  if(!txt || !txt.trim()) return;
+  const inp = pop ? pop.querySelector('.cb-aip-inp') : null;
+  if(inp) inp.value = '';
+  const msgsEl = pop ? pop.querySelector('.cb-aip-msgs') : null;
+  if(msgsEl){
+    msgsEl.style.display = 'flex';
+    const userMsg = document.createElement('div');
+    userMsg.style.cssText = 'display:flex;justify-content:flex-end;';
+    userMsg.innerHTML = '<div style="background:#4B6EF5;color:white;border-radius:10px 3px 10px 10px;padding:5px 9px;font-size:10px;max-width:90%;">'+text+'</div>';
+    msgsEl.appendChild(userMsg);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+  // 실제 AI 전달
+  if(_cbAiPopScope === 'all'){
+    const allInp = document.getElementById('rpAiAllInp');
+    if(allInp){ allInp.value = text; sendRpAiAllChatDirect && sendRpAiAllChatDirect(text); }
+    else { const i2 = document.getElementById('rpAiInp'); if(i2) i2.value=text; sendRpAiUnified && sendRpAiUnified(); }
+  } else {
+    const i2 = document.getElementById('rpAiInp');
+    if(i2) i2.value = text;
+    sendRpAiUnified && sendRpAiUnified();
+  }
+  setTimeout(function(){
+    if(msgsEl){
+      const aiMsg = document.createElement('div');
+      aiMsg.style.cssText = 'display:flex;gap:5px;align-items:flex-start;';
+      aiMsg.innerHTML = '<div style="width:18px;height:18px;border-radius:4px;background:linear-gradient(135deg,#4B6EF5,#7C4DFF);color:white;font-size:7px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">AI</div>'
+        +'<div style="background:#F8F9FF;border:1px solid var(--g2);border-radius:3px 8px 8px 8px;padding:5px 9px;font-size:10px;color:var(--text);line-height:1.5;">처리했어요.</div>';
+      msgsEl.appendChild(aiMsg);
+      msgsEl.scrollTop = msgsEl.scrollHeight;
+    }
+  }, 600);
+}
+
+
 </script>
 
 <style>
@@ -20156,7 +22614,9 @@ tr.mrow-active td { background:#EEF1FF !important; }
   background:#FEF3C7;color:#92400E;font-size:10px;font-weight:700;margin-left:6px;
   vertical-align:middle;
 }
+
 </style>
 
+<!-- ★ 편집영역 플로팅 퀵메뉴 → editor-body 내부로 이동됨 -->
+
 </body>
-</html>
