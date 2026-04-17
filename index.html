@@ -30,6 +30,33 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 }
 .landing-screen.out{opacity:0;transform:scale(1.02);pointer-events:none;}
 
+/* 랜딩 화면이 활성화된 동안은 배경 에디터 UI(타이틀바·툴바·에디터 본문) 완전 숨김 */
+body.landing-active .title-bar,
+body.landing-active .toolbar,
+body.landing-active .editor-body{
+  display:none !important;
+}
+
+/* 추천 보기 팝업 내부 탭 */
+.tmpl-rec-tab{
+  padding:10px 18px;
+  border:none;background:transparent;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:13px;font-weight:700;color:#9CA3AF;
+  border-bottom:2.5px solid transparent;margin-bottom:-1px;
+  transition:all .13s;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.tmpl-rec-tab:hover{ color:#4B6EF5; }
+.tmpl-rec-tab.on{
+  color:#4B6EF5;border-bottom-color:#4B6EF5;font-weight:800;
+}
+.tmpl-rec-tab-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:18px;height:18px;padding:0 5px;border-radius:9px;
+  background:#FF4F6A;color:white;font-size:10px;font-weight:800;
+}
+
 /* ── 상단 GNB ── */
 .ls-gnb{
   height:62px;
@@ -6482,31 +6509,36 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   </div>
 </div>
 
-<!-- 추천 콘텐츠 화면 (교사공유) -->
+<!-- 추천 콘텐츠 화면 (추천 콘텐츠 / 추천 세트지 / 찜한 것) -->
 <div id="tmplRecommendScreen" style="display:none;position:fixed;inset:0;z-index:3100;background:rgba(15,18,35,.45);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeTmplRecommend()">
   <div style="background:white;border-radius:20px;width:820px;max-width:calc(100vw - 32px);max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.22);overflow:hidden;animation:popupIn .25s cubic-bezier(.34,1.56,.64,1);">
     <!-- 헤더 -->
-    <div style="padding:22px 28px 16px;border-bottom:1px solid #F3F4F6;flex-shrink:0;">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+    <div style="padding:22px 28px 0;border-bottom:1px solid #F3F4F6;flex-shrink:0;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
         <div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <div style="font-size:18px;font-weight:800;color:#1C1F2E;">추천 콘텐츠</div>
-            <span style="padding:3px 10px;border-radius:20px;background:#E8FFF5;color:#22C98B;font-size:11px;font-weight:700;">👩‍🏫 교사 공유</span>
+            <div style="font-size:18px;font-weight:800;color:#1C1F2E;">추천 보기</div>
           </div>
-          <div style="font-size:12px;color:#9CA3AF;">콘텐츠를 선택하면 미리보기를 확인할 수 있어요</div>
+          <div style="font-size:12px;color:#9CA3AF;">원하는 콘텐츠를 선택하거나 찜한 항목을 확인해보세요</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <!-- 단원 필터 -->
-          <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:10px;border:1.5px solid #E5E7EB;background:#FAFAFA;">
+          <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:10px;border:1.5px solid #E5E7EB;background:#FAFAFA;" id="tmplRecUnitWrap">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M7 12h10M10 18h4" stroke="#9CA3AF" stroke-width="1.8" stroke-linecap="round"/></svg>
             <select id="tmplRecUnitSel" onchange="tmplRecFilter()" style="border:none;background:none;font-size:12px;font-weight:600;color:#374151;font-family:'Noto Sans KR',sans-serif;cursor:pointer;outline:none;"></select>
           </div>
           <button onclick="closeTmplRecommend()" style="width:32px;height:32px;border-radius:8px;border:none;background:#F3F4F6;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#6B7280;font-size:16px;" onmouseover="this.style.background='#E5E7EB'" onmouseout="this.style.background='#F3F4F6'">✕</button>
         </div>
       </div>
+      <!-- 탭 네비 -->
+      <div style="display:flex;gap:2px;">
+        <button class="tmpl-rec-tab on" data-tab="content" onclick="tmplRecSwitchTab('content')">추천 콘텐츠</button>
+        <button class="tmpl-rec-tab" data-tab="set" onclick="tmplRecSwitchTab('set')">추천 세트지</button>
+        <button class="tmpl-rec-tab" data-tab="liked" onclick="tmplRecSwitchTab('liked')">찜한 항목 <span class="tmpl-rec-tab-badge" id="tmplRecLikedBadge">0</span></button>
+      </div>
     </div>
     <!-- 콘텐츠 그리드 -->
-    <div style="flex:1;overflow-y:auto;padding:24px 28px;">
+    <div style="flex:1;overflow-y:auto;padding:20px 28px 24px;">
       <div id="tmplRecGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;"></div>
     </div>
   </div>
@@ -7249,6 +7281,7 @@ function lgSaveToMyContents(id, title, type, grade, source='gallery'){
 function openMyContentsPage(){
   const landing = document.getElementById('landingScreen');
   if(landing){ landing.classList.add('out'); setTimeout(()=>landing.style.display='none',400); }
+  document.body.classList.remove('landing-active'); // 에디터 UI와 독립된 전체 페이지
   const page = document.getElementById('myContentsPage');
   if(page){ page.style.display='flex'; renderMyPageGrid('mine'); }
 }
@@ -7258,6 +7291,7 @@ function closeMyContentsPage(){
   if(page) page.style.display='none';
   const landing = document.getElementById('landingScreen');
   if(landing){ landing.style.display='flex'; landing.style.opacity='1'; landing.style.transform='none'; landing.classList.remove('out'); }
+  document.body.classList.add('landing-active');
 }
 
 // 내 자료 그리드 렌더링
@@ -7446,6 +7480,8 @@ function lgInsertContent(id){
 function landingOpenEditor(){
   const screen = document.getElementById('landingScreen');
   screen.classList.add('out');
+  // 에디터 UI 복원
+  document.body.classList.remove('landing-active');
   setTimeout(()=>{
     screen.style.display='none';
     // 블록 있으면 퀵메뉴 동기화
@@ -11436,6 +11472,12 @@ function checkSlideEmpty(){
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
+  // 페이지 초기 진입: 랜딩이 기본 표시되므로 body에 landing-active 추가
+  // (에디터 UI인 title-bar/toolbar/editor-body를 감춰 하단이 비지 않도록)
+  const landing = document.getElementById('landingScreen');
+  if(landing && landing.style.display !== 'none' && !landing.classList.contains('out')){
+    document.body.classList.add('landing-active');
+  }
   // 갤러리 카드 초기 렌더링
   lgInitFilter();
   lgRenderCards('lgCardsOfficial', lgOfficialContents);
@@ -15620,7 +15662,9 @@ function selectTmpl(el, name, desc, isOcr=false){
   }
 }
 
-// ── 추천 콘텐츠 화면 (교사공유) ──
+// ── 추천 콘텐츠/세트지/찜한 항목 탭 팝업 ──
+window._tmplRecTab = 'content'; // 'content' | 'set' | 'liked'
+
 function openTmplRecommend(){
   const screen = document.getElementById('tmplRecommendScreen');
   screen.style.display = 'flex';
@@ -15630,11 +15674,38 @@ function openTmplRecommend(){
   if(sel && grade){
     sel.innerHTML = `<option value="">전체 단원</option>` + grade.units.map(u=>`<option value="${u}">${u.split(' · ')[1]||u}</option>`).join('');
   }
+  window._tmplRecTab = 'content';
+  tmplRecUpdateTabs();
+  tmplRecUpdateLikedBadge();
   tmplRecRender('');
 }
 
 function closeTmplRecommend(){
   document.getElementById('tmplRecommendScreen').style.display = 'none';
+}
+
+// 탭 전환
+function tmplRecSwitchTab(tab){
+  window._tmplRecTab = tab;
+  tmplRecUpdateTabs();
+  // 찜한 항목 탭에서는 단원 필터를 숨김
+  const unitWrap = document.getElementById('tmplRecUnitWrap');
+  if(unitWrap) unitWrap.style.display = (tab === 'liked') ? 'none' : 'flex';
+  tmplRecFilter();
+}
+
+function tmplRecUpdateTabs(){
+  document.querySelectorAll('.tmpl-rec-tab').forEach(t => {
+    t.classList.toggle('on', t.dataset.tab === window._tmplRecTab);
+  });
+}
+
+function tmplRecUpdateLikedBadge(){
+  const badge = document.getElementById('tmplRecLikedBadge');
+  if(!badge) return;
+  const n = (window._lsWished && window._lsWished.size) ? window._lsWished.size : 0;
+  badge.textContent = n > 99 ? '99+' : String(n);
+  badge.style.display = n === 0 ? 'none' : 'inline-flex';
 }
 
 function tmplRecFilter(){
@@ -15645,13 +15716,27 @@ function tmplRecFilter(){
 function tmplRecRender(unitFilter){
   const grid = document.getElementById('tmplRecGrid');
   if(!grid) return;
+  const tab = window._tmplRecTab || 'content';
+
+  if(tab === 'liked'){
+    return tmplRecRenderLiked(grid);
+  }
+  if(tab === 'set'){
+    return tmplRecRenderSets(grid, unitFilter);
+  }
+  // 기본: 추천 콘텐츠
+  return tmplRecRenderContents(grid, unitFilter);
+}
+
+// 추천 콘텐츠 그리드
+function tmplRecRenderContents(grid, unitFilter){
   const pool = typeof lgTeacherContents !== 'undefined' ? lgTeacherContents : [];
   const items = unitFilter
     ? pool.filter(item => item.title.includes(unitFilter.split(' · ')[1]||unitFilter) || (item.unit && item.unit===unitFilter))
     : pool;
 
   if(!items.length){
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#9CA3AF;font-size:13px;">해당 단원의 공유 콘텐츠가 없어요</div>`;
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#9CA3AF;font-size:13px;">해당 단원의 콘텐츠가 없어요</div>`;
     return;
   }
 
@@ -15670,12 +15755,153 @@ function tmplRecRender(unitFilter){
         <div style="font-size:14px;font-weight:800;color:#1C1F2E;margin-bottom:4px;">${item.title}</div>
         <div style="font-size:12px;color:#6B7280;margin-bottom:10px;">${item.desc||''}</div>
         <div style="display:flex;align-items:center;justify-content:space-between;">
-          <span style="font-size:11px;color:#9CA3AF;">${item.grade||''} · ${item.author||'교사'}</span>
+          <span style="font-size:11px;color:#9CA3AF;">${item.grade||''}</span>
           <button onclick="lgPreview('${item.id}')" style="border:none;background:none;font-size:12px;font-weight:700;color:${ac};cursor:pointer;padding:0;">미리보기 ›</button>
         </div>
       </div>
     </div>`;
   }).join('');
+}
+
+// 추천 세트지 그리드 — 랜딩의 LS_UNITS에서 sets 추출
+function tmplRecRenderSets(grid, unitFilter){
+  const units = (typeof LS_UNITS !== 'undefined') ? LS_UNITS : (window._lsDataSource || []);
+  const items = [];
+  units.forEach((u, uidx) => {
+    const name = u.name || '';
+    if(unitFilter && !name.includes(unitFilter.split(' · ')[1]||unitFilter)) return;
+    (u.sets || []).forEach((s, sidx) => {
+      items.push({ uidx, sidx, name: s.name, unit: u.name, breakdown: s.breakdown, badge: s.badge });
+    });
+  });
+
+  if(!items.length){
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#9CA3AF;font-size:13px;">해당 단원의 세트지가 없어요</div>`;
+    return;
+  }
+
+  const badgeMap = { ai: ['AI 추천','#F3EEFF','#7C4DFF'], new:['신규','#EEF1FF','#4B6EF5'], hot:['인기','#FFF0F3','#FF4F6A'] };
+
+  grid.innerHTML = items.map(it => {
+    const b = badgeMap[it.badge] || ['추천','#EEF1FF','#4B6EF5'];
+    const summary = it.breakdown
+      ? Object.entries(it.breakdown).map(([k,v]) => `${k} ${v}개`).join(' · ')
+      : '';
+    return `<div onclick="tmplRecInsertSet(${it.uidx},${it.sidx})" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:16px;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0'">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+        <span style="padding:3px 9px;border-radius:20px;background:${b[1]};color:${b[2]};font-size:10px;font-weight:800;">${b[0]}</span>
+        <span style="font-size:10.5px;font-weight:700;color:#FF8C42;background:#FFF6EF;padding:2px 7px;border-radius:5px;">세트지</span>
+      </div>
+      <div style="font-size:14px;font-weight:800;color:#1C1F2E;margin-bottom:6px;line-height:1.35;">${it.name}</div>
+      <div style="font-size:11px;color:#6B7280;margin-bottom:4px;">📚 ${it.unit}</div>
+      <div style="font-size:11px;color:#9CA3AF;">${summary}</div>
+    </div>`;
+  }).join('');
+}
+
+// 찜한 항목 그리드
+function tmplRecRenderLiked(grid){
+  const wishes = window._lsWished ? Array.from(window._lsWished.entries()) : [];
+  tmplRecUpdateLikedBadge();
+  if(!wishes.length){
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#9CA3AF;">
+      <div style="font-size:36px;margin-bottom:10px;opacity:.6;">❤️</div>
+      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:4px;">찜한 항목이 없어요</div>
+      <div style="font-size:11.5px;line-height:1.6;">콘텐츠나 세트지의 ♡ 아이콘을 눌러<br>찜하면 여기에서 한눈에 확인할 수 있어요</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = wishes.map(([wishId, info]) => {
+    if(!info || !info.kind){
+      // 구형 wishId만 저장된 경우 — 안전 스킵
+      return '';
+    }
+    if(info.kind === 'cont'){
+      const c = info.data || {};
+      return `<div onclick="tmplRecInsertLikedContent('${wishId}')" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:16px;position:relative;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0'">
+        <button onclick="event.stopPropagation();tmplRecUnfav('${wishId}')" title="찜 해제" style="position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:8px;border:none;background:#FFFBEB;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#FBBF24" stroke="#F59E0B" stroke-width="1.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        </button>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+          <span style="padding:3px 9px;border-radius:20px;background:#EEF1FF;color:#4B6EF5;font-size:10px;font-weight:800;">${c.type||'콘텐츠'}</span>
+        </div>
+        <div style="font-size:14px;font-weight:800;color:#1C1F2E;margin-bottom:6px;line-height:1.35;padding-right:28px;">${c.name||'이름 없음'}</div>
+        <div style="font-size:11px;color:#6B7280;">📚 ${info.unitName||''}</div>
+      </div>`;
+    } else {
+      // set
+      const s = info.data || {};
+      return `<div onclick="tmplRecInsertLikedSet('${wishId}')" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:16px;position:relative;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0'">
+        <button onclick="event.stopPropagation();tmplRecUnfav('${wishId}')" title="찜 해제" style="position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:8px;border:none;background:#FFFBEB;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#FBBF24" stroke="#F59E0B" stroke-width="1.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        </button>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+          <span style="padding:3px 9px;border-radius:20px;background:#FFF6EF;color:#FF8C42;font-size:10px;font-weight:800;">세트지</span>
+        </div>
+        <div style="font-size:14px;font-weight:800;color:#1C1F2E;margin-bottom:6px;line-height:1.35;padding-right:28px;">${s.name||'세트지'}</div>
+        <div style="font-size:11px;color:#6B7280;">📚 ${info.unitName||''}</div>
+      </div>`;
+    }
+  }).filter(Boolean).join('');
+}
+
+// 세트지 삽입
+function tmplRecInsertSet(uidx, sidx){
+  const units = (typeof LS_UNITS !== 'undefined') ? LS_UNITS : (window._lsDataSource || []);
+  const s = units[uidx] && units[uidx].sets ? units[uidx].sets[sidx] : null;
+  if(!s) return;
+  closeTmplRecommend();
+  closeTmplModal && closeTmplModal();
+  if(typeof showAiQuickLoading === 'function') showAiQuickLoading();
+  setTimeout(function(){
+    if(typeof hideAiQuickLoading === 'function') hideAiQuickLoading();
+    T(`✅ 세트지 "${s.name}" 삽입 완료`);
+  }, 900);
+}
+
+// 찜한 콘텐츠 삽입
+function tmplRecInsertLikedContent(wishId){
+  const info = window._lsWished && window._lsWished.get(wishId);
+  if(!info) return;
+  closeTmplRecommend();
+  closeTmplModal && closeTmplModal();
+  if(typeof showAiQuickLoading === 'function') showAiQuickLoading();
+  setTimeout(function(){
+    if(typeof hideAiQuickLoading === 'function') hideAiQuickLoading();
+    // 기본 템플릿 "선택형"으로 삽입 (info.data.type에 따라 매핑 가능)
+    const type = (info.data && info.data.type) || '';
+    const map = {'선택형':'선택형','단답형':'단답형','OX':'OX형','서술형':'서술형','연결형':'연결형','순서':'순서입력형'};
+    let tmpl = '선택형';
+    Object.keys(map).forEach(k => { if(type.indexOf(k) >= 0) tmpl = map[k]; });
+    if(typeof insertBlock === 'function'){
+      window.selectedTmplName = tmpl;
+      window.selectedTmplIsOcr = false;
+      insertBlock('question');
+    }
+    T(`✅ 찜한 콘텐츠 "${info.data && info.data.name || ''}" 삽입 완료`);
+  }, 900);
+}
+
+// 찜한 세트지 삽입
+function tmplRecInsertLikedSet(wishId){
+  const info = window._lsWished && window._lsWished.get(wishId);
+  if(!info) return;
+  tmplRecInsertSet(info.uidx, info.sidx);
+}
+
+// 찜 해제
+function tmplRecUnfav(wishId){
+  if(window._lsWished) window._lsWished.delete(wishId);
+  // 랜딩의 원본 하트 버튼도 업데이트
+  const origBtn = document.getElementById(wishId);
+  if(origBtn){
+    origBtn.classList.remove('on');
+    const heart = origBtn.querySelector('.wish-heart');
+    if(heart){ heart.setAttribute('stroke','#C8CDD8'); heart.setAttribute('fill','none'); }
+  }
+  tmplRecUpdateLikedBadge();
+  tmplRecRender('');
 }
 
 function tmplRecSelect(id){
