@@ -342,9 +342,9 @@ body.landing-active .editor-body{
 }
 .ls-tmpl-card{
   background:white;border-radius:16px;
-  border:1.5px solid #E8E7E2;padding:20px 18px;
+  border:1.5px solid #E8E7E2;padding:18px 12px;
   cursor:pointer;transition:all .2s cubic-bezier(.34,1.3,.64,1);
-  display:flex;flex-direction:column;align-items:flex-start;gap:12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
   position:relative;
 }
 .ls-tmpl-card:hover{
@@ -2446,8 +2446,9 @@ body.landing-active .editor-body{
 #smToolbarClone{display:block;border-top:1px solid #E8E7E2;}
 #smToolbarClone.open{animation:tbSlideDown .2s cubic-bezier(.2,0,.0,1);}
 .tb-row1{display:flex;align-items:center;height:44px;padding:0 14px;gap:0;border-bottom:1px solid var(--g2);}
-/* 속성 행 — 최대 2줄 지원 */
-.tb-props{min-height:44px;max-height:132px;border-bottom:1px solid var(--g2);background:white;overflow:hidden;display:flex;flex-direction:column;flex-shrink:0;}
+/* 속성 행 — 최대 2줄 지원. 기본은 숨김, 블록 선택/컨텍스트 발생 시 표시 */
+.tb-props{min-height:44px;max-height:132px;border-bottom:1px solid var(--g2);background:white;overflow:hidden;display:none !important;flex-direction:column;flex-shrink:0;}
+.tb-props.active{display:flex !important;}
 .tb-props-row{display:flex;align-items:center;height:44px;padding:0 0;overflow-x:auto;overflow-y:hidden;flex-shrink:0;}
 .tb-props-row::-webkit-scrollbar{height:0;}
 .tb-props-row+.tb-props-row{border-top:1px solid var(--g2);}
@@ -7482,8 +7483,11 @@ function landingOpenEditor(){
   screen.classList.add('out');
   // 에디터 UI 복원
   document.body.classList.remove('landing-active');
+  // 진입 직후 속성 패널은 숨김 상태로 시작 (블록 선택 시 동적으로 노출)
+  if(typeof ctxHideAll === 'function') ctxHideAll();
   setTimeout(()=>{
     screen.style.display='none';
+    if(typeof ctxHideAll === 'function') ctxHideAll();
     // 블록 있으면 퀵메뉴 동기화
     if(typeof eqmSyncVisibility === 'function') eqmSyncVisibility();
   }, 400);
@@ -11447,7 +11451,11 @@ function checkSlideEmpty(){
   const blocks=slide.querySelectorAll('.cb');
   const empty=document.getElementById('emptySlate');
   const addArea=document.getElementById('addArea');
-  if(blocks.length===0){ if(empty)empty.style.display='flex'; if(addArea)addArea.style.display='none'; }
+  if(blocks.length===0){
+    if(empty)empty.style.display='flex'; if(addArea)addArea.style.display='none';
+    // 블록 없으면 속성 패널 숨김
+    if(typeof ctxHideAll === 'function') ctxHideAll();
+  }
   else{ if(empty)empty.style.display='none'; if(addArea)addArea.style.display='flex'; }
   const totalEl = document.getElementById('blockCounterTotal');
   if(totalEl) totalEl.textContent = blocks.length;
@@ -11618,6 +11626,7 @@ function setRpAiContentVisible(show){
 function ctxShowPanel(type){
   const props = document.getElementById('tbProps');
   if(!props) return;
+  props.classList.add('active'); // 속성 있을 때만 노출
   const src = document.getElementById('ctx-'+type);
   if(!src){
     props.innerHTML = '<div class="tb-props-row" style="padding:0 16px;"><span style="font-size:11px;color:var(--g3);">속성 없음</span></div>';
@@ -11644,7 +11653,10 @@ function ctxShowPanel(type){
 
 function ctxHideAll(){
   const props = document.getElementById('tbProps');
-  if(props) props.innerHTML = '<div class="tb-props-row" style="padding:0 16px;"><span style="font-size:11px;color:var(--g3);">텍스트·이미지·표 등을 선택하면 속성을 편집할 수 있어요</span></div>';
+  if(props){
+    props.classList.remove('active'); // 선택 해제 시 숨김 (안내 문구도 안 보임)
+    props.innerHTML = '';
+  }
 }
 function ctxRemoveBlock(type){
   if(curBlock){ rmBlock(curBlock.querySelector('.bctrl .del') || {closest:()=>curBlock}); }
@@ -12460,6 +12472,18 @@ function renderRp(){
   // rpAttrPane·rpBody 강제 표시, rpEmpty 숨김
   const pane  = document.getElementById('rpAttrPane');
   const empty = document.getElementById('rpEmpty');
+  // 블록 미선택이면 empty 상태만 노출 (토글/섹션 렌더 안 함)
+  if(!window.curBlock){
+    if(pane)  pane.style.display  = 'flex';
+    if(empty) empty.style.display = 'flex';
+    if(b){
+      b.style.display = 'none';
+      b.innerHTML = '';
+    }
+    // AI 빠른실행 바도 블록이 없으면 숨김
+    if(typeof renderRpAiQuickBar === 'function') renderRpAiQuickBar();
+    return;
+  }
   if(pane)  pane.style.display  = 'flex';
   if(empty) empty.style.display = 'none';
   if(b)     b.style.display     = 'flex';
@@ -15918,6 +15942,14 @@ function tmplRecSelect(id){
 
 function confirmTmpl(tmplArg){
   closeTmplModal();
+
+  // 랜딩 화면이 열려있으면 에디터로 전환 (템플릿 바 카드에서 직접 호출된 경우)
+  const _landing = document.getElementById('landingScreen');
+  if(_landing && _landing.style.display !== 'none' && !_landing.classList.contains('out')){
+    if(typeof landingOpenEditor === 'function') landingOpenEditor();
+  }
+  // body의 landing-active 제거 (혹시 남아있는 경우)
+  document.body.classList.remove('landing-active');
 
   // tmpl-bar-card에서 "confirmTmpl('서술형')" 형태로 호출된 경우 파라미터 우선 적용
   if(tmplArg && typeof tmplArg === 'string'){
@@ -21252,8 +21284,8 @@ window.smOpen = function(itemInfo){
   badge.textContent = badgeText;
   badge.className = 'sm-topbar-badge ' + badgeCls;
 
-  // 추천콘텐츠/세트지: 블록 옆 AI 버튼 + 하단 tmpl-bar, 템플릿: 각 블록 내 varBar
-  const tmplBarHtml = (type === 'content' || type === 'set') ? `
+  // 모든 타입(추천콘텐츠/세트지/템플릿)에서 tmpl-bar 노출 — 하단 빠른 추가
+  const tmplBarHtml = (type === 'content' || type === 'set' || type === 'tmpl') ? `
   <div style="padding:20px 0 8px;">
     <div class="tmpl-bar" style="width:100%;max-width:100%;border-radius:12px;background:white;border:1.5px solid #EAECF0;box-shadow:0 2px 8px rgba(0,0,0,.06);">
       <div class="tmpl-bar-inner" style="overflow-x:auto;flex-wrap:nowrap;">
@@ -21816,20 +21848,32 @@ window.smToggleToolbar = function(){
   if(!tb) return;
   clone = tb.cloneNode(true);
   clone.id = 'smToolbarClone';
-  clone.style.cssText = 'border-top:1px solid #E8E7E2;overflow:visible;display:block;animation:tbSlideDown .2s ease;';
+  // 강제 표시: 기본 .toolbar CSS에 영향받지 않도록 cssText 완전 지정
+  clone.style.cssText = 'display:block !important;border-top:1px solid #E8E7E2;background:white;overflow:visible;flex-shrink:0;animation:tbSlideDown .2s ease;';
+  // simpleMode 내부에 있는 placeholder 바로 다음에 삽입
   placeholder.parentNode.insertBefore(clone, placeholder.nextSibling);
   if(handleIcon) handleIcon.style.transform = 'rotate(180deg)';
   if(handle) handle.style.borderBottom = 'none';
 
   // 클론 열릴 때 속성패널은 초기 상태 (선택 없음)
   const cloneProps = clone.querySelector('.tb-props');
-  if(cloneProps) cloneProps.innerHTML = '<div class="tb-props-row" style="padding:0 16px;"><span style="font-size:11px;color:var(--g3);">블록을 선택하면 속성을 편집할 수 있어요</span></div>';
+  if(cloneProps){
+    // .tb-props CSS는 !important 적용이라, style로 덮어 항상 보이게 설정
+    cloneProps.classList.add('active');
+    cloneProps.style.cssText = 'display:flex !important;flex-direction:column;min-height:44px;max-height:132px;background:white;border-bottom:1px solid var(--g2);overflow:hidden;flex-shrink:0;';
+    cloneProps.innerHTML = '<div class="tb-props-row" style="padding:0 16px;"><span style="font-size:11px;color:var(--g3);">블록을 선택하면 속성을 편집할 수 있어요</span></div>';
+  }
 
   // 원본 tbProps 변경 시 클론도 동기화
   const origProps = document.getElementById('tbProps');
   if(origProps && cloneProps){
     const obs = new MutationObserver(function(){
-      cloneProps.innerHTML = origProps.innerHTML;
+      if(origProps.innerHTML.trim()){
+        cloneProps.innerHTML = origProps.innerHTML;
+      } else {
+        // 원본이 빈 상태면 기본 안내 문구 유지
+        cloneProps.innerHTML = '<div class="tb-props-row" style="padding:0 16px;"><span style="font-size:11px;color:var(--g3);">블록을 선택하면 속성을 편집할 수 있어요</span></div>';
+      }
     });
     obs.observe(origProps, {childList:true, subtree:true, characterData:true});
     clone._obs = obs;
