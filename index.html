@@ -413,10 +413,10 @@ body.landing-active .editor-body{
 }
 .ls-set-card{
   background:white;border-radius:16px;
-  border:1px solid #EAECF0;padding:16px;
+  border:1px solid #EAECF0;
   cursor:pointer;transition:all .18s ease;
   position:relative;overflow:hidden;
-  display:flex;flex-direction:column;gap:10px;
+  display:flex;flex-direction:column;
 }
 .ls-set-card:hover{
   transform:translateY(-3px);
@@ -426,6 +426,20 @@ body.landing-active .editor-body{
 .ls-set-card.featured{
   border-color:#4B6EF5;
   box-shadow:0 0 0 3px rgba(75,110,245,.12);
+}
+
+/* [ADDED 2026-04] 세트지 카드 썸네일 (콘텐츠 카드와 동일 톤) */
+.ls-set-card-thumb{
+  height:120px;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;position:relative;
+}
+.ls-set-card-thumb-emoji{
+  font-size:42px;line-height:1;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.08));
+}
+.ls-set-card-body{
+  padding:14px 16px 16px;
+  display:flex;flex-direction:column;gap:8px;flex:1;
 }
 
 /* 배지 */
@@ -1250,10 +1264,27 @@ body.landing-active .editor-body{
   background:white;border-radius:24px;
   box-shadow:0 32px 80px rgba(0,0,0,.22);
   display:flex;flex-direction:column;overflow:hidden;
+  position:relative;
   transform:translateY(24px) scale(.97);
   transition:transform .28s cubic-bezier(.34,1.2,.64,1);
 }
 .ls-preview-backdrop.show .ls-preview-modal{transform:none;}
+
+/* [ADDED 2026-04] 프리뷰 모달 우측 상단 닫기 X 버튼 */
+.ls-pm-close-x{
+  position:absolute;top:12px;right:12px;z-index:5;
+  width:32px;height:32px;border-radius:10px;
+  border:none;background:rgba(255,255,255,.85);
+  color:#1E2340;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(6px);
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+  transition:all .15s;
+}
+.ls-pm-close-x:hover{
+  background:white;transform:scale(1.05);
+  box-shadow:0 4px 12px rgba(0,0,0,.16);
+}
 
 /* 모달 썸네일 */
 .ls-pm-thumb{
@@ -1600,13 +1631,28 @@ body.landing-active .editor-body{
 }
 .ls-pm-footer-info{font-size:12px;color:#8A93A8;}
 .ls-pm-footer-btns{display:flex;gap:8px;}
-.ls-pm-close-btn{
-  height:42px;padding:0 20px;border-radius:10px;
+/* [REMOVED 2026-04] .ls-pm-close-btn 제거 — 우측 상단 .ls-pm-close-x 로 대체 */
+
+/* [ADDED 2026-04] 프리뷰 모달 찜 버튼 */
+.ls-pm-wish-btn{
+  height:42px;padding:0 16px;border-radius:10px;
   border:1.5px solid #E8E7E2;background:white;
   font-size:13px;font-weight:700;color:#555E75;cursor:pointer;
   font-family:'Noto Sans KR',sans-serif;transition:all .15s;
+  display:inline-flex;align-items:center;gap:6px;
 }
-.ls-pm-close-btn:hover{border-color:#1E2340;color:#1E2340;}
+.ls-pm-wish-btn:hover{
+  border-color:#F59E0B;color:#D97706;background:#FFFBEB;
+}
+.ls-pm-wish-btn.on{
+  border-color:#F59E0B;background:#FFFBEB;color:#D97706;
+}
+.ls-pm-wish-btn:active svg{
+  animation:lspmWishPop .28s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes lspmWishPop{
+  0%{transform:scale(1);} 50%{transform:scale(1.35);} 100%{transform:scale(1);}
+}
 .ls-pm-insert-btn{
   height:42px;padding:0 24px;border-radius:10px;
   border:none;background:linear-gradient(135deg,#4B6EF5,#7C4DFF);
@@ -3259,11 +3305,14 @@ body.simple-active .right-panel .rp-sec{ padding-top:8px; padding-bottom:8px; }
    툴바 콘텐츠가 우측으로 밀려 있었음 → clone에서는 padding 제거 */
 #smToolbarClone.toolbar{ padding-left:0 !important; }
 #smToolbarClone .tb-row1{
-  justify-content:center !important;
+  /* [UPDATED 2026-04] 왼쪽 정렬 — 속성 안내 텍스트와 정렬 일치 */
+  justify-content:flex-start !important;
   width:100% !important;
   max-width:none !important;
   box-sizing:border-box;
 }
+/* [ADDED 2026-04] 고급모드 툴바도 명시적으로 왼쪽 정렬 (혹시 다른 곳에서 덮어쓰는 경우 방지) */
+.tb-row1{ justify-content:flex-start; }
 .tb-row1{display:flex;align-items:center;height:44px;padding:0 14px;gap:0;border-bottom:1px solid var(--g2);}
 /* 속성 행 — 최대 2줄 지원. 기본은 숨김, 블록 선택/컨텍스트 발생 시 표시 */
 .tb-props{min-height:44px;max-height:132px;border-bottom:1px solid var(--g2);background:white;overflow:hidden;display:none !important;flex-direction:column;flex-shrink:0;}
@@ -3573,10 +3622,10 @@ body.rp-resizing .editor-body,
 body:has(.right-panel.resizing) .toolbar,
 body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
 
-/* 툴바 1줄: 아이콘 가로 가운데 정렬
-   주의: tb-row1 끝에 있는 .sp(flex:1 스페이서)가 아이콘을 좌측으로 밀어냈었으므로
-   해당 스페이서의 flex 효과를 제거해 justify-content:center 가 실제 동작하도록 함 */
-.toolbar .tb-row1{ justify-content: center; }
+/* [UPDATED 2026-04] 툴바 1줄: 왼쪽 정렬 (속성 안내 텍스트와 정렬 일치)
+   주의: tb-row1 끝에 있는 .sp(flex:1 스페이서)가 가운데 정렬 시 아이콘을 밀어냈던 이슈 때문에
+   해당 스페이서의 flex 효과를 제거해 왔음 — 좌측 정렬에서도 그대로 유지해야 앞쪽에 빈 공간이 생기지 않음 */
+.toolbar .tb-row1{ justify-content: flex-start; }
 .toolbar .tb-row1 > .sp{ flex: 0 0 auto !important; width: 0; }
 
 /* 속성행(tb-props)도 동일 규칙 — 중앙 정렬이 자연스럽게 보이도록 */
@@ -4469,6 +4518,70 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
 .tmpl-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px;}
 .tmpl-section-lbl{font-size:10px;font-weight:700;color:var(--g4);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:5px;}
 .tmpl-section-lbl::after{content:'';flex:1;height:1px;background:var(--g2);}
+
+/* [ADDED 2026-04] 템플릿 모달 탭 네비 */
+.tmpl-tabs{
+  display:flex;gap:2px;margin-bottom:16px;
+  border-bottom:1.5px solid #E8E7E2;
+}
+.tmpl-tab{
+  padding:10px 22px;border:none;background:transparent;
+  font-size:13px;font-weight:700;color:#8A93A8;
+  cursor:pointer;position:relative;
+  font-family:'Noto Sans KR',sans-serif;
+  transition:color .15s;
+}
+.tmpl-tab:hover{ color:#4B6EF5; }
+.tmpl-tab.on{ color:#4B6EF5; font-weight:800; }
+.tmpl-tab.on::after{
+  content:'';position:absolute;left:0;right:0;bottom:-1.5px;
+  height:2.5px;background:#4B6EF5;border-radius:2px 2px 0 0;
+}
+.tmpl-tab-panel{ display:none; }
+.tmpl-tab-panel.on{ display:block; }
+
+/* [ADDED 2026-04] 추가 템플릿 (개념/활동 하위) */
+.tmpl-extra-title{
+  font-size:13px;font-weight:800;color:#1E2340;
+  margin:18px 0 12px;letter-spacing:-.2px;
+}
+.tmpl-extra-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);gap:10px;
+  margin-bottom:14px;
+}
+.tmpl-extra-item{
+  border:1.5px solid #E5E7EB;border-radius:8px;
+  cursor:pointer;transition:all .18s;background:white;
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.tmpl-extra-item:hover{
+  border-color:#4B6EF5;background:#F4F6FF;
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(75,110,245,.12);
+}
+.tmpl-extra-item.sel{
+  border-color:#4B6EF5;background:#EEF1FF;
+  box-shadow:0 0 0 2.5px rgba(75,110,245,.18);
+}
+.tmpl-extra-thumb{
+  height:82px;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  border-bottom:1px solid #F0F0F0;
+  position:relative;overflow:hidden;
+}
+.tmpl-extra-thumb-emoji{
+  font-size:34px;line-height:1;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.08));
+}
+.tmpl-extra-lbl{
+  font-size:10.5px;font-weight:600;color:#374151;
+  padding:7px 6px 8px;text-align:center;line-height:1.3;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.tmpl-extra-item.sel .tmpl-extra-lbl{ color:#4B6EF5;font-weight:700; }
+
+/* [REMOVED 2026-04] 썸네일 미니 목업 전용 .tx-* CSS 제거 — 진입화면과 동일한 이모지+그라데이션 스타일로 통일됨 */
+
 .tmpl-item{border:2px solid var(--g2);border-radius:10px;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;transition:all .18s;background:white;overflow:hidden;}
 .tmpl-item:hover{border-color:#b0bfff;background:var(--blue-lt);}
 .tmpl-item.sel{border-color:var(--blue);background:var(--blue-lt);box-shadow:0 0 0 3px rgba(75,110,245,.15);}
@@ -4711,6 +4824,323 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
   background:#F3F4F6 !important;color:#9CA3AF !important;
   cursor:not-allowed;border-color:transparent;
 }
+
+/* [ADDED 2026-04] 2단계에서는 좌측 사이드바(썸네일/네비/페이지 번호) 숨김 */
+body.save-step2 .save-sidebar{ display:none !important; }
+body.save-step2 .save-modal{ width:840px; }
+
+/* [REMOVED 2026-04] 기존 사용/미사용 카드 CSS 제거 — 2단계가 콘텐츠/세트지 공개 그룹 UI로 대체됨 */
+
+/* [ADDED 2026-04] 2단계 — 콘텐츠/세트지 공개 설정 레이아웃 */
+.save-s2-group-title{
+  display:flex;align-items:center;gap:7px;
+  font-size:14px;font-weight:800;color:#4B6EF5;
+  padding:14px 0 10px;
+}
+.save-s2-group-dot{
+  width:6px;height:6px;border-radius:50%;background:#4B6EF5;flex-shrink:0;
+}
+.save-s2-row{
+  display:grid;grid-template-columns:230px 1fr;
+  align-items:center;gap:12px;
+  padding:12px 0;border-top:1px solid #F0F0F0;
+  row-gap:4px;
+}
+.save-s2-row:first-of-type{ border-top:none; }
+.save-s2-label{
+  font-size:13px;font-weight:700;color:#1E2340;
+}
+.save-s2-label.req-color{ color:#FF8C42; }
+.save-s2-label.req-color .req{ color:#FF8C42; margin-left:2px; }
+.save-s2-label-sub{
+  color:#22C98B;font-weight:700;padding-left:26px;
+  display:flex;align-items:center;gap:5px;
+}
+.save-s2-sub-dot{
+  width:5px;height:5px;border-radius:50%;background:#22C98B;flex-shrink:0;
+}
+.save-s2-control{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.save-s2-radio{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;color:#374151;cursor:pointer;
+  padding:2px 0;
+}
+.save-s2-radio input{
+  accent-color:#4B6EF5;width:15px;height:15px;
+}
+.save-s2-hint{
+  grid-column:2;
+  font-size:11.5px;color:#9CA3AF;line-height:1.5;margin-top:-2px;
+}
+.save-s2-sub-btn{
+  padding:5px 11px;border-radius:6px;
+  background:#E8FFF5;color:#22C98B;
+  font-size:11px;font-weight:700;
+  border:none;cursor:pointer;white-space:nowrap;
+  font-family:'Noto Sans KR',sans-serif;
+  transition:background .15s;margin-left:4px;
+}
+.save-s2-sub-btn:hover{ background:#D4FAE8; }
+
+/* 세트지 이미지 영역 */
+.save-s2-row-img{
+  align-items:flex-start;
+}
+.save-s2-img-ctrl{
+  display:flex;align-items:center;gap:18px;
+}
+.save-s2-img-thumb{
+  width:130px;height:88px;
+  background:white;border:1.5px solid #E5E7EB;border-radius:6px;
+  padding:8px 10px;display:flex;flex-direction:column;gap:4px;
+  flex-shrink:0;position:relative;
+}
+.save-s2-img-thumb-doc{
+  width:16px;height:4px;background:#4B6EF5;border-radius:2px;
+}
+.save-s2-img-thumb-line{
+  height:3px;background:#E5E7EB;border-radius:2px;
+}
+.save-s2-img-check{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:600;color:#1E2340;cursor:pointer;
+}
+.save-s2-img-check input{
+  position:absolute;opacity:0;pointer-events:none;
+}
+.save-s2-img-check-box{
+  width:16px;height:16px;border-radius:3px;
+  border:1.5px solid #D1D5DB;background:white;
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .15s;
+}
+.save-s2-img-check input:checked + .save-s2-img-check-box{
+  background:#4B6EF5;border-color:#4B6EF5;
+}
+.save-s2-img-check input:checked + .save-s2-img-check-box::after{
+  content:'';width:4px;height:8px;border:solid white;border-width:0 2px 2px 0;
+  transform:rotate(45deg);margin-top:-2px;
+}
+
+/* 하단 안내문 */
+.save-s2-footnote{
+  font-size:12.5px;color:#555E75;text-align:center;
+  padding:20px 0 10px;line-height:1.6;
+}
+.save-s2-footnote b{ color:#1E2340; }
+
+/* ════════════════════════════════════════════════════
+ * [ADDED 2026-04] 평가 설정 모달 (배점 입력 시 자동 오픈)
+ * ════════════════════════════════════════════════════ */
+.save-eval-overlay{
+  position:fixed;inset:0;background:rgba(10,15,40,.55);
+  backdrop-filter:blur(5px);z-index:3400;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .22s;
+}
+.save-eval-overlay.open{ opacity:1;pointer-events:auto; }
+.save-eval-modal{
+  width:780px;max-width:calc(100vw - 40px);
+  max-height:90vh;background:white;border-radius:18px;
+  box-shadow:0 24px 70px rgba(0,0,0,.28);
+  display:flex;flex-direction:column;overflow:hidden;
+  transform:translateY(14px) scale(.97);
+  transition:transform .26s cubic-bezier(.34,1.2,.64,1);
+}
+.save-eval-overlay.open .save-eval-modal{ transform:none; }
+.save-eval-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 22px;border-bottom:1px solid #F0F0F0;
+}
+.save-eval-title{
+  font-size:16px;font-weight:800;color:#1E2340;letter-spacing:-.2px;
+}
+.save-eval-close{
+  width:30px;height:30px;border:none;background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  color:#6B7280;cursor:pointer;border-radius:8px;transition:background .15s;
+}
+.save-eval-close:hover{ background:#F3F4F6;color:#1E2340; }
+.save-eval-body{
+  flex:1;overflow-y:auto;padding:8px 22px 18px;
+}
+.save-eval-row{
+  display:grid;grid-template-columns:120px 1fr;
+  align-items:center;gap:14px;
+  padding:16px 0;border-bottom:1px solid #F0F0F0;
+}
+.save-eval-row:last-child{ border-bottom:none; }
+.save-eval-row-align-top{ align-items:flex-start; }
+.save-eval-label{
+  font-size:13px;font-weight:700;color:#1E2340;
+}
+.save-eval-req{ color:#4B6EF5;font-size:10px;margin-left:2px; }
+.save-eval-control{
+  display:flex;flex-wrap:wrap;gap:16px;align-items:center;
+}
+.save-eval-control-flex{ flex-wrap:nowrap; }
+
+/* 라디오 (커스텀) */
+.save-eval-radio{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:13px;color:#374151;cursor:pointer;
+}
+.save-eval-radio input{ position:absolute;opacity:0;pointer-events:none; }
+.save-eval-radio > span{
+  width:17px;height:17px;border-radius:50%;
+  border:1.5px solid #D1D5DB;background:white;flex-shrink:0;
+  position:relative;transition:all .15s;
+}
+.save-eval-radio input:checked + span{
+  border-color:#4B6EF5;background:white;
+}
+.save-eval-radio input:checked + span::after{
+  content:'';position:absolute;top:50%;left:50%;
+  width:9px;height:9px;border-radius:50%;background:#4B6EF5;
+  transform:translate(-50%,-50%);
+}
+
+/* 인풋 */
+.save-eval-inp{
+  width:100%;max-width:640px;
+  height:38px;padding:0 14px;
+  border:1.5px solid #E5E7EB;border-radius:8px;background:white;
+  font-size:13px;color:#1E2340;outline:none;
+  font-family:'Noto Sans KR',sans-serif;transition:border-color .15s;
+}
+.save-eval-inp:focus{ border-color:#4B6EF5; }
+
+/* 기간/타이머 프리셋 버튼 */
+.save-eval-preset-row{
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;width:100%;
+}
+.save-eval-preset{
+  height:34px;padding:0 14px;border-radius:8px;
+  border:1.5px solid #E5E7EB;background:white;
+  font-size:12.5px;font-weight:700;color:#374151;
+  cursor:pointer;font-family:'Noto Sans KR',sans-serif;
+  transition:all .15s;
+}
+.save-eval-preset:hover{ border-color:#4B6EF5;color:#4B6EF5; }
+.save-eval-preset.on{
+  border-color:#4B6EF5;background:#EEF1FF;color:#4B6EF5;
+}
+
+/* 체크박스 */
+.save-eval-check{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:12.5px;color:#374151;cursor:pointer;margin-left:4px;
+}
+.save-eval-check input{ position:absolute;opacity:0;pointer-events:none; }
+.save-eval-check-box{
+  width:17px;height:17px;border-radius:4px;
+  border:1.5px solid #D1D5DB;background:white;
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .15s;
+}
+.save-eval-check input:checked + .save-eval-check-box{
+  background:#4B6EF5;border-color:#4B6EF5;
+}
+.save-eval-check input:checked + .save-eval-check-box::after{
+  content:'';width:4px;height:8px;border:solid white;border-width:0 2px 2px 0;
+  transform:rotate(45deg);margin-top:-2px;
+}
+
+/* 날짜 인풋 */
+.save-eval-date-row{
+  display:flex;align-items:center;gap:10px;margin-top:10px;width:100%;
+}
+.save-eval-date{
+  flex:1;max-width:300px;
+  display:flex;align-items:center;gap:8px;
+  padding:8px 12px;border-radius:8px;
+  border:1.5px solid #E5E7EB;background:#F9FAFB;
+  color:#6B7280;transition:all .15s;
+}
+.save-eval-date input{
+  flex:1;border:none;background:transparent;outline:none;
+  font-size:12.5px;color:#1E2340;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.save-eval-date input:disabled{ cursor:not-allowed; }
+.save-eval-date:focus-within{ border-color:#4B6EF5;background:white; }
+.save-eval-date-sep{ color:#6B7280;font-size:13px;flex-shrink:0; }
+
+/* 알림 문구 */
+.save-eval-desc{
+  font-size:13px;color:#374151;line-height:1.5;
+}
+.save-eval-desc-sub{
+  font-size:12px;color:#9CA3AF;margin-top:4px;
+}
+
+/* 토글 스위치 */
+.save-eval-toggle{
+  display:inline-flex;align-items:center;gap:6px;
+  height:30px;padding:0 14px 0 6px;border-radius:999px;
+  border:none;background:#D1D5DB;
+  cursor:pointer;transition:background .2s;
+  font-family:'Noto Sans KR',sans-serif;flex-shrink:0;
+  position:relative;
+}
+.save-eval-toggle-dot{
+  width:22px;height:22px;border-radius:50%;background:white;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);flex-shrink:0;
+  transition:transform .2s;
+}
+.save-eval-toggle-lbl{
+  font-size:11px;font-weight:800;color:white;letter-spacing:.02em;
+}
+.save-eval-toggle.on{ background:#4B6EF5;padding:0 6px 0 14px;flex-direction:row-reverse; }
+.save-eval-toggle.on .save-eval-toggle-lbl{ color:white; }
+
+/* 타이머 */
+.save-eval-timer-row{
+  display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;
+}
+.save-eval-sel{
+  height:34px;padding:0 28px 0 12px;border-radius:8px;
+  border:1.5px solid #E5E7EB;background:white;
+  font-size:12.5px;font-family:'Noto Sans KR',sans-serif;color:#1E2340;
+  outline:none;cursor:pointer;min-width:90px;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none'><path d='M6 9l6 6 6-6' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat:no-repeat;background-position:right 8px center;
+}
+.save-eval-sel:focus{ border-color:#4B6EF5; }
+.save-eval-sel:disabled{ background-color:#F3F4F6;color:#9CA3AF;cursor:not-allowed; }
+
+.save-eval-hint{
+  font-size:11.5px;color:#9CA3AF;line-height:1.6;margin-top:12px;
+}
+
+/* 푸터 */
+.save-eval-footer{
+  display:flex;justify-content:flex-end;gap:8px;
+  padding:14px 22px 18px;border-top:1px solid #F0F0F0;
+  flex-shrink:0;
+}
+.save-eval-cancel{
+  height:40px;padding:0 22px;border-radius:8px;
+  border:1.5px solid #E5E7EB;background:white;
+  font-size:13px;font-weight:700;color:#374151;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;transition:all .15s;
+}
+.save-eval-cancel:hover{ background:#F9FAFB; }
+.save-eval-apply{
+  height:40px;padding:0 28px;border-radius:8px;
+  border:none;background:#4B6EF5;
+  color:white;font-size:13px;font-weight:800;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  transition:all .15s;
+}
+.save-eval-apply:hover{ background:#3D58D4; }
+.save-eval-apply[disabled]{
+  background:#D1D5DB;color:white;cursor:not-allowed;
+}
+
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(50px);background:rgba(30,35,64,.95);color:white;padding:9px 20px;border-radius:18px;font-size:12px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.25);z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);}
 .toast.show{transform:translateX(-50%) translateY(0);}
 
@@ -4956,12 +5386,23 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
 <!-- ★ 콘텐츠 프리뷰 모달 ★ -->
 <div class="ls-preview-backdrop" id="lsPreviewBackdrop" onclick="if(event.target===this)lsClosePreview()">
   <div class="ls-preview-modal" id="lsPreviewModal">
+    <!-- [ADDED 2026-04] 우측 상단 닫기 버튼 -->
+    <button class="ls-pm-close-x" onclick="lsClosePreview()" aria-label="닫기">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+    </button>
     <div class="ls-pm-thumb" id="lspmThumb"></div>
     <div class="ls-pm-body" id="lspmBody"></div>
     <div class="ls-pm-footer">
       <span class="ls-pm-footer-info" id="lspmFooterInfo"></span>
       <div class="ls-pm-footer-btns">
-        <button class="ls-pm-close-btn" onclick="lsClosePreview()">닫기</button>
+        <!-- [ADDED 2026-04] 프리뷰 모달에서 바로 찜 가능 -->
+        <button class="ls-pm-wish-btn" id="lspmWishBtn" onclick="lspmToggleWish()" aria-label="찜하기">
+          <svg id="lspmWishHeart" width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M12 21s-7-4.5-7-11a4 4 0 018-1 4 4 0 018 1c0 6.5-7 11-7 11z"
+                  stroke="#C8CDD8" stroke-width="2" stroke-linejoin="round" fill="none"/>
+          </svg>
+          <span id="lspmWishLabel">찜하기</span>
+        </button>
         <button class="ls-pm-insert-btn" onclick="lsInsertContent()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
           저작툴에 삽입
@@ -8012,30 +8453,49 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
     </div>
     <div class="tmpl-body">
       <div class="tmpl-left">
-        <!-- [UPDATED 2026-04] 템플릿을 문항/활동/개념 3개 영역으로 분리 -->
-        <div class="tmpl-section-lbl">문항</div>
-        <div class="tmpl-grid">
-          <div class="tmpl-item" onclick="selectTmpl(this,'선택형','선택형(객관식) 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="18" r="3" stroke="#8A93A8" stroke-width="2"/><path d="M20 18h14" stroke="#8A93A8" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="27" r="3" fill="#4B6EF5"/><path d="M20 27h14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="36" r="3" stroke="#8A93A8" stroke-width="2"/><path d="M20 36h14" stroke="#8A93A8" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tmpl-lbl">선택형</div></div>
-          <div class="tmpl-item" onclick="selectTmpl(this,'단답형','단답형 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="8" y="8" width="32" height="10" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="8" y="24" width="32" height="16" rx="2" stroke="#8A93A8" stroke-width="2" stroke-dasharray="3 2"/></svg></div><div class="tmpl-lbl">단답형</div></div>
-          <div class="tmpl-item" onclick="selectTmpl(this,'연쇄형','연쇄형 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="10" cy="24" r="5" stroke="#8A93A8" stroke-width="2"/><circle cx="24" cy="24" r="5" stroke="#8A93A8" stroke-width="2"/><circle cx="38" cy="24" r="5" stroke="#8A93A8" stroke-width="2"/><path d="M15 24h4M29 24h4" stroke="#8A93A8" stroke-width="2" stroke-linecap="round"/><path d="M7 20l-3 2 3 2" stroke="#8A93A8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div><div class="tmpl-lbl">연쇄형</div></div>
-          <div class="tmpl-item" onclick="selectTmpl(this,'OX형','OX 선택 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="16" cy="24" r="8" stroke="#8A93A8" stroke-width="2.5"/><path d="M27 18l10 10M37 18L27 28" stroke="#8A93A8" stroke-width="2.5" stroke-linecap="round"/></svg></div><div class="tmpl-lbl">OX형</div></div>
-          <div class="tmpl-item" onclick="selectTmpl(this,'TF형','참/거짓 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><text x="4" y="30" font-size="20" font-weight="800" fill="#8A93A8" font-family="'Noto Sans KR',sans-serif">T/F</text></svg></div><div class="tmpl-lbl">T/F형</div></div>
-          <div class="tmpl-item" onclick="selectTmpl(this,'순서입력형','순서 배열 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><path d="M12 14h4M12 24h4M12 34h4" stroke="#8A93A8" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tmpl-lbl">순서입력형</div></div>
-          <div class="tmpl-item" onclick="selectTmpl(this,'순서조합형','조합 순서 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="8" y="10" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="8" y="22" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="30" y="10" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="30" y="22" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/></svg></div><div class="tmpl-lbl">순서조합형</div></div>
-          <div class="tmpl-item" onclick="selectTmpl(this,'연결형','항목 연결 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="16" r="4" stroke="#8A93A8" stroke-width="2"/><circle cx="14" cy="32" r="4" stroke="#8A93A8" stroke-width="2"/><circle cx="34" cy="16" r="4" stroke="#8A93A8" stroke-width="2"/><circle cx="34" cy="24" r="4" stroke="#8A93A8" stroke-width="2"/><path d="M18 16 Q24 20 30 24M18 32 Q24 28 30 16" stroke="#8A93A8" stroke-width="1.5" stroke-dasharray="3 2"/></svg></div><div class="tmpl-lbl">연결형</div></div>
+        <!-- [UPDATED 2026-04] 탭 네비 — 문항 / 활동 / 개념 -->
+        <div class="tmpl-tabs" id="tmplTabs">
+          <button class="tmpl-tab on" data-tmpltab="question" onclick="tmplSwitchTab('question')">문항</button>
+          <button class="tmpl-tab" data-tmpltab="activity" onclick="tmplSwitchTab('activity')">활동</button>
+          <button class="tmpl-tab" data-tmpltab="concept" onclick="tmplSwitchTab('concept')">개념</button>
         </div>
-        <div class="tmpl-section-lbl">활동</div>
-        <div class="tmpl-grid">
-          <div class="tmpl-item" onclick="selectTmpl(this,'선택형','선택형 활동을 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="18" r="3" stroke="#7C4DFF" stroke-width="2"/><path d="M20 18h14" stroke="#7C4DFF" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="27" r="3" fill="#7C4DFF"/><path d="M20 27h14" stroke="#7C4DFF" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="36" r="3" stroke="#7C4DFF" stroke-width="2"/><path d="M20 36h14" stroke="#7C4DFF" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tmpl-lbl">선택형 활동</div></div>
-          <div class="tmpl-item" onclick="selectTmpl(this,'단답형','단답형 활동을 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="8" y="8" width="32" height="10" rx="2" stroke="#7C4DFF" stroke-width="2"/><rect x="8" y="24" width="32" height="16" rx="2" stroke="#7C4DFF" stroke-width="2" stroke-dasharray="3 2"/></svg></div><div class="tmpl-lbl">단답형 활동</div></div>
-          <div class="tmpl-item" onclick="selectTmpl(this,'서술형','서술형 활동을 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="6" y="12" width="36" height="26" rx="3" stroke="#7C4DFF" stroke-width="2.5"/><path d="M12 20h24M12 26h18M12 32h20" stroke="#7C4DFF" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tmpl-lbl">서술형 활동</div></div>
-          <div class="tmpl-item" onclick="selectTmpl(this,'연쇄형','연쇄형 활동을 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="10" cy="24" r="5" stroke="#7C4DFF" stroke-width="2"/><circle cx="24" cy="24" r="5" stroke="#7C4DFF" stroke-width="2"/><circle cx="38" cy="24" r="5" stroke="#7C4DFF" stroke-width="2"/><path d="M15 24h4M29 24h4" stroke="#7C4DFF" stroke-width="2" stroke-linecap="round"/><path d="M7 20l-3 2 3 2" stroke="#7C4DFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div><div class="tmpl-lbl">연쇄형 활동</div></div>
+
+        <!-- ── 문항 탭 ── -->
+        <div class="tmpl-tab-panel on" data-tmplpanel="question">
+          <div class="tmpl-grid">
+            <div class="tmpl-item" onclick="selectTmpl(this,'선택형','선택형(객관식) 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="18" r="3" stroke="#8A93A8" stroke-width="2"/><path d="M20 18h14" stroke="#8A93A8" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="27" r="3" fill="#4B6EF5"/><path d="M20 27h14" stroke="#4B6EF5" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="36" r="3" stroke="#8A93A8" stroke-width="2"/><path d="M20 36h14" stroke="#8A93A8" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tmpl-lbl">선택형</div></div>
+            <div class="tmpl-item" onclick="selectTmpl(this,'단답형','단답형 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="8" y="8" width="32" height="10" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="8" y="24" width="32" height="16" rx="2" stroke="#8A93A8" stroke-width="2" stroke-dasharray="3 2"/></svg></div><div class="tmpl-lbl">단답형</div></div>
+            <div class="tmpl-item" onclick="selectTmpl(this,'연쇄형','연쇄형 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="10" cy="24" r="5" stroke="#8A93A8" stroke-width="2"/><circle cx="24" cy="24" r="5" stroke="#8A93A8" stroke-width="2"/><circle cx="38" cy="24" r="5" stroke="#8A93A8" stroke-width="2"/><path d="M15 24h4M29 24h4" stroke="#8A93A8" stroke-width="2" stroke-linecap="round"/><path d="M7 20l-3 2 3 2" stroke="#8A93A8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div><div class="tmpl-lbl">연쇄형</div></div>
+            <div class="tmpl-item" onclick="selectTmpl(this,'OX형','OX 선택 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="16" cy="24" r="8" stroke="#8A93A8" stroke-width="2.5"/><path d="M27 18l10 10M37 18L27 28" stroke="#8A93A8" stroke-width="2.5" stroke-linecap="round"/></svg></div><div class="tmpl-lbl">OX형</div></div>
+            <div class="tmpl-item" onclick="selectTmpl(this,'TF형','참/거짓 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><text x="4" y="30" font-size="20" font-weight="800" fill="#8A93A8" font-family="'Noto Sans KR',sans-serif">T/F</text></svg></div><div class="tmpl-lbl">T/F형</div></div>
+            <div class="tmpl-item" onclick="selectTmpl(this,'순서입력형','순서 배열 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><path d="M12 14h4M12 24h4M12 34h4" stroke="#8A93A8" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tmpl-lbl">순서입력형</div></div>
+            <div class="tmpl-item" onclick="selectTmpl(this,'순서조합형','조합 순서 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="8" y="10" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="8" y="22" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="30" y="10" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/><rect x="30" y="22" width="10" height="8" rx="2" stroke="#8A93A8" stroke-width="2"/></svg></div><div class="tmpl-lbl">순서조합형</div></div>
+            <div class="tmpl-item" onclick="selectTmpl(this,'연결형','항목 연결 문제를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="16" r="4" stroke="#8A93A8" stroke-width="2"/><circle cx="14" cy="32" r="4" stroke="#8A93A8" stroke-width="2"/><circle cx="34" cy="16" r="4" stroke="#8A93A8" stroke-width="2"/><circle cx="34" cy="24" r="4" stroke="#8A93A8" stroke-width="2"/><path d="M18 16 Q24 20 30 24M18 32 Q24 28 30 16" stroke="#8A93A8" stroke-width="1.5" stroke-dasharray="3 2"/></svg></div><div class="tmpl-lbl">연결형</div></div>
+          </div>
         </div>
-        <div class="tmpl-section-lbl">개념</div>
-        <div class="tmpl-grid">
-          <div class="tmpl-item" onclick="selectTmpl(this,'빈 문서','새 빈 문서를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="8" y="6" width="32" height="36" rx="3" stroke="#C8CDD8" stroke-width="2.5"/><path d="M16 16h16M16 22h10" stroke="#C8CDD8" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tmpl-lbl">빈 문서</div></div>
+
+        <!-- ── 활동 탭 ── -->
+        <div class="tmpl-tab-panel" data-tmplpanel="activity">
+          <div class="tmpl-grid">
+            <div class="tmpl-item" onclick="selectTmpl(this,'선택형','선택형 활동을 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="14" cy="18" r="3" stroke="#7C4DFF" stroke-width="2"/><path d="M20 18h14" stroke="#7C4DFF" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="27" r="3" fill="#7C4DFF"/><path d="M20 27h14" stroke="#7C4DFF" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="36" r="3" stroke="#7C4DFF" stroke-width="2"/><path d="M20 36h14" stroke="#7C4DFF" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tmpl-lbl">선택형 활동</div></div>
+            <div class="tmpl-item" onclick="selectTmpl(this,'단답형','단답형 활동을 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="8" y="8" width="32" height="10" rx="2" stroke="#7C4DFF" stroke-width="2"/><rect x="8" y="24" width="32" height="16" rx="2" stroke="#7C4DFF" stroke-width="2" stroke-dasharray="3 2"/></svg></div><div class="tmpl-lbl">단답형 활동</div></div>
+            <div class="tmpl-item" onclick="selectTmpl(this,'서술형','서술형 활동을 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="6" y="12" width="36" height="26" rx="3" stroke="#7C4DFF" stroke-width="2.5"/><path d="M12 20h24M12 26h18M12 32h20" stroke="#7C4DFF" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tmpl-lbl">서술형 활동</div></div>
+            <div class="tmpl-item" onclick="selectTmpl(this,'연쇄형','연쇄형 활동을 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="10" cy="24" r="5" stroke="#7C4DFF" stroke-width="2"/><circle cx="24" cy="24" r="5" stroke="#7C4DFF" stroke-width="2"/><circle cx="38" cy="24" r="5" stroke="#7C4DFF" stroke-width="2"/><path d="M15 24h4M29 24h4" stroke="#7C4DFF" stroke-width="2" stroke-linecap="round"/><path d="M7 20l-3 2 3 2" stroke="#7C4DFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div><div class="tmpl-lbl">연쇄형 활동</div></div>
+          </div>
+          <!-- [ADDED 2026-04] 활동 추가 템플릿 -->
+          <div class="tmpl-extra-title">추가 콘텐츠 템플릿</div>
+          <div class="tmpl-extra-grid" id="tmplExtraActivity"></div>
         </div>
-        <!-- [REMOVED 2026-04] 문제 추출(OCR) 섹션 제거 -->
+
+        <!-- ── 개념 탭 ── -->
+        <div class="tmpl-tab-panel" data-tmplpanel="concept">
+          <div class="tmpl-grid">
+            <div class="tmpl-item" onclick="selectTmpl(this,'빈 문서','새 빈 문서를 추가합니다.')"><div class="tmpl-ico"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><rect x="8" y="6" width="32" height="36" rx="3" stroke="#C8CDD8" stroke-width="2.5"/><path d="M16 16h16M16 22h10" stroke="#C8CDD8" stroke-width="2" stroke-linecap="round"/></svg></div><div class="tmpl-lbl">빈 문서</div></div>
+          </div>
+          <!-- [ADDED 2026-04] 개념 추가 템플릿 -->
+          <div class="tmpl-extra-title">추가 콘텐츠 템플릿</div>
+          <div class="tmpl-extra-grid" id="tmplExtraConcept"></div>
+        </div>
       </div>
       <div class="tmpl-right">
         <div class="tmpl-preview-title">미리보기</div>
@@ -8246,9 +8706,116 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
       </div>
       <div class="save-body" id="saveBody"></div>
       <div class="save-footer">
-        <button class="save-btn-temp" onclick="saveTempStore()">임시 저장</button>
+        <!-- [REMOVED 2026-04] 임시 저장 버튼 제거 -->
         <button class="save-btn-next is-disabled" id="saveBtnNext" onclick="saveNextStep()" disabled>다음 단계</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- [ADDED 2026-04] 평가 설정 모달 (배점 입력 시 자동 오픈) -->
+<div class="save-eval-overlay" id="saveEvalOverlay" onclick="if(event.target===this)closeSaveEvalModal()">
+  <div class="save-eval-modal">
+    <div class="save-eval-header">
+      <div class="save-eval-title">평가 설정</div>
+      <button class="save-eval-close" onclick="closeSaveEvalModal()" aria-label="닫기">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="save-eval-body">
+
+      <!-- 평가 구분 -->
+      <div class="save-eval-row">
+        <div class="save-eval-label">평가 구분<span class="save-eval-req">·</span></div>
+        <div class="save-eval-control">
+          <label class="save-eval-radio"><input type="radio" name="saveEvalCategory" value="진단 평가" onchange="saveEvalMarkCategory()"><span></span> 진단 평가</label>
+          <label class="save-eval-radio"><input type="radio" name="saveEvalCategory" value="형성 평가" onchange="saveEvalMarkCategory()"><span></span> 형성 평가</label>
+          <label class="save-eval-radio"><input type="radio" name="saveEvalCategory" value="총괄 평가" onchange="saveEvalMarkCategory()"><span></span> 총괄 평가</label>
+          <label class="save-eval-radio"><input type="radio" name="saveEvalCategory" value="수행 평가" onchange="saveEvalMarkCategory()"><span></span> 수행 평가</label>
+        </div>
+      </div>
+
+      <!-- 평가명 -->
+      <div class="save-eval-row">
+        <div class="save-eval-label">평가명</div>
+        <div class="save-eval-control">
+          <input type="text" class="save-eval-inp" id="saveEvalName" placeholder="평가명을 입력해 주세요.">
+        </div>
+      </div>
+
+      <!-- 기간 설정 -->
+      <div class="save-eval-row save-eval-row-align-top">
+        <div class="save-eval-label">기간 설정</div>
+        <div class="save-eval-control">
+          <div class="save-eval-preset-row">
+            <button type="button" class="save-eval-preset" data-days="3"  onclick="saveEvalSetPreset(3,this)">3일</button>
+            <button type="button" class="save-eval-preset" data-days="5"  onclick="saveEvalSetPreset(5,this)">5일</button>
+            <button type="button" class="save-eval-preset" data-days="7"  onclick="saveEvalSetPreset(7,this)">7일</button>
+            <button type="button" class="save-eval-preset" data-days="15" onclick="saveEvalSetPreset(15,this)">15일</button>
+            <button type="button" class="save-eval-preset" data-days="30" onclick="saveEvalSetPreset(30,this)">30일</button>
+            <label class="save-eval-check">
+              <input type="checkbox" id="saveEvalNoPeriod" checked onchange="saveEvalTogglePeriod()">
+              <span class="save-eval-check-box"></span>
+              설정 안 함
+            </label>
+          </div>
+          <div class="save-eval-date-row">
+            <div class="save-eval-date">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <input type="date" id="saveEvalStart" disabled>
+            </div>
+            <span class="save-eval-date-sep">~</span>
+            <div class="save-eval-date">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <input type="date" id="saveEvalEnd" disabled>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 알림 전송 -->
+      <div class="save-eval-row save-eval-row-align-top">
+        <div class="save-eval-label">알림 전송</div>
+        <div class="save-eval-control save-eval-control-flex">
+          <div style="flex:1;">
+            <div class="save-eval-desc">설정 시 학생들에게 응시를 독려하는 시스템 알림이 전송됩니다.</div>
+            <div class="save-eval-desc save-eval-desc-sub">* 응시 시작일 포함 3일 전/후로 매일 1회 응시 예정 알림 및 응시 독려 알림이 전송됩니다.</div>
+          </div>
+          <button type="button" class="save-eval-toggle" id="saveEvalNotify" onclick="saveEvalToggleNotify(this)" role="switch" aria-checked="false">
+            <span class="save-eval-toggle-dot"></span>
+            <span class="save-eval-toggle-lbl">OFF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 타이머 -->
+      <div class="save-eval-row save-eval-row-align-top">
+        <div class="save-eval-label">타이머</div>
+        <div class="save-eval-control">
+          <div class="save-eval-preset-row">
+            <button type="button" class="save-eval-preset" data-min="30" onclick="saveEvalSetTimerPreset(30,this)">30분</button>
+            <button type="button" class="save-eval-preset" data-min="60" onclick="saveEvalSetTimerPreset(60,this)">1시간</button>
+          </div>
+          <div class="save-eval-timer-row">
+            <select class="save-eval-sel" id="saveEvalHour"></select>
+            <select class="save-eval-sel" id="saveEvalMin"></select>
+            <label class="save-eval-check">
+              <input type="checkbox" id="saveEvalNoTimer" onchange="saveEvalToggleNoTimer()">
+              <span class="save-eval-check-box"></span>
+              제한 없음
+            </label>
+          </div>
+          <div class="save-eval-hint">
+            * 예) 기간 설정: 2025-01-01 ~ 2025-01-03 / 타이머 : 50분<br>
+            &nbsp;&nbsp;&nbsp;→ 1/1~1/3(3일) 기간 내 응시 가능 + 응시 시작 시, 타이머 50분 제한
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="save-eval-footer">
+      <button class="save-eval-cancel" onclick="closeSaveEvalModal()">취소</button>
+      <button class="save-eval-apply" onclick="applySaveEval()">적용</button>
     </div>
   </div>
 </div>
@@ -9262,6 +9829,8 @@ function _closeLandingNewMenu(){
 // [UPDATED 2026-04] ① AI로 생성하기 — 랜딩에서 AI 콘텐츠 생성 팝업 오픈 (에디터 전환 전)
 window.landingNewAI = function(){
   _closeLandingNewMenu();
+  // [ADDED 2026-04] 새로 만들기 경로 — 저장 팝업에 자동 채움 방지 위해 컨텍스트 초기화
+  window._currentEntryContext = null;
   if(typeof openAiCreatePopup === 'function'){
     openAiCreatePopup();
   } else {
@@ -9767,6 +10336,8 @@ window.startAiCreate = function(){
 // [UPDATED 2026-04] ② 빈 템플릿 — 상단 모드 선택에 따라 심플/고급으로 진입
 window.landingNewTmpl = function(){
   _closeLandingNewMenu();
+  // [ADDED 2026-04] 새로 만들기 경로 — 저장 팝업에 자동 채움 방지 위해 컨텍스트 초기화
+  window._currentEntryContext = null;
   const mode = (typeof lsGetSelectedMode === 'function') ? lsGetSelectedMode() : 'simple';
   window._tmplModalMode = (mode === 'simple') ? 'simple' : null;
   if(typeof openTmplModal === 'function'){
@@ -9780,6 +10351,8 @@ window.landingNewTmpl = function(){
 // [UPDATED 2026-04] ③ 문제추출 (OCR) — 상단 모드 선택에 따라 심플/고급으로 진입
 window.landingNewOCR = function(){
   _closeLandingNewMenu();
+  // [ADDED 2026-04] 새로 만들기 경로 — 저장 팝업에 자동 채움 방지 위해 컨텍스트 초기화
+  window._currentEntryContext = null;
   const mode = (typeof lsGetSelectedMode === 'function') ? lsGetSelectedMode() : 'simple';
   window._tmplModalMode = (mode === 'simple') ? 'simple' : null;
   if(typeof openTmplModal === 'function'){
@@ -18568,6 +19141,7 @@ let selectedTmplName=null, selectedTmplIsOcr=false;
 function openTmplModal(){
   selectedTmplName=null; selectedTmplIsOcr=false;
   document.querySelectorAll('.tmpl-item').forEach(el=>el.classList.remove('sel'));
+  document.querySelectorAll('.tmpl-extra-item').forEach(el=>el.classList.remove('sel'));
   document.getElementById('tmplPreview').innerHTML=`<svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#C8CDD8" stroke-width="1.5"/><path d="M8 12h8M8 8h8M8 16h5" stroke="#C8CDD8" stroke-width="1.5" stroke-linecap="round"/></svg><div style="font-size:11px;color:var(--g3);margin-top:4px;">템플릿을 선택하세요</div>`;
   const btn=document.getElementById('tmplConfirm');
   btn.classList.remove('active','ocr-active');
@@ -18578,8 +19152,143 @@ function openTmplModal(){
     const isLanding = document.body && document.body.classList.contains('landing-active');
     recBtn.style.display = isLanding ? 'none' : 'flex';
   }
+
+  // [UPDATED 2026-04] 심플모드/고급모드 분기
+  //   - 고급모드: 탭 네비 + 각 탭별 패널 + 추가 템플릿 표시
+  //   - 심플모드: 탭 네비 숨김, 모든 패널 동시 표시 (기존 섹션 레이블 스타일), 추가 템플릿 숨김
+  const isSimpleEntry = (window._tmplModalMode === 'simple')
+                     || (document.body && document.body.classList.contains('simple-active'));
+  applyTmplModeLayout(isSimpleEntry);
+
+  // 고급모드일 때만 탭 초기화 + 추가 템플릿 렌더
+  if(!isSimpleEntry){
+    tmplSwitchTab('question');
+    renderTmplExtra('concept');
+    renderTmplExtra('activity');
+  }
+
   document.getElementById('tmplOverlay').classList.add('open');
 }
+
+// [ADDED 2026-04] 템플릿 모달 — 모드별 레이아웃 적용
+function applyTmplModeLayout(isSimple){
+  const tabs = document.getElementById('tmplTabs');
+  if(tabs) tabs.style.display = isSimple ? 'none' : '';
+
+  const panels = document.querySelectorAll('.tmpl-tab-panel');
+  panels.forEach(p => {
+    if(isSimple){
+      p.style.display = 'block';          // 심플: 모두 표시
+      p.classList.remove('on');
+      // 섹션 레이블 주입 (중복 방지)
+      if(!p.querySelector('.tmpl-sm-section-lbl')){
+        const k = p.dataset.tmplpanel;
+        const label = k === 'question' ? '문항' : k === 'activity' ? '활동' : '개념';
+        const lbl = document.createElement('div');
+        lbl.className = 'tmpl-section-lbl tmpl-sm-section-lbl';
+        lbl.textContent = label;
+        p.insertBefore(lbl, p.firstChild);
+      }
+    } else {
+      p.style.display = '';               // 고급: 탭에 따라 표시
+      p.querySelector('.tmpl-sm-section-lbl')?.remove();
+    }
+  });
+
+  // 추가 템플릿 영역
+  document.querySelectorAll('.tmpl-extra-title, .tmpl-extra-grid').forEach(el => {
+    el.style.display = isSimple ? 'none' : '';
+  });
+}
+
+// [ADDED 2026-04] 템플릿 모달 탭 전환
+function tmplSwitchTab(tab){
+  document.querySelectorAll('.tmpl-tab').forEach(t=>{
+    t.classList.toggle('on', t.dataset.tmpltab===tab);
+  });
+  document.querySelectorAll('.tmpl-tab-panel').forEach(p=>{
+    p.classList.toggle('on', p.dataset.tmplpanel===tab);
+  });
+}
+
+// [ADDED 2026-04] 추가 콘텐츠 템플릿 데이터 (개념 / 활동)
+// [UPDATED 2026-04] 진입화면(추천 콘텐츠 카드) 썸네일과 동일한 스타일 — 그라데이션 배경 + 큰 이모지
+const _TMPL_EXTRA = {
+  concept: [
+    { name:'중등_소단원 도입',       thumbEmoji:'📖', thumbBg:'linear-gradient(135deg,#EEF1FF,#D6DFFF)' },
+    { name:'중등_개념',              thumbEmoji:'🎌', thumbBg:'linear-gradient(135deg,#E0F7F0,#BFE8D9)' },
+    { name:'중등_개념+수학자',       thumbEmoji:'🧮', thumbBg:'linear-gradient(135deg,#E0F7F0,#BFE8D9)' },
+    { name:'중등_개념&스스로',       thumbEmoji:'🔍', thumbBg:'linear-gradient(135deg,#E0F7F0,#BFE8D9)' },
+    { name:'중등_개념&스스로 점검',  thumbEmoji:'✅', thumbBg:'linear-gradient(135deg,#E0F7F0,#BFE8D9)' },
+    { name:'중등_개념&개념 정리',    thumbEmoji:'📝', thumbBg:'linear-gradient(135deg,#EEF1FF,#D6DFFF)' },
+    { name:'중등_개념&개념정리',     thumbEmoji:'📌', thumbBg:'linear-gradient(135deg,#EEF1FF,#D6DFFF)' },
+    { name:'중등_교과서 개념 정리',  thumbEmoji:'📘', thumbBg:'linear-gradient(135deg,#E8F5E9,#C8E6C9)' },
+    { name:'중등_예제_풀이&답',      thumbEmoji:'💡', thumbBg:'linear-gradient(135deg,#F0E8FF,#DCC8FF)' },
+    { name:'중등_예제_풀이&확',      thumbEmoji:'🎯', thumbBg:'linear-gradient(135deg,#F0E8FF,#DCC8FF)' },
+    { name:'중등_예제_풀이&다',      thumbEmoji:'📐', thumbBg:'linear-gradient(135deg,#F0E8FF,#DCC8FF)' },
+    { name:'중등_계산 연습_표',      thumbEmoji:'➕', thumbBg:'linear-gradient(135deg,#E0F7F0,#BFE8D9)' },
+  ],
+  activity: [
+    { name:'중등_함께 탐구',         thumbEmoji:'⭐', thumbBg:'linear-gradient(135deg,#FFF4D6,#FFE4A8)' },
+    { name:'중등_함께 탐구_탐구',    thumbEmoji:'🔬', thumbBg:'linear-gradient(135deg,#FFF4D6,#FFE4A8)' },
+    { name:'중등_함께 탐구_탐구',    thumbEmoji:'🧪', thumbBg:'linear-gradient(135deg,#FFF4D6,#FFE4A8)' },
+    { name:'중등_개념&스스로',       thumbEmoji:'🔍', thumbBg:'linear-gradient(135deg,#E0F7F0,#BFE8D9)' },
+    { name:'중등_개념&스스로 점검',  thumbEmoji:'✅', thumbBg:'linear-gradient(135deg,#E0F7F0,#BFE8D9)' },
+    { name:'중등_역량키우기_3',      thumbEmoji:'💪', thumbBg:'linear-gradient(135deg,#FFE8D6,#FFCEA8)' },
+    { name:'중등_역량키우기_2',      thumbEmoji:'🎯', thumbBg:'linear-gradient(135deg,#FFE8D6,#FFCEA8)' },
+    { name:'중등_역량키우기_1',      thumbEmoji:'🚀', thumbBg:'linear-gradient(135deg,#FFE8D6,#FFCEA8)' },
+    { name:'중등_수학 놀이',         thumbEmoji:'🎲', thumbBg:'linear-gradient(135deg,#E0F7F0,#BFE8D9)' },
+    { name:'수학 10 - 창의수행',     thumbEmoji:'🎨', thumbBg:'linear-gradient(135deg,#FFE8D6,#FFCEA8)' },
+    { name:'수학 14 - 협력 프로젝트', thumbEmoji:'🤝', thumbBg:'linear-gradient(135deg,#F0E8FF,#DCC8FF)' },
+    { name:'고등_개념 탐구',         thumbEmoji:'🔭', thumbBg:'linear-gradient(135deg,#EEF1FF,#D6DFFF)' },
+  ],
+};
+
+// [ADDED 2026-04] 추가 템플릿 그리드 렌더 (진입화면 카드 썸네일과 동일한 스타일)
+function renderTmplExtra(kind){
+  const wrap = document.getElementById(kind === 'concept' ? 'tmplExtraConcept' : 'tmplExtraActivity');
+  if(!wrap) return;
+  const list = _TMPL_EXTRA[kind] || [];
+  wrap.innerHTML = list.map((t, i) => `
+    <div class="tmpl-extra-item" data-kind="${kind}" data-idx="${i}"
+         onclick="selectTmplExtra(this,'${kind}',${i})">
+      <div class="tmpl-extra-thumb" style="background:${t.thumbBg};">
+        <span class="tmpl-extra-thumb-emoji">${t.thumbEmoji}</span>
+      </div>
+      <div class="tmpl-extra-lbl" title="${t.name}">${t.name}</div>
+    </div>
+  `).join('');
+}
+
+
+// [ADDED 2026-04] 추가 템플릿 선택
+function selectTmplExtra(el, kind, idx){
+  const t = (_TMPL_EXTRA[kind] || [])[idx];
+  if(!t) return;
+  const name = t.name;
+  // 기본 템플릿 선택 상태 해제 + 추가 템플릿끼리 중복 선택 해제
+  document.querySelectorAll('.tmpl-item').forEach(x=>x.classList.remove('sel'));
+  document.querySelectorAll('.tmpl-extra-item').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel');
+  // 선택 템플릿 — 개념은 '빈 문서' / 활동은 '서술형'을 베이스로 사용하되 표기명만 바꿈
+  const baseTmpl = kind === 'concept' ? '빈 문서' : '서술형';
+  window.selectedTmplName = baseTmpl;
+  window.selectedTmplDisplayName = name;
+  window.selectedTmplIsOcr = false;
+  const btn = document.getElementById('tmplConfirm');
+  btn.classList.add('active'); btn.classList.remove('ocr-active');
+  btn.textContent = '템플릿 선택';
+  // 미리보기 영역에 간단한 안내
+  const prev = document.getElementById('tmplPreview');
+  if(prev){
+    prev.innerHTML = `
+      <div style="width:100%;padding:14px;text-align:center;">
+        <div style="font-size:12px;font-weight:800;color:#1E2340;margin-bottom:6px;">${name}</div>
+        <div style="font-size:10.5px;color:#6B7280;line-height:1.5;">${kind==='concept' ? '개념 학습 템플릿' : '활동 템플릿'}</div>
+      </div>`;
+  }
+}
+
 function closeTmplModal(){
   document.getElementById('tmplOverlay').classList.remove('open');
   // [ADDED 2026-04] 심플모드 플래그 정리 — 다음 번 templates open에 영향 방지
@@ -19307,8 +20016,21 @@ function toggleAchieveCode(el){
   }
 }
 
-function openSaveModal(){ saveStep=0; document.getElementById('saveOverlay').classList.add('open'); renderSaveStep(); }
-function closeSaveModal(){ document.getElementById('saveOverlay').classList.remove('open'); }
+function openSaveModal(){
+  saveStep=0;
+  // [ADDED 2026-04] 2단계용 body 클래스 초기화
+  document.body.classList.remove('save-step2');
+  // [ADDED 2026-04] 평가 설정 관련 플래그 초기화 — 새 저장 세션마다 초기화
+  window._saveEvalApplied = false;
+  window._saveCapturedScore = null;
+  document.getElementById('saveOverlay').classList.add('open');
+  renderSaveStep();
+}
+function closeSaveModal(){
+  document.getElementById('saveOverlay').classList.remove('open');
+  // [ADDED 2026-04] 모달 닫을 때도 사이드바 숨김 클래스 제거 (다음 오픈 대비)
+  document.body.classList.remove('save-step2');
+}
 function saveOvClick(e){ if(e.target===document.getElementById('saveOverlay'))closeSaveModal(); }
 function renderSaveStep(){
   ['sstep-0','sstep-1'].forEach((id,i)=>{
@@ -19317,7 +20039,12 @@ function renderSaveStep(){
     el.className='save-step'+(i<saveStep?' done':i===saveStep?' active':'');
   });
   const nextBtn=document.getElementById('saveBtnNext');
-  if(nextBtn)nextBtn.textContent=saveStep===0?'다음 단계':'✅ 저장 완료';
+  if(nextBtn)nextBtn.textContent=saveStep===0?'다음 단계':'최종 반영';
+  // [ADDED 2026-04] 1단계에서는 save-step2 해제 + '이전 단계' 버튼 제거
+  if(saveStep===0){
+    document.body.classList.remove('save-step2');
+    if(typeof saveBtnPrevRemove === 'function') saveBtnPrevRemove();
+  }
   const body=document.getElementById('saveBody');
   if(!body) return;
   if(saveStep===0){
@@ -19340,172 +20067,270 @@ function renderSaveStep(){
 
     const setKey = 26672;
     const contentKey = '신규';
-    const setName = '용량 표기 테스트';
+    // [UPDATED 2026-04] 진입 경로별 세트지명/콘텐츠명 표시
+    //   - 추천 세트지로 진입 → setName에 그 이름 표시, contentName은 빈 상태
+    //   - 추천 콘텐츠로 진입 → contentName에 그 이름 표시, setName은 빈 상태
+    //   - 새로 만들기로 진입 (컨텍스트 없음) → 둘 다 빈 상태 (사용자 직접 입력)
+    const _entryCtx = window._currentEntryContext || null;
+    const setName     = (_entryCtx && _entryCtx.setName)     ? _entryCtx.setName     : '';
+    const contentName = (_entryCtx && _entryCtx.contentName) ? _entryCtx.contentName : '';
 
-    // [ADDED 2026-04] 심플모드 여부 감지 — 심플모드면 필수 필드(주황 라벨)만 노출
-    const isSimpleSave = (document.body && document.body.classList.contains('simple-active'))
-                       || (typeof window._lsSelectedMode !== 'undefined' && window._lsSelectedMode === 'simple');
-
-    body.innerHTML=`
-      <!-- 1단계 안내문 -->
-      <div class="save-body-notice">
-        <b>[ 1단계 ]</b> "개별 콘텐츠에 각각" 적용할 정보를 설정해 주세요.
-      </div>
-
-      ${isSimpleSave ? '' : `
-      <!-- 세트지 명 -->
-      <div class="save-row">
-        <div class="save-row-label">세트지 명</div>
-        <div class="save-row-inline">
-          <span class="save-row-value-readonly">${setName}</span>
-          <span class="save-row-key" style="margin-left:auto;">Key : ${setKey}</span>
+    // [UPDATED 2026-04] 고급모드 저장 팝업 1단계 필드 재구성
+    //   유지: 세트지명 / 콘텐츠명 / 학습맵 / 콘텐츠 / 문항 유형 / 평가 영역 / 난이도 / 배점
+    //   제거: 교과·비교과 / 교과 역량 / 해시태그 / 출처 / 설명
+    //   [UPDATED 2026-04] 심플모드도 동일한 레이아웃 사용 (기존 심플 분기 제거)
+    {
+      // ── 1단계 공통 레이아웃 (8개 필드) ──
+      body.innerHTML=`
+        <div class="save-body-notice">
+          <b>[ 1단계 ]</b> "개별 콘텐츠에 각각" 적용할 정보를 설정해 주세요.
         </div>
-      </div>
-      `}
 
-      <!-- 콘텐츠 명 -->
-      <div class="save-row">
-        <div class="save-row-label req-color">콘텐츠 명 <span class="req">*</span></div>
-        <div class="save-row-inline">
-          <input class="save-inp" id="smeta-name" placeholder="${tmplAuto} 명을 입력해 주세요." style="flex:1;max-width:440px;" oninput="saveValidateStep1()">
-          <span class="save-row-key" style="margin-left:auto;">Key : ${contentKey}</span>
-        </div>
-      </div>
-
-      <!-- 교과/비교과 -->
-      <div class="save-row">
-        <div class="save-row-label req-color">교과/비교과 <span class="req">*</span></div>
-        <div class="save-row-inline">
-          <label class="save-radio"><input type="radio" name="saveSubjType" value="교과서" onchange="saveValidateStep1()"> 교과서 콘텐츠</label>
-          <label class="save-radio"><input type="radio" name="saveSubjType" value="비교과서" onchange="saveValidateStep1()"> 비교과서 콘텐츠</label>
-        </div>
-      </div>
-
-      <!-- 학습 맵 -->
-      <div class="save-row">
-        <div class="save-row-label req-color">학습 맵 <span class="req">*</span></div>
-        <div class="save-row-inline">
-          <select class="save-select" id="smeta-map" onchange="saveValidateStep1()" style="min-width:140px;">
-            <option value="">대단원선택</option>
-            ${(typeof lgCurrentGrade!=='undefined'?lgCurrentGrade.units:[unitN]).map(u=>`<option${u===unitN?' selected':''}>${u}</option>`).join('')}
-          </select>
-          <button type="button" class="save-ai-btn" onclick="saveAiRecommend('map')">AI 추천</button>
-        </div>
-      </div>
-
-      ${isSimpleSave ? '' : `
-      <!-- 교과 역량 -->
-      <div class="save-row">
-        <div class="save-row-label">교과 역량</div>
-        <div class="save-row-inline">
-          <select class="save-select" id="smeta-competency" style="min-width:140px;">
-            <option value="">선택</option>
-            <option>계산력</option>
-            <option>문제해결</option>
-            <option>추론</option>
-            <option>의사소통</option>
-            <option>정보처리</option>
-          </select>
-          <button type="button" class="save-add-btn" onclick="saveAddCompetency()" aria-label="교과 역량 추가">+</button>
-        </div>
-      </div>
-      `}
-
-      <!-- 해시태그 -->
-      <div class="save-row top-align">
-        <div class="save-row-label req-color" style="padding-top:8px;">해시태그 <span class="req">*</span></div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <div class="save-tag-wrap" id="sTagWrap" style="border:1.5px solid #E5E7EB;border-radius:999px;padding:4px 12px;min-height:32px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;">
-            <span style="color:#9CA3AF;font-size:13px;margin-right:4px;">#</span>
-            <input class="save-tag-inp" id="sTagInput" placeholder="태그 입력 후 Enter" onkeydown="saveTagKeydown(event)" oninput="saveValidateStep1()" style="border:none;outline:none;flex:1;min-width:100px;font-size:12px;background:transparent;">
+        <!-- [UPDATED 2026-04] 세트지 명 — 필수값, 편집 가능 (진입 세트지명이 있으면 자동 반영) -->
+        <div class="save-row">
+          <div class="save-row-label req-color">세트지 명 <span class="req">*</span></div>
+          <div class="save-row-inline">
+            <input class="save-inp" id="smeta-setname" value="${setName}" placeholder="세트지 명을 입력해 주세요." style="flex:1;max-width:440px;" oninput="saveValidateStep1()">
+            <span class="save-row-key" style="margin-left:auto;">Key : ${setKey}</span>
           </div>
-          <button type="button" class="save-ai-btn sm" onclick="saveAiRecommend('tag')" style="align-self:flex-start;">AI 추천</button>
         </div>
-      </div>
 
-      ${isSimpleSave ? '' : `
-      <!-- 콘텐츠 (읽기 전용) -->
-      <div class="save-row">
-        <div class="save-row-label">콘텐츠</div>
-        <span class="save-row-value-readonly">${contentTypeAuto}</span>
-      </div>
-
-      <!-- 문항 유형 (읽기 전용) -->
-      <div class="save-row">
-        <div class="save-row-label">문항 유형</div>
-        <span class="save-row-value-readonly">${tmplAuto}</span>
-      </div>
-      `}
-
-      <!-- 평가 영역 -->
-      <div class="save-row">
-        <div class="save-row-label req-color">평가 영역 <span class="req">*</span></div>
-        <div class="save-row-inline">
-          <select class="save-select" id="smeta-eval" onchange="saveValidateStep1()" style="min-width:140px;">
-            <option value="">선택</option>
-            <option>계산력</option>
-            <option>문제해결</option>
-            <option>추론</option>
-            <option>의사소통</option>
-            <option>정보처리</option>
-          </select>
-          <button type="button" class="save-ai-btn" onclick="saveAiRecommend('eval')">AI 추천</button>
+        <!-- [UPDATED 2026-04] 콘텐츠 명 — 진입 콘텐츠명이 있으면 자동 반영 -->
+        <div class="save-row">
+          <div class="save-row-label req-color">콘텐츠 명 <span class="req">*</span></div>
+          <div class="save-row-inline">
+            <input class="save-inp" id="smeta-name" value="${contentName}" placeholder="${tmplAuto} 명을 입력해 주세요." style="flex:1;max-width:440px;" oninput="saveValidateStep1()">
+            <span class="save-row-key" style="margin-left:auto;">Key : ${contentKey}</span>
+          </div>
         </div>
-      </div>
 
-      <!-- 난이도 -->
-      <div class="save-row">
-        <div class="save-row-label req-color">난이도 <span class="req">*</span></div>
-        <div class="save-row-inline">
-          <label class="save-radio"><input type="radio" name="saveDiff" value="상" onchange="saveValidateStep1()"> 상</label>
-          <label class="save-radio"><input type="radio" name="saveDiff" value="중" onchange="saveValidateStep1()"> 중</label>
-          <label class="save-radio"><input type="radio" name="saveDiff" value="하" onchange="saveValidateStep1()"> 하</label>
-          <button type="button" class="save-ai-btn" style="margin-left:6px;" onclick="saveAiRecommend('diff')">AI 추천</button>
+        <!-- 학습 맵 -->
+        <div class="save-row">
+          <div class="save-row-label req-color">학습 맵 <span class="req">*</span></div>
+          <div class="save-row-inline">
+            <select class="save-select" id="smeta-map" onchange="saveValidateStep1()" style="min-width:140px;">
+              <option value="">대단원선택</option>
+              ${(typeof lgCurrentGrade!=='undefined'?lgCurrentGrade.units:[unitN]).map(u=>`<option${u===unitN?' selected':''}>${u}</option>`).join('')}
+            </select>
+            <button type="button" class="save-ai-btn" onclick="saveAiRecommend('map')">AI 추천</button>
+          </div>
         </div>
-      </div>
 
-      ${isSimpleSave ? '' : `
-      <!-- 출처 -->
-      <div class="save-row">
-        <div class="save-row-label">출처</div>
-        <input class="save-inp" id="smeta-source" placeholder="출처를 입력하여 주세요." style="width:100%;max-width:440px;">
-      </div>
+        <!-- 콘텐츠 (읽기 전용) -->
+        <div class="save-row">
+          <div class="save-row-label">콘텐츠</div>
+          <span class="save-row-value-readonly">${contentTypeAuto}</span>
+        </div>
 
-      <!-- 설명 -->
-      <div class="save-row top-align">
-        <div class="save-row-label" style="padding-top:8px;">설명</div>
-        <textarea class="save-textarea" id="smeta-desc" placeholder="콘텐츠에 대한 설명을 입력해 주세요." style="max-width:440px;"></textarea>
-      </div>
-      `}
+        <!-- 문항 유형 (읽기 전용) -->
+        <div class="save-row">
+          <div class="save-row-label">문항 유형</div>
+          <span class="save-row-value-readonly">${tmplAuto}</span>
+        </div>
 
-      <!-- 하단 안내문 -->
-      <div class="save-body-footnote">
-        필수 값을 모두 설정 하시면 [다음 단계]로 이동하실 수 있습니다.
-      </div>`;
+        <!-- 평가 영역 -->
+        <div class="save-row">
+          <div class="save-row-label req-color">평가 영역 <span class="req">*</span></div>
+          <div class="save-row-inline">
+            <select class="save-select" id="smeta-eval" onchange="saveValidateStep1()" style="min-width:140px;">
+              <option value="">선택</option>
+              <option>계산력</option>
+              <option>문제해결</option>
+              <option>추론</option>
+              <option>의사소통</option>
+              <option>정보처리</option>
+            </select>
+            <button type="button" class="save-ai-btn" onclick="saveAiRecommend('eval')">AI 추천</button>
+          </div>
+        </div>
+
+        <!-- 난이도 -->
+        <div class="save-row">
+          <div class="save-row-label req-color">난이도 <span class="req">*</span></div>
+          <div class="save-row-inline">
+            <label class="save-radio"><input type="radio" name="saveDiff" value="상" onchange="saveValidateStep1()"> 상</label>
+            <label class="save-radio"><input type="radio" name="saveDiff" value="중" onchange="saveValidateStep1()"> 중</label>
+            <label class="save-radio"><input type="radio" name="saveDiff" value="하" onchange="saveValidateStep1()"> 하</label>
+            <button type="button" class="save-ai-btn" style="margin-left:6px;" onclick="saveAiRecommend('diff')">AI 추천</button>
+          </div>
+        </div>
+
+        <!-- [UPDATED 2026-04] 배점 — 선택값, 기본값 없음 -->
+        <div class="save-row">
+          <div class="save-row-label">배점</div>
+          <div class="save-row-inline">
+            <input type="number" class="save-inp" id="smeta-score" min="0" max="100" step="1" placeholder="입력" value=""
+                   oninput="saveValidateStep1()" onfocus="this.select()"
+                   style="width:100px;text-align:center;">
+            <span style="font-size:12px;color:#6B7280;">점</span>
+          </div>
+        </div>
+
+        <div class="save-body-footnote">
+          필수 값을 모두 설정 하시면 [다음 단계]로 이동하실 수 있습니다.
+        </div>`;
+    }
 
     // 초기 검증 실행 — 다음 단계 버튼 disabled 상태 결정
     saveValidateStep1();
   } else {
-    body.innerHTML=`<div style="text-align:center;padding:32px 0 24px;">
-      <div style="font-size:40px;margin-bottom:12px;">✅</div>
-      <div style="font-size:16px;font-weight:800;color:var(--text);">저장 준비 완료!</div>
-      <div style="font-size:12px;color:var(--g4);line-height:1.8;margin-top:8px;">입력하신 메타 정보로 콘텐츠를 최종 저장합니다.</div>
-    </div>`;
+    // ── 2단계 — 최종 반영 ──
+    // [UPDATED 2026-04] 힌트 문구 3개 제거 + 심플모드 분기 추가
+    //   - 심플모드: 콘텐츠 공개 / 세트지 공개 / 세트지 난이도 / 세트지 이미지만 노출
+    //   - 고급모드: 전체 항목 노출
+    const isSimpleSave2 = (document.body && document.body.classList.contains('simple-active'))
+                       || (typeof window._lsSelectedMode !== 'undefined' && window._lsSelectedMode === 'simple');
+
+    body.innerHTML=`
+      <div class="save-body-notice">
+        <b>[ 2단계 ]</b> "개별 콘텐츠와 세트지"를 공개하실 수 있습니다.
+      </div>
+
+      <!-- ── 콘텐츠 그룹 ── -->
+      <div class="save-s2-group-title">
+        <span class="save-s2-group-dot"></span>콘텐츠
+      </div>
+
+      <!-- 콘텐츠 공개 -->
+      <div class="save-s2-row">
+        <div class="save-s2-label req-color">콘텐츠 공개 <span class="req">*</span></div>
+        <div class="save-s2-control">
+          <label class="save-s2-radio"><input type="radio" name="s2-cont-pub" value="public"> 공개</label>
+          <label class="save-s2-radio"><input type="radio" name="s2-cont-pub" value="private" checked> 비공개</label>
+        </div>
+      </div>
+
+      ${isSimpleSave2 ? '' : `
+      <!-- AIDT 수업자료실(콘텐츠 조회) 공개 -->
+      <div class="save-s2-row">
+        <div class="save-s2-label req-color">AIDT 수업자료실(콘텐츠 조회) 공개 <span class="req">*</span></div>
+        <div class="save-s2-control">
+          <label class="save-s2-radio"><input type="radio" name="s2-aidt-cont" value="public"> 공개</label>
+          <label class="save-s2-radio"><input type="radio" name="s2-aidt-cont" value="private" checked> 비공개</label>
+          <button type="button" class="save-ai-btn" style="margin-left:6px;" onclick="T('개별 설정 — 향후 지원')">개별 설정</button>
+        </div>
+      </div>
+
+      <!-- 콘텐츠 복사 -->
+      <div class="save-s2-row">
+        <div class="save-s2-label save-s2-label-sub"><span class="save-s2-sub-dot"></span>콘텐츠 복사</div>
+        <div class="save-s2-control">
+          <label class="save-s2-radio"><input type="radio" name="s2-cont-copy" value="copy"> 복사</label>
+          <label class="save-s2-radio"><input type="radio" name="s2-cont-copy" value="keep" checked> 유지</label>
+          <button type="button" class="save-s2-sub-btn" onclick="T('개별 설정 — 향후 지원')">개별 설정</button>
+        </div>
+        <div class="save-s2-hint">(수정사항이 있어야 복사가 가능하며 선택 시, 콘텐츠 Key가 신규로 생성됩니다.)</div>
+      </div>
+      `}
+
+      <!-- ── 세트지(수업자료) 그룹 ── -->
+      <div class="save-s2-group-title" style="margin-top:20px;">
+        <span class="save-s2-group-dot"></span>세트지(수업자료)
+      </div>
+
+      <!-- 세트지 공개 -->
+      <div class="save-s2-row">
+        <div class="save-s2-label req-color">세트지 공개 <span class="req">*</span></div>
+        <div class="save-s2-control">
+          <label class="save-s2-radio"><input type="radio" name="s2-set-pub" value="public"> 공개</label>
+          <label class="save-s2-radio"><input type="radio" name="s2-set-pub" value="private" checked> 비공개</label>
+        </div>
+      </div>
+
+      ${isSimpleSave2 ? '' : `
+      <!-- AIDT 수업자료실(수업자료 조회) 공개 -->
+      <div class="save-s2-row">
+        <div class="save-s2-label req-color">AIDT 수업자료실(수업자료 조회) 공개 <span class="req">*</span></div>
+        <div class="save-s2-control">
+          <label class="save-s2-radio"><input type="radio" name="s2-aidt-set" value="public"> 공개</label>
+          <label class="save-s2-radio"><input type="radio" name="s2-aidt-set" value="private" checked> 비공개</label>
+        </div>
+      </div>
+      `}
+
+      <!-- 세트지 난이도 -->
+      <div class="save-s2-row">
+        <div class="save-s2-label req-color">세트지 난이도 <span class="req">*</span></div>
+        <div class="save-s2-control">
+          <label class="save-s2-radio"><input type="radio" name="s2-set-diff" value="상"> 상</label>
+          <label class="save-s2-radio"><input type="radio" name="s2-set-diff" value="중"> 중</label>
+          <label class="save-s2-radio"><input type="radio" name="s2-set-diff" value="하" checked> 하</label>
+        </div>
+      </div>
+
+      <!-- 세트지 이미지 -->
+      <div class="save-s2-row save-s2-row-img">
+        <div class="save-s2-label">세트지 이미지</div>
+        <div class="save-s2-control save-s2-img-ctrl">
+          <div class="save-s2-img-thumb">
+            <div class="save-s2-img-thumb-doc"></div>
+            <div class="save-s2-img-thumb-line" style="width:60%;"></div>
+            <div class="save-s2-img-thumb-line" style="width:45%;"></div>
+            <div class="save-s2-img-thumb-line" style="width:35%;"></div>
+          </div>
+          <label class="save-s2-img-check">
+            <input type="checkbox" id="s2-use-first-img" checked>
+            <span class="save-s2-img-check-box"></span>
+            첫 콘텐츠 이미지 사용
+          </label>
+        </div>
+      </div>
+
+      <!-- 하단 안내문 -->
+      <div class="save-s2-footnote">
+        필수 값을 모두 설정 하신 후 <b>[최종 반영]</b> 버튼을 클릭 하시면, 실제 "콘텐츠"와 "세트지"에 반영됩니다.
+      </div>`;
+    // [ADDED 2026-04] 2단계 진입 시 좌측 사이드바 숨김 + Footer 버튼 "최종 반영"으로
+    document.body.classList.add('save-step2');
+    const nextBtn = document.getElementById('saveBtnNext');
+    if(nextBtn){
+      nextBtn.textContent = '최종 반영';
+      nextBtn.classList.remove('is-disabled');
+      nextBtn.removeAttribute('disabled');
+    }
+    // "이전 단계" 버튼 주입 (Footer에 없으면 추가)
+    saveEnsurePrevBtn();
   }
+}
+
+// [ADDED 2026-04] 2단계 전용 "이전 단계" 버튼을 Footer에 주입 (중복 주입 방지)
+function saveEnsurePrevBtn(){
+  const footer = document.querySelector('.save-footer');
+  const nextBtn = document.getElementById('saveBtnNext');
+  if(!footer || !nextBtn) return;
+  let prev = document.getElementById('saveBtnPrev');
+  if(!prev){
+    prev = document.createElement('button');
+    prev.id = 'saveBtnPrev';
+    prev.type = 'button';
+    prev.className = 'save-btn-temp';
+    prev.textContent = '이전 단계';
+    prev.onclick = function(){ saveStep = 0; renderSaveStep(); saveBtnPrevRemove(); };
+    footer.insertBefore(prev, nextBtn);
+  }
+}
+function saveBtnPrevRemove(){
+  const prev = document.getElementById('saveBtnPrev');
+  if(prev) prev.remove();
 }
 function saveTagKeydown(e){ if(e.key==='Enter'){e.preventDefault();const v=e.target.value.trim();if(!v)return;const w=document.getElementById('sTagWrap');const s=document.createElement('span');s.className='save-tag';s.innerHTML=`${v} <span class="rm" onclick="this.parentNode.remove();saveValidateStep1();">✕</span>`;w.insertBefore(s,e.target);e.target.value='';saveValidateStep1();} }
 
 // [ADDED 2026-04] 1단계 필수값 검증 → "다음 단계" 버튼 활성/비활성
+// [UPDATED 2026-04] 심플모드도 고급모드와 동일한 레이아웃/검증 사용
 function saveValidateStep1(){
   const btn = document.getElementById('saveBtnNext');
   if(!btn) return;
+
   const name = (document.getElementById('smeta-name')?.value || '').trim();
-  const subjType = document.querySelector('input[name="saveSubjType"]:checked')?.value;
   const map = document.getElementById('smeta-map')?.value;
-  const hasTag = !!document.querySelector('#sTagWrap .save-tag');
   const evalArea = document.getElementById('smeta-eval')?.value;
   const diff = document.querySelector('input[name="saveDiff"]:checked')?.value;
-  const ok = !!(name && subjType && map && hasTag && evalArea && diff);
+  const setname = (document.getElementById('smeta-setname')?.value || '').trim();
+
+  // 필수값: 세트지명 / 콘텐츠명 / 학습맵 / 평가영역 / 난이도 (5개)
+  // 배점은 선택값 — 비워두거나 0도 허용
+  const ok = !!(setname && name && map && evalArea && diff);
+
   if(ok){
     btn.classList.remove('is-disabled');
     btn.removeAttribute('disabled');
@@ -19559,17 +20384,206 @@ function saveTempStore(){
   T('💾 임시 저장되었습니다');
 }
 
+// ════════════════════════════════════════════════════
+// [ADDED 2026-04] 평가 설정 모달 — 2단계 최종 반영 시, 배점이 설정되어 있으면 자동 오픈
+// ════════════════════════════════════════════════════
+
+// 상태 저장소
+window._saveEvalConfig = window._saveEvalConfig || {
+  category: null, name: '', days: null, start: '', end: '',
+  notify: false, timerMin: 0, noTimer: false,
+};
+
+// [REMOVED 2026-04] saveOnScoreChange — 배점 자동 오픈 로직 제거
+//   평가 설정 모달은 2단계 [최종 반영] 클릭 시점에 배점이 설정되어 있으면 자동 오픈됨
+
+function openSaveEvalModal(){
+  const ov = document.getElementById('saveEvalOverlay');
+  if(!ov) return;
+
+  // 타이머 드롭다운 (시 0~12 / 분 0,5,10,...,55) 채우기
+  const h = document.getElementById('saveEvalHour');
+  const m = document.getElementById('saveEvalMin');
+  if(h && !h.options.length){
+    let html = '';
+    for(let i=0;i<=12;i++) html += `<option value="${i}">${i}시간</option>`;
+    h.innerHTML = html;
+  }
+  if(m && !m.options.length){
+    let html = '';
+    for(let i=0;i<12;i++){ const v = i*5; html += `<option value="${v}">${v}분</option>`; }
+    m.innerHTML = html;
+  }
+
+  // 기본값: 평가명에 오늘 날짜(YY.MM.DD)
+  const nameInp = document.getElementById('saveEvalName');
+  if(nameInp && !nameInp.value){
+    const d = new Date();
+    const yy = String(d.getFullYear()).slice(2);
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    nameInp.value = `${yy}.${mm}.${dd}`;
+  }
+
+  ov.classList.add('open');
+}
+
+// 취소/닫기 — 평가 설정 없이 모달만 닫음. 저장 모달은 열린 상태로 유지되어
+//   사용자가 원하면 [최종 반영] 버튼을 다시 눌러 평가 설정 재진입 or 취소 가능.
+function closeSaveEvalModal(){
+  const ov = document.getElementById('saveEvalOverlay');
+  if(ov) ov.classList.remove('open');
+}
+
+// 라디오 선택 시 표시용 훅(필요시 확장)
+function saveEvalMarkCategory(){ /* 현재는 CSS로 자동 반영 */ }
+
+// 기간 프리셋 버튼 — 클릭 시 오늘부터 N일까지 세팅 + "설정 안 함" 해제
+function saveEvalSetPreset(days, btn){
+  document.querySelectorAll('.save-eval-preset[data-days]').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  const noCheck = document.getElementById('saveEvalNoPeriod');
+  if(noCheck) noCheck.checked = false;
+  const startInp = document.getElementById('saveEvalStart');
+  const endInp = document.getElementById('saveEvalEnd');
+  if(startInp && endInp){
+    startInp.disabled = false; endInp.disabled = false;
+    const s = new Date();
+    const e = new Date(); e.setDate(e.getDate() + days);
+    const fmt = (d) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${dd}`;
+    };
+    startInp.value = fmt(s); endInp.value = fmt(e);
+  }
+}
+
+// "설정 안 함" 체크 변경
+function saveEvalTogglePeriod(){
+  const noCheck = document.getElementById('saveEvalNoPeriod');
+  const startInp = document.getElementById('saveEvalStart');
+  const endInp = document.getElementById('saveEvalEnd');
+  if(!noCheck) return;
+  if(noCheck.checked){
+    // 설정 안 함 → 프리셋 해제 + 날짜 비활성
+    document.querySelectorAll('.save-eval-preset[data-days]').forEach(b=>b.classList.remove('on'));
+    if(startInp){ startInp.disabled = true; startInp.value = ''; }
+    if(endInp){ endInp.disabled = true; endInp.value = ''; }
+  } else {
+    // 수동 설정 허용
+    if(startInp) startInp.disabled = false;
+    if(endInp) endInp.disabled = false;
+  }
+}
+
+// 알림 토글
+function saveEvalToggleNotify(btn){
+  const on = btn.classList.toggle('on');
+  btn.setAttribute('aria-checked', on ? 'true' : 'false');
+  btn.querySelector('.save-eval-toggle-lbl').textContent = on ? 'ON' : 'OFF';
+}
+
+// 타이머 프리셋
+function saveEvalSetTimerPreset(min, btn){
+  document.querySelectorAll('.save-eval-preset[data-min]').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  const noTimer = document.getElementById('saveEvalNoTimer');
+  if(noTimer) noTimer.checked = false;
+  const h = document.getElementById('saveEvalHour');
+  const mSel = document.getElementById('saveEvalMin');
+  if(h && mSel){
+    h.disabled = false; mSel.disabled = false;
+    const hours = Math.floor(min/60);
+    const mins = min % 60;
+    // 5분 단위로 내림
+    const minStep = Math.floor(mins/5) * 5;
+    h.value = String(hours);
+    mSel.value = String(minStep);
+  }
+}
+
+// 타이머 "제한 없음" 체크
+function saveEvalToggleNoTimer(){
+  const noTimer = document.getElementById('saveEvalNoTimer');
+  const h = document.getElementById('saveEvalHour');
+  const m = document.getElementById('saveEvalMin');
+  if(!noTimer) return;
+  if(noTimer.checked){
+    document.querySelectorAll('.save-eval-preset[data-min]').forEach(b=>b.classList.remove('on'));
+    if(h){ h.disabled = true; }
+    if(m){ m.disabled = true; }
+  } else {
+    if(h) h.disabled = false;
+    if(m) m.disabled = false;
+  }
+}
+
+// 적용 버튼 — 평가 설정 적용 후 최종 저장까지 이어서 처리
+function applySaveEval(){
+  const category = document.querySelector('input[name="saveEvalCategory"]:checked')?.value || null;
+  if(!category){
+    T('⚠️ 평가 구분을 선택해 주세요');
+    return;
+  }
+  const name = (document.getElementById('saveEvalName')?.value || '').trim();
+  const noPeriod = !!document.getElementById('saveEvalNoPeriod')?.checked;
+  const start = document.getElementById('saveEvalStart')?.value || '';
+  const end = document.getElementById('saveEvalEnd')?.value || '';
+  const notify = !!document.getElementById('saveEvalNotify')?.classList.contains('on');
+  const noTimer = !!document.getElementById('saveEvalNoTimer')?.checked;
+  const hours = parseInt(document.getElementById('saveEvalHour')?.value || '0', 10);
+  const mins = parseInt(document.getElementById('saveEvalMin')?.value || '0', 10);
+  const timerMin = noTimer ? null : (hours*60 + mins);
+
+  window._saveEvalConfig = {
+    category, name,
+    noPeriod, start, end,
+    notify, noTimer, timerMin,
+  };
+
+  // [UPDATED 2026-04] 평가 설정 모달 닫기 + 저장 모달도 최종 반영 처리
+  const ov = document.getElementById('saveEvalOverlay');
+  if(ov) ov.classList.remove('open');
+  window._saveEvalApplied = true;            // 재진입 방지 플래그
+  T('✅ 평가 설정이 적용되었습니다 (' + category + ')');
+  // 약간의 지연 후 저장 모달도 완료 처리
+  setTimeout(()=>{ saveFinalize(); }, 250);
+}
+
 function saveNextStep(){
   if(saveStep===0){
+    // [FIXED 2026-04] 1→2단계 이동 시점에 배점값을 캡처해서 저장
+    //   2단계는 body.innerHTML을 새로 그리므로 #smeta-score DOM이 사라짐 — 그 전에 저장 필요
+    const scoreVal = (document.getElementById('smeta-score')?.value || '').trim();
+    const scoreNum = parseInt(scoreVal, 10);
+    window._saveCapturedScore = (Number.isFinite(scoreNum) && scoreNum > 0) ? scoreNum : null;
     saveStep=1; renderSaveStep();
   } else {
-    closeSaveModal();
-    T('✅ 콘텐츠가 저장되었습니다!');
-    if(window._openAiAfterSave){
-      window._openAiAfterSave = false;
-      setTimeout(()=>showAiChatLanding(), 300);
+    // [UPDATED 2026-04] 최종 반영 클릭 시 — 1단계에서 캡처한 배점값이 있으면 평가 설정 모달 먼저 오픈
+    // 평가 설정이 적용(applySaveEval)되면 실제 저장 완료 처리
+    const hasScore = window._saveCapturedScore != null && window._saveCapturedScore > 0;
+    if(hasScore && !window._saveEvalApplied){
+      openSaveEvalModal();
+      return;
     }
+    // 배점 없음 or 이미 평가 설정 완료 → 최종 저장
+    saveFinalize();
   }
+}
+
+// [ADDED 2026-04] 최종 저장 처리 분리 — 평가 설정 적용 후에도 재사용
+function saveFinalize(){
+  closeSaveModal();
+  T('✅ 콘텐츠가 저장되었습니다!');
+  if(window._openAiAfterSave){
+    window._openAiAfterSave = false;
+    setTimeout(()=>showAiChatLanding(), 300);
+  }
+  // 플래그 리셋 (다음 저장 세션 대비)
+  window._saveEvalApplied = false;
+  window._saveCapturedScore = null;
 }
 
 // ── 프로필 메뉴 ──
@@ -22078,9 +23092,15 @@ function _setCardHtml(s, featured, unitIdx, setIdx){
   const bkHtml = _breakdownHtml(s.breakdown);
   const dataAttr = `data-type="set" data-uidx="${unitIdx}" data-sidx="${setIdx}"`;
   const wishId = `wish-s-${unitIdx}-${setIdx}`;
+  // [ADDED 2026-04] 썸네일 (콘텐츠 카드와 동일 톤)
+  const thumbBg    = s.thumbBg    || 'linear-gradient(135deg,#F3F4F6,#E5E7EB)';
+  const thumbEmoji = s.thumb      || '📚';
   return `
   <div class="ls-set-card${featured?' featured':''}" ${dataAttr} style="cursor:pointer;position:relative;">
-    <div onclick="lsOpenPreview(this.closest('[data-type]'))" style="display:flex;flex-direction:column;gap:10px;flex:1;">
+    <div class="ls-set-card-thumb" style="background:${thumbBg};" onclick="lsOpenPreview(this.closest('[data-type]'))">
+      <span class="ls-set-card-thumb-emoji">${thumbEmoji}</span>
+    </div>
+    <div class="ls-set-card-body" onclick="lsOpenPreview(this.closest('[data-type]'))">
       ${badge}
       <div class="ls-set-name">${s.name}</div>
       <div class="ls-set-breakdown">${bkHtml}</div>
@@ -23124,7 +24144,11 @@ window.lsOpenPreview = function(el){
       }</div>`;
   }
 
-  _lsCurrentItem = { type, item, unitNum: (type==='set'||type==='content') ? (LS_UNITS[uidx]?.num||'1') : undefined };
+  _lsCurrentItem = { type, item, unitNum: (type==='set'||type==='content') ? (LS_UNITS[uidx]?.num||'1') : undefined,
+    // [ADDED 2026-04] 찜 연동용 메타
+    uidx: (type==='set'||type==='content') ? uidx : null,
+    cidx: (type==='content') ? cidx : null,
+    sidx: (type==='set') ? sidx : null };
 
   // 썸네일 교체
   const thumb = document.getElementById('lspmThumb');
@@ -23154,6 +24178,86 @@ window.lsOpenPreview = function(el){
   const bd = document.getElementById('lsPreviewBackdrop');
   bd.style.display = 'flex';
   requestAnimationFrame(()=>{ bd.classList.add('show'); });
+
+  // [ADDED 2026-04] 프리뷰 모달 찜 상태 동기화
+  lspmSyncWishBtn();
+};
+
+// [ADDED 2026-04] 프리뷰 모달 찜 버튼 상태를 _lsWished에 맞춰 갱신
+window.lspmSyncWishBtn = function(){
+  const btn = document.getElementById('lspmWishBtn');
+  if(!btn) return;
+  const wid = lspmGetCurrentWishId();
+  // 빈 템플릿(tmpl) 등 찜 불가한 타입은 버튼 숨김
+  if(!wid){
+    btn.style.display = 'none';
+    return;
+  }
+  btn.style.display = '';
+  const heart = document.getElementById('lspmWishHeart').querySelector('path');
+  const label = document.getElementById('lspmWishLabel');
+  const isOn = !!(window._lsWished && window._lsWished.has(wid));
+  if(isOn){
+    btn.classList.add('on');
+    heart.setAttribute('stroke','#F59E0B');
+    heart.setAttribute('fill','#FBBF24');
+    if(label) label.textContent = '찜됨';
+  } else {
+    btn.classList.remove('on');
+    heart.setAttribute('stroke','#C8CDD8');
+    heart.setAttribute('fill','none');
+    if(label) label.textContent = '찜하기';
+  }
+};
+
+// [ADDED 2026-04] 현재 열린 프리뷰 항목의 wishId 생성 (리스트 카드와 동일 형식)
+window.lspmGetCurrentWishId = function(){
+  const cur = _lsCurrentItem;
+  if(!cur) return null;
+  if(cur.type === 'content' && cur.uidx != null && cur.cidx != null){
+    return 'wish-c-' + cur.uidx + '-' + cur.cidx;
+  }
+  if(cur.type === 'set' && cur.uidx != null && cur.sidx != null){
+    return 'wish-s-' + cur.uidx + '-' + cur.sidx;
+  }
+  return null;
+};
+
+// [ADDED 2026-04] 프리뷰 모달 찜 버튼 클릭
+window.lspmToggleWish = function(){
+  const wid = lspmGetCurrentWishId();
+  if(!wid) return;
+  if(!window._lsWished) window._lsWished = new Map();
+
+  if(window._lsWished.has(wid)){
+    window._lsWished.delete(wid);
+    T('찜 해제됨');
+  } else {
+    // _lsGetWishData가 참조하는 _lsDataSource는 LS_UNITS가 채워두므로 그대로 활용
+    if(!window._lsDataSource) window._lsDataSource = (typeof LS_UNITS !== 'undefined') ? LS_UNITS : [];
+    const data = (typeof _lsGetWishData === 'function') ? _lsGetWishData(wid) : null;
+    window._lsWished.set(wid, data || { wishId: wid });
+    T('찜 목록에 추가됨 ♥');
+  }
+
+  // 프리뷰 모달 내 버튼 상태 갱신
+  lspmSyncWishBtn();
+
+  // 리스트 화면의 동일 wishId 카드 버튼도 함께 동기화
+  const listBtn = document.getElementById(wid);
+  if(listBtn){
+    const heart = listBtn.querySelector('.wish-heart');
+    if(window._lsWished.has(wid)){
+      listBtn.classList.add('on');
+      if(heart){ heart.setAttribute('stroke','#F59E0B'); heart.setAttribute('fill','#FBBF24'); }
+    } else {
+      listBtn.classList.remove('on');
+      if(heart){ heart.setAttribute('stroke','#C8CDD8'); heart.setAttribute('fill','none'); }
+    }
+  }
+
+  // 찜 카운트 배지 업데이트 (있을 경우)
+  if(typeof tmplRecUpdateLikedBadge === 'function') tmplRecUpdateLikedBadge();
 };
 
 // ── 찜 토글 ── (wishId별로 콘텐츠 참조 저장)
@@ -23239,6 +24343,14 @@ window.lsClosePreview = function(){
 
 // [UPDATED 2026-04] 추천 콘텐츠/세트지 미리보기에서 '삽입' 클릭 — 상단 모드 선택에 따라 심플/고급
 window.lsInsertContent = function(){
+  // [ADDED 2026-04] 저장 팝업에서 세트지/콘텐츠명 표시를 위해 진입 컨텍스트 보관
+  if(_lsCurrentItem){
+    window._currentEntryContext = {
+      type: _lsCurrentItem.type,
+      setName: (_lsCurrentItem.type === 'set' && _lsCurrentItem.item) ? _lsCurrentItem.item.name : null,
+      contentName: (_lsCurrentItem.type === 'content' && _lsCurrentItem.item) ? _lsCurrentItem.item.name : null,
+    };
+  }
   lsClosePreview();
   const mode = (typeof lsGetSelectedMode === 'function') ? lsGetSelectedMode() : 'simple';
   setTimeout(()=>{
@@ -23998,6 +25110,10 @@ function _blocksForSetGeneric(name, breakdown, questionTypes, unitNum){
     const s = SEC[k];
     for(let i=0;i<cnt;i++){
       const n = globalIdx++;
+      // [ADDED 2026-04] qType을 if/else 바깥에서도 접근 가능하도록 루프 스코프에 선언
+      //   - 문항 분기에서 할당되며, _smBlockVarBar 호출 시 사용됨
+      //   - 개념/활동 분기에서는 할당되지 않으므로 undefined 상태 유지 (문제 없음)
+      let qType;
       if(k==='개념'){
         const txt = uc.concept[i] || uc.concept[0];
         h += `<div class="sm-block" style="border-color:${s.color};">
@@ -24034,7 +25150,7 @@ function _blocksForSetGeneric(name, breakdown, questionTypes, unitNum){
         // 문항
         const qSample = uc.q[qCount % uc.q.length];
         qCount++;
-        const qType = (questionTypes && questionTypes[i]) ? questionTypes[i] : qSample.type;
+        qType = (questionTypes && questionTypes[i]) ? questionTypes[i] : qSample.type;
         const [qc,qbg,qbd] = qType==='선택형'?[s.color,'#EEF1FF','#D6DFFF']:qType==='연결형'?['#2E7D32','#E8F5E9','#C8E6C9']:[s.color,s.bg,s.border];
         let qBody = '';
         if(qType==='선택형'){
@@ -26488,6 +27604,26 @@ function _renderAll(){
 
   let html = '';
 
+  // [UPDATED 2026-04] 순서 변경: 추천 세트지 → 추천 콘텐츠
+  // ── 추천 세트지 ──
+  html += `
+  <div class="ls-sec">
+    <div class="ls-sec-header">
+      <div class="ls-sec-title">추천 세트지 <span class="ls-sec-title-em">— 전체 단원</span></div>
+    </div>
+    <div class="ls-set-grid ls-sec-content" id="lsSetGrid-all">`;
+  setVisible.forEach(({s, si, ui})=>{ html += _setCardHtml(s, si===0 && ui===0, ui, si); });
+  html += `</div>`;
+  if(setHasMore){
+    html += `<div class="ls-loadmore-wrap">
+      <button class="ls-loadmore-btn" id="lsMore-set" onclick="lsLoadMore('set')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        세트지 더보기
+      </button>
+    </div>`;
+  }
+  html += `</div>`;
+
   // ── 추천 콘텐츠 (통합 1섹션) ──
   html += `
   <div class="ls-sec">
@@ -26503,25 +27639,6 @@ function _renderAll(){
       <button class="ls-loadmore-btn" id="lsMore-cont" onclick="lsLoadMore('cont')">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         콘텐츠 더보기
-      </button>
-    </div>`;
-  }
-  html += `</div>`;
-
-  // ── 추천 세트지 ──
-  html += `
-  <div class="ls-sec">
-    <div class="ls-sec-header">
-      <div class="ls-sec-title">추천 세트지 <span class="ls-sec-title-em">— 전체 단원</span></div>
-    </div>
-    <div class="ls-set-grid ls-sec-content" id="lsSetGrid-all">`;
-  setVisible.forEach(({s, si, ui})=>{ html += _setCardHtml(s, si===0 && ui===0, ui, si); });
-  html += `</div>`;
-  if(setHasMore){
-    html += `<div class="ls-loadmore-wrap">
-      <button class="ls-loadmore-btn" id="lsMore-set" onclick="lsLoadMore('set')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        세트지 더보기
       </button>
     </div>`;
   }
@@ -26576,17 +27693,17 @@ function _renderUnit(u){
     <div style="display:flex;flex-wrap:wrap;gap:4px;max-width:340px;justify-content:flex-end;">${kws}</div>
   </div>
   <div class="ls-sec">
+    <div class="ls-sec-header">
+      <div class="ls-sec-title">추천 세트지</div>
+    </div>
+    <div class="ls-set-grid ls-sec-content" id="lsSetGrid-${uid}">${setCards}</div>
+  </div>
+  <div class="ls-sec">
     <div class="ls-sec-header" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
       <div class="ls-sec-title">추천 콘텐츠</div>
       ${chipHtml}
     </div>
     <div class="ls-cont-grid ls-sec-content">${contCards}</div>
-  </div>
-  <div class="ls-sec">
-    <div class="ls-sec-header">
-      <div class="ls-sec-title">추천 세트지</div>
-    </div>
-    <div class="ls-set-grid ls-sec-content" id="lsSetGrid-${uid}">${setCards}</div>
   </div>
   <!-- [REMOVED 2026-04] 단원별 '템플릿 선택' 섹션 제거 -->`;
 }
