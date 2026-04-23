@@ -4653,10 +4653,27 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
 .save-row2{display:flex;gap:12px;}
 .save-row2 .save-field{flex:1;}
 .save-radio-row{display:flex;gap:10px;flex-wrap:wrap;}
-.save-radio{display:flex;align-items:center;gap:5px;padding:6px 12px;border:1.5px solid var(--g2);border-radius:8px;cursor:pointer;font-size:11px;color:var(--g5);transition:all .15s;}
-.save-radio:hover{border-color:var(--ai);color:var(--ai);}
-.save-radio.on{border-color:var(--ai);background:var(--ai-lt);color:var(--ai);font-weight:700;}
-.save-radio input{display:none;}
+.save-radio{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 16px;border:1.5px solid var(--g2);border-radius:8px;
+  cursor:pointer;font-size:12px;color:var(--g5);
+  transition:all .15s;background:white;user-select:none;
+}
+.save-radio:hover{ border-color:var(--ai);color:var(--ai); }
+.save-radio.on,
+.save-radio:has(input:checked){
+  border-color:var(--ai);background:var(--ai-lt);color:var(--ai);font-weight:700;
+}
+.save-radio input{
+  appearance:none;-webkit-appearance:none;
+  width:14px;height:14px;margin:0;
+  border:1.5px solid #D1D5DB;border-radius:50%;
+  background:white;flex-shrink:0;
+  position:relative;transition:all .15s;cursor:pointer;
+}
+.save-radio input:checked{
+  border-color:var(--ai);border-width:4px;background:white;
+}
 .save-sel{width:100%;height:36px;padding:0 10px;border:1.5px solid var(--g2);border-radius:8px;font-size:12px;color:var(--text);outline:none;font-family:'Noto Sans KR',sans-serif;background:white;}
 .save-sel:focus{border-color:var(--ai);}
 .save-tag-wrap{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px;border:1.5px solid var(--g2);border-radius:8px;min-height:38px;cursor:text;}
@@ -4754,6 +4771,20 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
 .save-ai-btn:hover{ background:#3D58D4; }
 .save-ai-btn.sm{ padding:3px 9px;font-size:10.5px; }
 
+/* [ADDED 2026-04] AI 추천 적용됨 뱃지 — 값이 AI로 자동 입력되었으나 수정 가능함을 표시 */
+.save-ai-applied-badge{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:3px 9px;border-radius:12px;
+  background:linear-gradient(135deg,#F0E8FF,#DCD0FF);
+  color:#6E50C8;font-size:10.5px;font-weight:700;
+  border:1px solid #DCD0FF;flex-shrink:0;
+  animation:saveAiBadgeIn .35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes saveAiBadgeIn{
+  from{ opacity:0; transform:translateY(-4px) scale(.9); }
+  to{ opacity:1; transform:none; }
+}
+
 /* 필드 행 — 이미지와 동일한 간격 */
 .save-row{
   display:grid;grid-template-columns:100px 1fr;align-items:center;gap:14px;
@@ -4796,9 +4827,7 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
 }
 .save-add-btn:hover{ background:#3D58D4; }
 
-/* 교과/비교과 라디오 */
-.save-radio{ display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:#374151;margin-right:18px; }
-.save-radio input{ accent-color:#4B6EF5; }
+/* [REMOVED 2026-04] .save-radio 중복 정의 제거 — 첫 번째 정의(4656~)가 유일한 source of truth */
 
 /* 설명 textarea */
 .save-textarea{
@@ -20110,7 +20139,7 @@ function renderSaveStep(){
           <div class="save-row-inline">
             <select class="save-select" id="smeta-map" onchange="saveValidateStep1()" style="min-width:140px;">
               <option value="">대단원선택</option>
-              ${(typeof lgCurrentGrade!=='undefined'?lgCurrentGrade.units:[unitN]).map(u=>`<option${u===unitN?' selected':''}>${u}</option>`).join('')}
+              ${(typeof lgCurrentGrade!=='undefined'?lgCurrentGrade.units:[unitN]).map(u=>`<option>${u}</option>`).join('')}
             </select>
             <button type="button" class="save-ai-btn" onclick="saveAiRecommend('map')">AI 추천</button>
           </div>
@@ -20173,6 +20202,10 @@ function renderSaveStep(){
 
     // 초기 검증 실행 — 다음 단계 버튼 disabled 상태 결정
     saveValidateStep1();
+
+    // [ADDED 2026-04] AI 추천 있는 필드 3개(학습 맵 / 평가 영역 / 난이도) 자동 매핑
+    //   값이 채워지고 "✨ AI 추천됨" 뱃지가 표시됨 — 사용자는 언제든 수정 가능
+    saveAutoApplyAi();
   } else {
     // ── 2단계 — 최종 반영 ──
     // [UPDATED 2026-04] 힌트 문구 3개 제거 + 심플모드 분기 추가
@@ -20341,10 +20374,40 @@ function saveValidateStep1(){
 }
 
 // [ADDED 2026-04] AI 추천 — 필드별 더미 값 자동 채움
+// [ADDED 2026-04] 저장 팝업 1단계 오픈 시 — AI 추천 가능한 3개 필드를 자동 매핑
+// 값이 채워지고 "✨ AI 추천됨" 뱃지가 표시되며, 사용자가 값을 변경하면 뱃지 자동 제거됨
+function saveAutoApplyAi(){
+  // 학습 맵 — 첫 번째 실제 옵션 선택
+  const mapSel = document.getElementById('smeta-map');
+  if(mapSel && mapSel.options.length > 1 && !mapSel.value){
+    mapSel.selectedIndex = 1;
+    saveMarkAiApplied('smeta-map');
+  }
+  // 평가 영역 — 첫 번째 실제 옵션 선택
+  const evalSel = document.getElementById('smeta-eval');
+  if(evalSel && evalSel.options.length > 1 && !evalSel.value){
+    evalSel.selectedIndex = 1;
+    saveMarkAiApplied('smeta-eval');
+  }
+  // 난이도 — "중" 선택
+  const mid = document.querySelector('input[name="saveDiff"][value="중"]');
+  const anyChecked = document.querySelector('input[name="saveDiff"]:checked');
+  if(mid && !anyChecked){
+    mid.checked = true;
+    saveMarkAiApplied('diff-group');
+  }
+  // 필수값 검증 재실행 — 자동 매핑으로 "다음 단계" 버튼 즉시 활성화 가능
+  saveValidateStep1();
+}
+
 function saveAiRecommend(kind){
   if(kind === 'map'){
     const sel = document.getElementById('smeta-map');
-    if(sel && sel.options.length > 1){ sel.selectedIndex = 1; T('✨ 학습 맵 AI 추천 적용'); }
+    if(sel && sel.options.length > 1){
+      sel.selectedIndex = 1;
+      saveMarkAiApplied('smeta-map');
+      T('✨ 학습 맵 AI 추천 적용 — 원하시면 수정하실 수 있어요');
+    }
   } else if(kind === 'tag'){
     const w = document.getElementById('sTagWrap');
     const inp = document.getElementById('sTagInput');
@@ -20363,12 +20426,61 @@ function saveAiRecommend(kind){
     }
   } else if(kind === 'eval'){
     const sel = document.getElementById('smeta-eval');
-    if(sel && sel.options.length > 1){ sel.selectedIndex = 1; T('✨ 평가 영역 AI 추천 적용'); }
+    if(sel && sel.options.length > 1){
+      sel.selectedIndex = 1;
+      saveMarkAiApplied('smeta-eval');
+      T('✨ 평가 영역 AI 추천 적용 — 원하시면 수정하실 수 있어요');
+    }
   } else if(kind === 'diff'){
     const mid = document.querySelector('input[name="saveDiff"][value="중"]');
-    if(mid){ mid.checked = true; T('✨ 난이도 AI 추천 적용'); }
+    if(mid){
+      mid.checked = true;
+      saveMarkAiApplied('diff-group');
+      T('✨ 난이도 AI 추천 적용 — 원하시면 수정하실 수 있어요');
+    }
   }
   saveValidateStep1();
+}
+
+// [ADDED 2026-04] AI 추천이 적용된 필드에 "AI 추천됨" 뱃지를 붙이고, 사용자가 값을 바꾸면 자동 제거
+function saveMarkAiApplied(fieldKey){
+  // 필드별 anchor 엘리먼트(뱃지를 붙일 대상 부모)
+  let anchor = null;
+  let el = null;
+  if(fieldKey === 'smeta-map'){
+    el = document.getElementById('smeta-map');
+    anchor = el?.parentElement;
+  } else if(fieldKey === 'smeta-eval'){
+    el = document.getElementById('smeta-eval');
+    anchor = el?.parentElement;
+  } else if(fieldKey === 'diff-group'){
+    el = document.querySelector('input[name="saveDiff"]:checked');
+    anchor = el?.closest('.save-row-inline');
+  }
+  if(!anchor) return;
+
+  // 기존 뱃지 제거
+  anchor.querySelectorAll('.save-ai-applied-badge').forEach(b=>b.remove());
+
+  // 새 뱃지 삽입 (AI 추천 버튼 앞에)
+  const badge = document.createElement('span');
+  badge.className = 'save-ai-applied-badge';
+  badge.innerHTML = '✨ AI 추천됨';
+  const aiBtn = anchor.querySelector('.save-ai-btn');
+  if(aiBtn) anchor.insertBefore(badge, aiBtn);
+  else anchor.appendChild(badge);
+
+  // 사용자가 값을 바꾸면 뱃지 자동 제거
+  const clearBadge = () => {
+    anchor.querySelectorAll('.save-ai-applied-badge').forEach(b=>b.remove());
+  };
+  if(fieldKey === 'diff-group'){
+    document.querySelectorAll('input[name="saveDiff"]').forEach(r=>{
+      r.addEventListener('change', clearBadge, { once:true });
+    });
+  } else if(el){
+    el.addEventListener('change', clearBadge, { once:true });
+  }
 }
 
 // [ADDED 2026-04] 교과 역량 추가 (현재 선택을 태그화) — 단순 UX 시뮬레이션
