@@ -2012,9 +2012,20 @@ body.landing-active .editor-body{
   width:auto; max-width:none; margin:0; /* row 안에서는 flex:1로 이미 가득 참 */
 }
 /* [ADDED 2026-04] .cb-sm-wrap 내부 sm-block — cb 래퍼가 이미 700px이므로 안쪽은 auto로 가득 채움 */
-#slide1 .cb.cb-sm-wrap{ padding:0; background:transparent; box-shadow:none; border:none; }
+/* [UPDATED 2026-04] 래퍼를 완전히 투명하게 — 내부 sm-block 원본 스타일이 그대로 드러나도록 */
+#slide1 .cb.cb-sm-wrap{
+  padding:0 !important;
+  margin:8px auto !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  border:none !important;
+  width:700px;
+}
 #slide1 .cb.cb-sm-wrap > .sm-block{
-  width:auto; max-width:none; margin:0;
+  width:100% !important;
+  max-width:100% !important;
+  margin:0 !important;
+  box-shadow:0 1px 6px rgba(0,0,0,.08) !important;
 }
 #slide1 .cb.cb-sm-wrap.sel > .sm-block{
   border-color:#4B6EF5;
@@ -3799,13 +3810,18 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
 /* [ADDED 2026-04] 채팅 탭 AI 표시 — 작은 그라데이션 뱃지 */
 .rp-main-tab-ai{
   display:inline-flex;align-items:center;justify-content:center;
-  padding:1px 6px;
-  background:linear-gradient(135deg,#4B6EF5,#7C4DFF);
+  padding:2px 8px;
+  background:linear-gradient(135deg,#F59E0B,#EA580C);
   color:white;
-  border-radius:5px;
-  font-size:8.5px;font-weight:900;letter-spacing:.03em;
-  margin-left:3px;line-height:1.2;
-  box-shadow:0 1px 3px rgba(75,110,245,.28);
+  border-radius:6px;
+  font-size:9.5px;font-weight:900;letter-spacing:.05em;
+  margin-left:4px;line-height:1.2;
+  box-shadow:0 1px 4px rgba(245,158,11,.4);
+  animation:rpAiBadgePulse 2.4s ease-in-out infinite;
+}
+@keyframes rpAiBadgePulse{
+  0%, 100%{ box-shadow:0 1px 4px rgba(245,158,11,.4), 0 0 0 0 rgba(245,158,11,.4); }
+  50%{ box-shadow:0 1px 4px rgba(245,158,11,.4), 0 0 0 4px rgba(245,158,11,0); }
 }
 .rp-main-tab-pane{
   flex:1;min-height:0;overflow:hidden;
@@ -3962,40 +3978,71 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
 .rp-chat-clear-btn:hover{ border-color:#FF4F6A;color:#FF4F6A;background:#FFF0F3; }
 
 /* ── 속성 패널 상단 AI 빠른 실행 바 ── */
+/* [UPDATED 2026-04] 앰버 계열 카드 — 헤더는 아래 문항 정보와 동일한 구조
+   [FIXED 2026-04] overflow:hidden 제거 — 속성 패널 스크롤 영역 계산 영향 최소화 */
 .rp-ai-quick{
   padding:0;
-  background:linear-gradient(180deg, #F6F8FF 0%, #FFFFFF 100%);
+  margin:0;
+  background:linear-gradient(135deg, #FFF8EC 0%, #FFF4E0 55%, #FFEFD3 100%) !important;
+  border:2px solid #F59E0B !important;
+  border-radius:12px;
+  box-shadow:
+    0 4px 14px rgba(245,158,11,.15),
+    0 0 0 1px rgba(255,255,255,.6) inset;
   flex-shrink:0;
+  position:relative;
 }
+/* 상단 하이라이트 제거 — pseudo-element로 인한 레이아웃 계산 간섭 방지 */
+.rp-ai-quick::before{ content:none; }
+/* 좌측 앰버 사이드바 */
+.rp-ai-quick::after{
+  content:'';
+  position:absolute;top:8px;bottom:8px;left:-1px;width:4px;
+  background:linear-gradient(180deg, #F59E0B 0%, #EA580C 100%);
+  border-radius:4px;
+  pointer-events:none;
+}
+/* 헤더 — 문항 정보(.rp-section-header)와 동일한 구조 + AI 강조 색상 */
 .rp-ai-quick-head{
-  display:flex;align-items:center;gap:5px;
-  padding:10px 12px;
+  display:flex;align-items:center;gap:6px;
+  padding:10px 12px 10px 18px;
   cursor:pointer;
   user-select:none;
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:11.5px;font-weight:800;color:#1E2340;
+  background:transparent;
   transition:background .12s;
 }
-.rp-ai-quick-head:hover{ background:rgba(75,110,245,.04); }
+.rp-ai-quick-head:hover{ background:rgba(245,158,11,.08); }
+/* chevron — 문항 정보와 동일한 크기/회전 로직 */
 .rp-ai-quick-chev{
-  color:#4B6EF5;transition:transform .18s;flex-shrink:0;
+  color:#EA580C;transition:transform .18s;flex-shrink:0;width:12px;height:12px;
 }
 .rp-ai-quick.collapsed .rp-ai-quick-chev{ transform:rotate(-90deg); }
 .rp-ai-quick-content{
-  padding:0 10px 10px;
+  padding:4px 14px 14px;
   transition:all .2s;
 }
 .rp-ai-quick.collapsed .rp-ai-quick-content{ display:none; }
 .rp-ai-quick-badge{
-  background:linear-gradient(135deg,#4B6EF5,#7C4DFF);
-  color:white;font-size:8px;font-weight:800;
-  padding:2px 5px;border-radius:4px;
-  letter-spacing:.02em;
+  background:linear-gradient(135deg,#F59E0B,#EA580C);
+  color:white;font-size:9.5px;font-weight:800;
+  padding:3px 8px;border-radius:6px;
+  letter-spacing:.03em;
+  box-shadow:0 2px 5px rgba(245,158,11,.4);
+  display:inline-flex;align-items:center;gap:3px;
+  margin-left:auto;
+}
+.rp-ai-quick-badge::before{
+  content:'✨';font-size:10px;
 }
 .rp-ai-quick-label{
-  font-size:10px;font-weight:800;color:#1E2340;
+  font-size:12.5px;font-weight:800;color:#1E2340;
   font-family:'Noto Sans KR',sans-serif;
+  letter-spacing:-.2px;
 }
 .rp-ai-quick-grid{
-  display:grid;grid-template-columns:repeat(3, 1fr);gap:4px;
+  display:grid;grid-template-columns:repeat(3, 1fr);gap:7px;
 }
 
 /* ── 미디어 제안 (이미지/영상/오디오) ── */
@@ -4100,6 +4147,11 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
   padding:10px;
   display:flex;flex-direction:column;gap:10px;
   background:#F4F5F9;
+  /* [FIXED 2026-04] 스크롤 이슈 수정 — height:100%·max-height:100%를 flex:1/min-height:0과 함께 쓰면
+     일부 브라우저/레이아웃에서 높이 계산이 어긋나 아래 영역이 잘려 스크롤로도 접근 불가능해지는 문제가 있었음.
+     flex:1 + min-height:0 만으로도 부모(#rpAttrPane)의 남은 공간을 정확히 차지하므로 충돌 소지를 제거. */
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
 }
 .rp-attr-scroll::-webkit-scrollbar{ width:6px; }
 .rp-attr-scroll::-webkit-scrollbar-thumb{ background:#D8D7D0;border-radius:3px; }
@@ -4109,6 +4161,12 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
   border-radius:12px;
   overflow:hidden;
   box-shadow:0 1px 2px rgba(30,35,64,.03);
+  /* [FIXED 2026-04] flex-column 스크롤 함정 방지 —
+     .rp-attr-scroll이 display:flex;flex-direction:column 이므로
+     자식 카드에 flex-shrink 기본값(1)이 적용되면 flex가 자식을 스크롤 영역 높이에 맞게 축소해버려
+     내부 내용이 잘린 채로 표시되고 스크롤 자체가 발생하지 않는다.
+     flex-shrink:0을 강제해 자식이 원래 높이를 유지 → 초과분이 스크롤로 나타나도록 함. */
+  flex-shrink:0;
 }
 /* 빠른 실행 카드: 기존 그라데이션을 카드 내부에 맞춰 부드럽게 */
 .rp-ai-quick.rp-sec-card{
@@ -4127,12 +4185,24 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
 .rp-sec-card-attr #rpBody{
   flex:none !important;
   overflow:visible !important;
+  overflow-y:visible !important;
   height:auto !important;
+  max-height:none !important;
+  min-height:0 !important;
 }
 
-/* rpAttrPane 안에서 body는 스크롤 가능 */
+/* [ADDED 2026-04] 외부 스크롤 래퍼 보강 — min-height:0과 flex:1을 확실히 적용
+   - rp-attr-scroll이 부모(#rpAttrPane)의 남은 공간을 차지해야 스크롤 동작 */
 #rpAttrPane{
   flex:1;min-height:0;
+}
+.rp-attr-scroll{
+  overflow-y:scroll !important;  /* auto 대신 scroll — 항상 스크롤 가능 영역 보장 */
+}
+/* [FIXED 2026-04] rpBody 내부 내용(attr-wrap 등)도 flex-shrink 축소 방지
+   내용이 길어도 원래 높이를 유지하여 외부 rp-attr-scroll이 스크롤을 발생시키도록 함 */
+.rp-sec-card-attr #rpBody > *{
+  flex-shrink:0;
 }
 #rpBody{
   flex:1;min-height:0;overflow-y:auto;
@@ -4254,6 +4324,12 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
 .rp-sel-mode.on .rp-sel-mode-lbl{ color:#4B6EF5; }
 
 /* ── 보기 형식 선택 (5개 카드) ── */
+/* [ADDED 2026-04] 속성 패널 섹션 제목 — '선택지 스타일' 등 */
+.rp-sec-title{
+  font-size:11.5px;font-weight:800;color:#4B5691;
+  margin-bottom:8px;letter-spacing:-.2px;
+  font-family:'Noto Sans KR',sans-serif;
+}
 .rp-choice-fmt-grid{
   display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
 }
@@ -5524,7 +5600,9 @@ body.save-step2 .save-modal{ width:840px; }
           </span>
           <span class="ls-hero-new-body">
             <span class="ls-hero-new-title">새로 만들기</span>
-            <span class="ls-hero-new-desc">AI, 빈 템플릿, OCR로 다양한 콘텐츠를 만들어보세요.</span>
+            <!-- [UPDATED 2026-04] "빈 템플릿, " 부분은 심플모드에서 메뉴 항목이 숨겨지므로 설명에서도 제거.
+                 별도 span으로 감싸서 lsSelectMode가 모드 전환 시 display를 토글. 기본(심플)은 숨김. -->
+            <span class="ls-hero-new-desc">AI, <span class="ls-hero-new-desc-tmpl" style="display:none;">빈 템플릿, </span>OCR로 다양한 콘텐츠를 만들어보세요.</span>
           </span>
           <svg class="ls-hero-new-chev" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
@@ -5856,7 +5934,7 @@ body.save-step2 .save-modal{ width:840px; }
         <div class="ai-create-chips" id="aiCreateUnits"></div>
       </div>
 
-      <div class="ai-create-section">
+      <div class="ai-create-section" id="aiCreateTypeSection">
         <div class="ai-create-section-title">콘텐츠 유형 <span class="ai-create-opt-multi">복수 선택</span></div>
         <div class="ai-create-chips">
           <button type="button" class="ai-create-chip" data-type="question" onclick="aiCreateSelectType(this)">✏️ 문항</button>
@@ -8984,50 +9062,24 @@ body.save-step2 .save-modal{ width:840px; }
     </div>
     <div class="save-eval-body">
 
-      <!-- 평가 구분 -->
-      <div class="save-eval-row">
-        <div class="save-eval-label">평가 구분<span class="save-eval-req">·</span></div>
-        <div class="save-eval-control">
-          <label class="save-eval-radio"><input type="radio" name="saveEvalCategory" value="진단 평가" onchange="saveEvalMarkCategory()"><span></span> 진단 평가</label>
-          <label class="save-eval-radio"><input type="radio" name="saveEvalCategory" value="형성 평가" onchange="saveEvalMarkCategory()"><span></span> 형성 평가</label>
-          <label class="save-eval-radio"><input type="radio" name="saveEvalCategory" value="총괄 평가" onchange="saveEvalMarkCategory()"><span></span> 총괄 평가</label>
-          <label class="save-eval-radio"><input type="radio" name="saveEvalCategory" value="수행 평가" onchange="saveEvalMarkCategory()"><span></span> 수행 평가</label>
-        </div>
-      </div>
-
-      <!-- 평가명 -->
-      <div class="save-eval-row">
-        <div class="save-eval-label">평가명</div>
-        <div class="save-eval-control">
-          <input type="text" class="save-eval-inp" id="saveEvalName" placeholder="평가명을 입력해 주세요.">
-        </div>
-      </div>
+      <!-- [UPDATED 2026-04] 심플모드와 동일한 구조로 간소화
+           - 평가 구분/평가명 제거
+           - 기간 설정: 프리셋(3/5/7/15/30일) + '설정 안 함' 체크박스 제거 → 날짜만
+           - 타이머: 프리셋(30분/1시간) + '제한 없음' 체크박스 + 힌트 제거 → 시/분 셀렉트만 -->
 
       <!-- 기간 설정 -->
       <div class="save-eval-row save-eval-row-align-top">
         <div class="save-eval-label">기간 설정</div>
         <div class="save-eval-control">
-          <div class="save-eval-preset-row">
-            <button type="button" class="save-eval-preset" data-days="3"  onclick="saveEvalSetPreset(3,this)">3일</button>
-            <button type="button" class="save-eval-preset" data-days="5"  onclick="saveEvalSetPreset(5,this)">5일</button>
-            <button type="button" class="save-eval-preset" data-days="7"  onclick="saveEvalSetPreset(7,this)">7일</button>
-            <button type="button" class="save-eval-preset" data-days="15" onclick="saveEvalSetPreset(15,this)">15일</button>
-            <button type="button" class="save-eval-preset" data-days="30" onclick="saveEvalSetPreset(30,this)">30일</button>
-            <label class="save-eval-check">
-              <input type="checkbox" id="saveEvalNoPeriod" checked onchange="saveEvalTogglePeriod()">
-              <span class="save-eval-check-box"></span>
-              설정 안 함
-            </label>
-          </div>
           <div class="save-eval-date-row">
             <div class="save-eval-date">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-              <input type="date" id="saveEvalStart" disabled>
+              <input type="date" id="saveEvalStart">
             </div>
             <span class="save-eval-date-sep">~</span>
             <div class="save-eval-date">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-              <input type="date" id="saveEvalEnd" disabled>
+              <input type="date" id="saveEvalEnd">
             </div>
           </div>
         </div>
@@ -9052,22 +9104,9 @@ body.save-step2 .save-modal{ width:840px; }
       <div class="save-eval-row save-eval-row-align-top">
         <div class="save-eval-label">타이머</div>
         <div class="save-eval-control">
-          <div class="save-eval-preset-row">
-            <button type="button" class="save-eval-preset" data-min="30" onclick="saveEvalSetTimerPreset(30,this)">30분</button>
-            <button type="button" class="save-eval-preset" data-min="60" onclick="saveEvalSetTimerPreset(60,this)">1시간</button>
-          </div>
           <div class="save-eval-timer-row">
             <select class="save-eval-sel" id="saveEvalHour"></select>
             <select class="save-eval-sel" id="saveEvalMin"></select>
-            <label class="save-eval-check">
-              <input type="checkbox" id="saveEvalNoTimer" onchange="saveEvalToggleNoTimer()">
-              <span class="save-eval-check-box"></span>
-              제한 없음
-            </label>
-          </div>
-          <div class="save-eval-hint">
-            * 예) 기간 설정: 2025-01-01 ~ 2025-01-03 / 타이머 : 50분<br>
-            &nbsp;&nbsp;&nbsp;→ 1/1~1/3(3일) 기간 내 응시 가능 + 응시 시작 시, 타이머 50분 제한
           </div>
         </div>
       </div>
@@ -9456,76 +9495,113 @@ function lgInsertSelected(){
 function lgPreview(id){
   const item = [...lgOfficialContents,...lgTeacherContents].find(x=>x.id===id);
   if(!item) return;
+  // [UPDATED 2026-04] 세트지 미리보기와 동일한 UI로 통일
+  //   - 최대 z-index + !important 강제 스타일 (Artifacts iframe 호환)
+  //   - 실제 콘텐츠 블록(_blocksForContent)을 렌더하여 실제 모습 확인 가능
+  //   - 심플/고급 모두 동일하게 동작
   const existing = document.getElementById('lgPreviewModal');
   if(existing) existing.remove();
+
+  // 실제 콘텐츠 HTML 생성
+  // [UPDATED 2026-04] 삽입 경로(_cbInsertContentItem/smInsertRecContent)와 동일한 enrichment 적용
+  //   — lgOfficialContents/lgTeacherContents의 item은 mockType/contType이 비어 있으므로,
+  //     이를 삽입 시점에만 추론해왔던 기존 구조 때문에 preview와 실제 삽입 HTML이 서로 달랐던 문제를 해결
+  const enrichedForPreview = (typeof window._enrichItemForBlocks === 'function')
+    ? window._enrichItemForBlocks(item)
+    : item;
+  let contentHtml = '';
+  if(typeof window._blocksForContent === 'function'){
+    try { contentHtml = window._blocksForContent(enrichedForPreview) || ''; } catch(e){ console.error(e); }
+  }
+  if(!contentHtml){
+    // 폴백 — 기존 디자인 샘플 문항
+    const sampleQs = [
+      {q:`${item.title}에 관한 문항 1`, choices:['보기 ①','보기 ②','보기 ③','보기 ④','보기 ⑤'], ans:2},
+      {q:`${item.title}에 관한 문항 2`, choices:[], ans:null},
+    ];
+    contentHtml = (item.type && item.type.includes('개념') ? `
+      <div style="padding:12px 16px;background:#F5F3FF;border-radius:10px;border-left:4px solid ${item.accent||'#7C4DFF'};margin-bottom:14px;">
+        <div style="font-size:10px;font-weight:800;color:${item.accent||'#7C4DFF'};margin-bottom:5px;">📖 개념 설명</div>
+        <div style="font-size:13px;color:#374151;line-height:1.7;">${item.desc||''}</div>
+      </div>` : '') +
+      sampleQs.map((qItem, qi) => `
+        <div style="margin-bottom:12px;">
+          <div style="display:flex;align-items:flex-start;gap:9px;margin-bottom:8px;">
+            <div style="min-width:24px;height:24px;border-radius:6px;background:#3B4168;color:white;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${qi+1}</div>
+            <div style="font-size:13px;color:#1C1F2E;font-weight:600;line-height:1.5;">${qItem.q}</div>
+          </div>
+          ${qItem.choices.length>0 ? `<div style="display:flex;flex-direction:column;gap:4px;padding-left:33px;">
+            ${qItem.choices.map((ch,ci) => `<div style="display:flex;align-items:center;gap:8px;padding:5px 9px;border-radius:7px;border:1px solid ${ci===qItem.ans?'#4B9EFF':'#EFEFEF'};background:${ci===qItem.ans?'#E8F4FF':'white'};">
+              <span style="width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;border:1.5px solid ${ci===qItem.ans?'#4B9EFF':'#D1D5DB'};background:${ci===qItem.ans?'#4B9EFF':'white'};color:${ci===qItem.ans?'white':'#9CA3AF'};">${['①','②','③','④','⑤'][ci]}</span>
+              <span style="font-size:12px;color:${ci===qItem.ans?'#1C1F2E':'#9CA3AF'};">${ch}</span>
+            </div>`).join('')}
+          </div>` : `<div style="padding-left:33px;"><div style="height:32px;border-radius:7px;border:1.5px dashed #C0C4CC;background:#FAFAFA;display:flex;align-items:center;padding:0 11px;"><span style="font-size:11px;color:#D1D5DB;">답을 입력하세요</span></div></div>`}
+        </div>`).join('');
+  }
+
   const m = document.createElement('div');
-  m.id='lgPreviewModal';
-  m.style.cssText='position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;background:rgba(10,15,40,.55);backdrop-filter:blur(6px);';
-  m.innerHTML=`
-    <div style="width:480px;max-height:80vh;border-radius:20px;overflow:hidden;
-                background:white;box-shadow:0 24px 80px rgba(0,0,0,.25);display:flex;flex-direction:column;">
-      <div style="padding:20px 24px 16px;border-bottom:1px solid var(--g2);display:flex;align-items:center;gap:12px;">
-        <div style="width:40px;height:40px;border-radius:10px;background:${item.color};
-                    display:flex;align-items:center;justify-content:center;font-size:20px;">${item.icon}</div>
-        <div style="flex:1;">
-          <div style="font-size:15px;font-weight:800;color:var(--text);">${item.title}</div>
-          <div style="font-size:11px;color:var(--g4);">${item.grade} · ${item.subject} · ${item.type}</div>
+  m.id = 'lgPreviewModal';
+  m.style.cssText = 'position:fixed !important;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;width:100vw !important;height:100vh !important;background:rgba(20,24,40,.6) !important;z-index:2147483647 !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:24px !important;animation:fadeIn .2s;';
+  m.onclick = function(e){ if(e.target === m) m.remove(); };
+  m.innerHTML = `
+    <div style="background:white;border-radius:16px;width:min(820px,96vw);max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:popIn .25s cubic-bezier(.34,1.56,.64,1);">
+      <!-- 헤더 — 세트지 미리보기와 동일 패턴 -->
+      <div style="padding:18px 22px 14px;border-bottom:1px solid #F0F0F0;display:flex;align-items:flex-start;gap:12px;">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span style="padding:3px 10px;border-radius:20px;background:${item.accent||'#4B6EF5'};color:white;font-size:10px;font-weight:700;">콘텐츠 미리보기</span>
+            ${item.type ? `<span style="font-size:11px;color:#6B7280;">${item.type}</span>` : ''}
+          </div>
+          <div style="font-size:17px;font-weight:800;color:#1C1F2E;">${item.title}</div>
+          <div style="font-size:12px;color:#6B7280;margin-top:4px;">📚 ${item.grade||''} · ${item.subject||''}${item.author ? ' · ' + item.author : ''}</div>
         </div>
         <button onclick="this.closest('#lgPreviewModal').remove()"
-          style="width:32px;height:32px;border-radius:8px;border:1.5px solid var(--g2);
-                 background:white;cursor:pointer;font-size:14px;color:var(--g4);">✕</button>
+          style="width:32px;height:32px;border-radius:50%;border:none;background:#F3F4F6;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;"
+          title="닫기">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#6B7280" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </button>
       </div>
-      <div style="flex:1;overflow-y:auto;padding:20px 24px;">
-        <!-- 실제 교재 스타일 미리보기 -->
-        <div style="background:white;border:1.5px solid var(--g2);border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);">
-          <!-- 단원 헤더 -->
-          <div style="padding:14px 20px;background:${item.color};border-bottom:1.5px solid ${item.accent}20;">
-            <div style="font-size:10px;font-weight:700;color:${item.accent};margin-bottom:3px;">${item.grade} · ${item.subject} · ${item.type}</div>
-            <div style="font-size:15px;font-weight:800;color:#1C1F2E;">${item.title}</div>
-          </div>
-          <!-- 본문 미리보기 -->
-          <div style="padding:18px 20px;">
-            ${item.type.includes('개념')?`
-              <div style="padding:12px 16px;background:#F5F3FF;border-radius:10px;border-left:4px solid ${item.accent};margin-bottom:14px;">
-                <div style="font-size:10px;font-weight:800;color:${item.accent};margin-bottom:5px;">📖 개념 설명</div>
-                <div style="font-size:13px;color:#374151;line-height:1.7;">${item.desc}</div>
-              </div>`:''}
-            <!-- 샘플 문항 -->
-            <div>
-              <div style="font-size:10px;font-weight:700;color:var(--g4);margin-bottom:10px;letter-spacing:.04em;">문항 미리보기</div>
-              ${[
-                {q:`${item.title}에 관한 문항 1`, choices:['보기 ①','보기 ②','보기 ③','보기 ④','보기 ⑤'], ans:2},
-                {q:`${item.title}에 관한 문항 2`, choices:[], ans:null},
-              ].map((qItem,qi)=>`
-                <div style="margin-bottom:12px;">
-                  <div style="display:flex;align-items:flex-start;gap:9px;margin-bottom:8px;">
-                    <div style="min-width:24px;height:24px;border-radius:6px;background:#3B4168;color:white;
-                                font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${qi+1}</div>
-                    <div style="font-size:13px;color:#1C1F2E;font-weight:600;line-height:1.5;">${qItem.q}</div>
-                  </div>
-                  ${qItem.choices.length>0?`<div style="display:flex;flex-direction:column;gap:4px;padding-left:33px;">
-                    ${qItem.choices.map((ch,ci)=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 9px;border-radius:7px;border:1px solid ${ci===qItem.ans?'#4B9EFF':'#EFEFEF'};background:${ci===qItem.ans?'#E8F4FF':'white'};">
-                      <span style="width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;border:1.5px solid ${ci===qItem.ans?'#4B9EFF':'#D1D5DB'};background:${ci===qItem.ans?'#4B9EFF':'white'};color:${ci===qItem.ans?'white':'#9CA3AF'};">${['①','②','③','④','⑤'][ci]}</span>
-                      <span style="font-size:12px;color:${ci===qItem.ans?'#1C1F2E':'#9CA3AF'};">${ch}</span>
-                    </div>`).join('')}
-                  </div>`:`<div style="padding-left:33px;"><div style="height:32px;border-radius:7px;border:1.5px dashed #C0C4CC;background:#FAFAFA;display:flex;align-items:center;padding:0 11px;"><span style="font-size:11px;color:#D1D5DB;">답을 입력하세요</span></div></div>`}
-                </div>`).join('')}
-            </div>
-          </div>
+
+      <!-- 본문 미리보기 -->
+      <div style="flex:1;overflow-y:auto;padding:24px 28px;background:#F5F6FA;">
+        <div class="tmpl-rec-preview-body" style="background:white;border-radius:12px;padding:24px 28px;box-shadow:0 2px 10px rgba(0,0,0,.04);">
+          ${contentHtml}
         </div>
-        ${item.author?`<div style="margin-top:10px;font-size:11px;color:var(--g4);">제작: ${item.author}</div>`:''}
       </div>
-      <div style="padding:16px 24px;border-top:1px solid var(--g2);display:flex;gap:8px;">
-        <button onclick="lgInsertContent('${id}');this.closest('#lgPreviewModal').remove()"
-          style="flex:1;height:42px;border-radius:10px;border:none;background:#1C1F2E;color:white;
-                 font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">
-          저작툴에 추가하기
+
+      <!-- 푸터 -->
+      <div style="padding:14px 22px;border-top:1px solid #F0F0F0;display:flex;justify-content:flex-end;gap:8px;background:#FAFBFD;">
+        <button onclick="this.closest('#lgPreviewModal').remove()"
+          style="padding:9px 18px;border-radius:8px;border:1.5px solid #D1D5DB;background:white;color:#374151;font-size:13px;font-weight:700;cursor:pointer;">닫기</button>
+        <button onclick="this.closest('#lgPreviewModal').remove();lgPreviewInsertById('${id}')"
+          style="padding:9px 20px;border-radius:8px;border:none;background:#4B6EF5;color:white;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(75,110,245,.3);">
+          저작툴에 추가
         </button>
       </div>
     </div>`;
-  m.addEventListener('click',e=>{ if(e.target===m) m.remove(); });
+
   document.body.appendChild(m);
+  // [ADDED 2026-04] Artifacts iframe 호환 — 전역 overflow 해제 + 스크롤 리셋
+  try { document.documentElement.style.setProperty('overflow', 'visible', 'important'); } catch(e){}
+  try { document.body.style.setProperty('overflow', 'visible', 'important'); } catch(e){}
+  try { window.scrollTo(0, 0); } catch(e){}
+  const innerScroll = m.querySelector('[style*="overflow-y:auto"]');
+  if(innerScroll) innerScroll.scrollTop = 0;
 }
+
+// [ADDED 2026-04] 미리보기 → 저작툴에 추가 시 심플/고급 모드 자동 분기
+window.lgPreviewInsertById = function(id){
+  const isSm = !!window._smRecInsertContext
+    || (typeof lsGetSelectedMode === 'function' && lsGetSelectedMode() === 'simple')
+    || (document.body && document.body.classList.contains('simple-active'));
+  if(isSm && typeof smInsertRecContent === 'function'){
+    smInsertRecContent(id);
+  } else if(typeof cbInsertRecContent === 'function'){
+    cbInsertRecContent(id);
+  } else if(typeof lgInsertContent === 'function'){
+    lgInsertContent(id);
+  }
+};
 
 function lgSwitchTab(tab, btn){
   document.querySelectorAll('.lg-tab').forEach(b=>b.classList.remove('on'));
@@ -10011,6 +10087,10 @@ window.lsSelectMode = function(mode, clickedBtn){
       b.classList.remove('ls-mode-btn-prim');
     }
   });
+  // [ADDED 2026-04] "새로 만들기" 설명의 "빈 템플릿, " 부분은 심플모드에서 메뉴 자체가 숨겨지므로 함께 숨김
+  document.querySelectorAll('.ls-hero-new-desc-tmpl').forEach(el => {
+    el.style.display = (window._lsSelectedMode === 'advanced') ? '' : 'none';
+  });
 };
 
 // 선택된 모드 getter (기본 'simple')
@@ -10208,7 +10288,12 @@ window.aiCreateApplyModeLayout = function(){
 
   if(isSimple){
     // ── 심플모드 레이아웃 ──
-    // [UPDATED 2026-04] 심플모드는 문항 유형만 허용 — 활동/개념 칩 숨김
+    // [UPDATED 2026-04] 심플모드는 문항 유형만 사용 — 콘텐츠 유형 섹션 전체를 숨김
+    //   (섹션 안에 문항 칩만 남아 있어 사용자가 선택할 여지가 없으므로 UI 단순화)
+    const typeSectionHideEl = document.getElementById('aiCreateTypeSection');
+    if(typeSectionHideEl) typeSectionHideEl.style.display = 'none';
+
+    // 칩 자체는 개별 제어 유지 (혹시 외부에서 참조될 수 있으므로)
     if(conceptChip){
       conceptChip.style.display = 'none';
       conceptChip.classList.remove('on');
@@ -10271,6 +10356,9 @@ window.aiCreateApplyModeLayout = function(){
     }
   } else {
     // ── 고급모드 레이아웃 (기본/원복) ──
+    // [ADDED 2026-04] 심플모드에서 숨겨졌을 수 있는 콘텐츠 유형 섹션 복원
+    const typeSectionShowEl = document.getElementById('aiCreateTypeSection');
+    if(typeSectionShowEl) typeSectionShowEl.style.display = '';
     if(conceptChip){  conceptChip.style.display  = ''; conceptChip.classList.remove('on'); }
     if(activityChip){ activityChip.style.display = ''; activityChip.classList.remove('on'); }
     if(questionChip){
@@ -14468,7 +14556,13 @@ function insertConceptBlock(conceptText, title){
 // 기존 JS 전체 유지
 // ════════════════════════════════════════════
 
-let curType=null, curBlock=null, rpTab=0, blkCnt=0;
+// [FIXED 2026-04] let → var 로 변경 + window 명시적 노출
+//   `let` top-level 선언은 일부 환경에서 다른 <script> 블록의 전역 범위로 공유되지 않아
+//   스크립트 블록 3에 있는 cbInsertHtmlBlocks에서 `blkCnt is not defined` 에러가 발생하며
+//   추천 콘텐츠/세트지 삽입이 실패해 미리보기와 다른 결과가 나오던 문제를 해결.
+//   var는 window 속성으로 노출되어야 하지만, 명시적 할당으로 확실히 보장.
+var curType=null, curBlock=null, rpTab=0, blkCnt=0;
+window.blkCnt = blkCnt;  // 다른 스크립트 블록(cbInsertHtmlBlocks 등)에서 window.blkCnt로 접근 가능하도록 보장
 // [ADDED 2026-04] 심플모드 어댑터용 setter — module-scope 변수를 외부(window)에서 설정 가능
 window.setCurBlockType = function(block, type){
   curBlock = block;
@@ -15973,6 +16067,7 @@ function _rpSelectPanelHtmlSimple(st){
     </div>
 
     <div class="rp-sec">
+      <div class="rp-sec-title">선택지 스타일</div>
       <div class="rp-choice-fmt-grid">
         ${fmts.map(f => `
           <button class="rp-choice-fmt${st.choiceFormat===f.id?' on':''}" onclick="rpSetChoiceFmt('${f.id}')" title="${f.label}">
@@ -16199,6 +16294,7 @@ function _rpSelectPanelHtmlFull(st){
 
       <!-- 스타일 서브탭: 일반형 / 자유형 / 지문형 -->
       <div class="rp-sec">
+        <div class="rp-sec-title">선택지 스타일</div>
         <div class="rp-sub-tabs">
           <button class="rp-sub-tab${choiceStyle==='normal'?' on':''}"  onclick="rpSetData(null,null,{choiceStyle:'normal'});renderRp();">일반형</button>
           <button class="rp-sub-tab${choiceStyle==='free'?' on':''}"    onclick="rpSetData(null,null,{choiceStyle:'free'});renderRp();">자유형</button>
@@ -20134,7 +20230,7 @@ function tmplRecRenderContents(grid, unitFilter){
           <div style="font-size:12px;color:#6B7280;margin-bottom:10px;">${item.desc||''}</div>
           <div style="display:flex;align-items:center;justify-content:space-between;">
             <span style="font-size:11px;color:#9CA3AF;">${item.grade||''}</span>
-            <button onclick="event.stopPropagation();lgPreview('${item.id}')" style="border:none;background:none;font-size:12px;font-weight:700;color:${ac};cursor:pointer;padding:0;">미리보기 ›</button>
+            <button onclick="event.stopPropagation();lgPreview('${item.id}')" style="border:none;background:none;font-size:12px;font-weight:700;color:#FF8C42;cursor:pointer;padding:0;">미리보기 ›</button>
           </div>
         </div>
       </div>`;
@@ -20149,7 +20245,7 @@ function tmplRecRenderContents(grid, unitFilter){
         <div style="font-size:12px;color:#6B7280;margin-bottom:10px;">${item.desc||''}</div>
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <span style="font-size:11px;color:#9CA3AF;">${item.grade||''}</span>
-          <button onclick="lgPreview('${item.id}')" style="border:none;background:none;font-size:12px;font-weight:700;color:${ac};cursor:pointer;padding:0;">미리보기 ›</button>
+          <button onclick="lgPreview('${item.id}')" style="border:none;background:none;font-size:12px;font-weight:700;color:#FF8C42;cursor:pointer;padding:0;">미리보기 ›</button>
         </div>
       </div>
     </div>`;
@@ -20201,7 +20297,7 @@ function tmplRecRenderSets(grid, unitFilter){
     const summary = it.breakdown
       ? Object.entries(it.breakdown).map(([k,v]) => `${k} ${v}개`).join(' · ')
       : '';
-    return `<div onclick="tmplRecInsertSet(${it.uidx},${it.sidx})" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0'">
+    return `<div style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0'" onclick="tmplRecInsertSet(${it.uidx},${it.sidx})">
       <div style="height:130px;background:${th.bg};display:flex;align-items:center;justify-content:center;position:relative;">
         <span style="font-size:52px;">${th.emoji}</span>
         <span style="position:absolute;top:12px;left:12px;padding:3px 10px;border-radius:20px;background:#FF8C42;color:white;font-size:10px;font-weight:700;">세트지</span>
@@ -20210,11 +20306,116 @@ function tmplRecRenderSets(grid, unitFilter){
       <div style="padding:14px 16px;">
         <div style="font-size:14px;font-weight:800;color:#1C1F2E;margin-bottom:6px;line-height:1.35;">${it.name}</div>
         <div style="font-size:11px;color:#6B7280;margin-bottom:4px;">📚 ${it.unit}</div>
-        <div style="font-size:11px;color:#9CA3AF;">${summary}</div>
+        <!-- [UPDATED 2026-04] 콘텐츠 카드와 동일한 미리보기 링크 스타일 — breakdown 요약 + 우측 미리보기 버튼 -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">
+          <span style="font-size:11px;color:#9CA3AF;">${summary}</span>
+          <button onclick="event.stopPropagation();tmplRecPreviewSet(${it.uidx},${it.sidx})"
+            style="border:none;background:none;font-size:12px;font-weight:700;color:#FF8C42;cursor:pointer;padding:0;">미리보기 ›</button>
+        </div>
       </div>
     </div>`;
   }).join('');
 }
+
+// [ADDED 2026-04] 세트지 미리보기 모달
+//   _blocksForSet의 실제 HTML을 렌더링하여 삽입 전에 미리볼 수 있음
+window.tmplRecPreviewSet = function(uidx, sidx){
+  const units = (typeof LS_UNITS !== 'undefined') ? LS_UNITS : (window._lsDataSource || []);
+  const u = units[uidx];
+  const s = u && u.sets ? u.sets[sidx] : null;
+  if(!s) return;
+  const setName = s.name || '';
+  const unitName = (u && u.name) || '';
+  const unitNum = (u && u.num) ? String(u.num) : '1';
+
+  // 기존 모달 제거
+  document.getElementById('tmplRecSetPreview')?.remove();
+
+  // _blocksForSet으로 HTML 생성 (세트지 내용)
+  let contentHtml = '';
+  if(typeof window._blocksForSet === 'function'){
+    try { contentHtml = window._blocksForSet(s, unitNum) || ''; } catch(e){ console.error(e); }
+  }
+  if(!contentHtml && typeof window._blocksForSetGeneric === 'function'){
+    try { contentHtml = window._blocksForSetGeneric(setName, s.breakdown || {}, s.questionTypes || null, unitNum); } catch(e){}
+  }
+  if(!contentHtml){
+    contentHtml = '<div style="padding:40px;text-align:center;color:#9CA3AF;">미리보기를 생성할 수 없습니다.</div>';
+  }
+
+  // breakdown 요약
+  const breakdownText = s.breakdown
+    ? Object.entries(s.breakdown).map(([k,v]) => `${k} ${v}개`).join(' · ')
+    : '';
+
+  const m = document.createElement('div');
+  m.id = 'tmplRecSetPreview';
+  // [UPDATED 2026-04] Artifacts iframe 호환 — 최대 z-index + !important 강제 스타일
+  //   (이미지 검색 패널 등 다른 레이어에 덮이지 않도록)
+  m.style.cssText = 'position:fixed !important;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;width:100vw !important;height:100vh !important;background:rgba(20,24,40,.6) !important;z-index:2147483647 !important;display:flex !important;align-items:center !important;justify-content:center !important;padding:24px !important;animation:fadeIn .2s;';
+  m.onclick = function(e){ if(e.target === m) m.remove(); };
+  m.innerHTML = `
+    <div style="background:white;border-radius:16px;width:min(820px,96vw);max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:popIn .25s cubic-bezier(.34,1.56,.64,1);">
+      <!-- 헤더 -->
+      <div style="padding:18px 22px 14px;border-bottom:1px solid #F0F0F0;display:flex;align-items:flex-start;gap:12px;">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span style="padding:3px 10px;border-radius:20px;background:#FF8C42;color:white;font-size:10px;font-weight:700;">세트지 미리보기</span>
+            ${breakdownText ? `<span style="font-size:11px;color:#6B7280;">${breakdownText}</span>` : ''}
+          </div>
+          <div style="font-size:17px;font-weight:800;color:#1C1F2E;">${setName}</div>
+          <div style="font-size:12px;color:#6B7280;margin-top:4px;">📚 ${unitName}</div>
+        </div>
+        <button onclick="this.closest('#tmplRecSetPreview').remove()"
+          style="width:32px;height:32px;border-radius:50%;border:none;background:#F3F4F6;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;"
+          title="닫기">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#6B7280" stroke-width="2.2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <!-- 본문 미리보기 (실제 세트지 내용) -->
+      <div style="flex:1;overflow-y:auto;padding:24px 28px;background:#F5F6FA;">
+        <div class="tmpl-rec-preview-body" style="background:white;border-radius:12px;padding:24px 28px;box-shadow:0 2px 10px rgba(0,0,0,.04);">
+          ${contentHtml}
+        </div>
+      </div>
+
+      <!-- 푸터 -->
+      <div style="padding:14px 22px;border-top:1px solid #F0F0F0;display:flex;justify-content:flex-end;gap:8px;background:#FAFBFD;">
+        <button onclick="this.closest('#tmplRecSetPreview').remove()"
+          style="padding:9px 18px;border-radius:8px;border:1.5px solid #D1D5DB;background:white;color:#374151;font-size:13px;font-weight:700;cursor:pointer;">닫기</button>
+        <button onclick="this.closest('#tmplRecSetPreview').remove();tmplRecInsertSet(${uidx},${sidx})"
+          style="padding:9px 20px;border-radius:8px;border:none;background:#4B6EF5;color:white;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(75,110,245,.3);">
+          저작툴에 추가
+        </button>
+      </div>
+    </div>`;
+  document.body.appendChild(m);
+  // [ADDED 2026-04] Artifacts iframe 호환 — 전역 overflow 해제 + 모달 내부 스크롤로 리셋
+  //   이미지 검색 결과 패널 등 외부 요소가 모달을 가리지 않도록 최상위로 강제 이동
+  try { document.documentElement.style.setProperty('overflow', 'visible', 'important'); } catch(e){}
+  try { document.body.style.setProperty('overflow', 'visible', 'important'); } catch(e){}
+  try { window.scrollTo(0, 0); } catch(e){}
+  // 내부 스크롤 컨테이너를 위쪽으로 스크롤
+  const innerScroll = m.querySelector('[style*="overflow-y:auto"]');
+  if(innerScroll) innerScroll.scrollTop = 0;
+};
+
+// [ADDED 2026-04] 미리보기 본문 내부 sm-block 축약 표시 보정
+const _tmplRecPreviewStyle = document.createElement('style');
+_tmplRecPreviewStyle.textContent = `
+  .tmpl-rec-preview-body .sm-block{ margin:10px 0; }
+  .tmpl-rec-preview-body .sm-block[data-is-title]{ margin:6px 0 12px; }
+  .tmpl-rec-preview-body .sm-block-row{ margin:0; }
+  .tmpl-rec-preview-body .sm-vartype{ display:none; }
+  .tmpl-rec-preview-body .sm-bctrl{ display:none; }
+  .tmpl-rec-preview-body .sm-block-var-bar{ display:none; }
+  /* 미리보기에서는 편집 불가 느낌으로 표시 */
+  .tmpl-rec-preview-body [contenteditable]{ cursor:default; }
+  @keyframes popIn{ from{ transform:scale(.94); opacity:0; } to{ transform:none; opacity:1; } }
+  @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+`;
+document.head.appendChild(_tmplRecPreviewStyle);
 
 // 찜한 항목 그리드
 function tmplRecRenderLiked(grid){
@@ -20722,15 +20923,86 @@ function _saveEvalInlineHtml(){
   `;
 }
 
+// [ADDED 2026-04] 심플모드 저장 모달 전용 — 간소화된 평가 설정 인라인 HTML
+//   - 기간 설정: 프리셋 버튼(3/5/7/15/30일) 제거, '설정 안 함' 제거 → 날짜 입력만
+//   - 타이머: 프리셋 버튼(30분/1시간) 제거, '제한 없음' 제거 → 시/분 셀렉트만
+function _saveEvalInlineHtmlSimple(){
+  // [ADDED 2026-04] 시작일에 오늘 날짜를 기본값으로 채움 (사용자가 수정 가능)
+  const _today = new Date();
+  const _y = _today.getFullYear();
+  const _m = String(_today.getMonth() + 1).padStart(2, '0');
+  const _d = String(_today.getDate()).padStart(2, '0');
+  const _todayStr = `${_y}-${_m}-${_d}`;
+
+  return `
+    <div class="save-eval-inline-title">평가 설정</div>
+
+    <!-- 기간 설정 — 날짜 입력만 (시작일은 오늘 기본값) -->
+    <div class="save-eval-row save-eval-row-align-top">
+      <div class="save-eval-label">기간 설정</div>
+      <div class="save-eval-control">
+        <div class="save-eval-date-row">
+          <div class="save-eval-date">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <input type="date" id="saveEvalStart" value="${_todayStr}">
+          </div>
+          <span class="save-eval-date-sep">~</span>
+          <div class="save-eval-date">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <input type="date" id="saveEvalEnd">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 알림 전송 -->
+    <div class="save-eval-row save-eval-row-align-top">
+      <div class="save-eval-label">알림 전송</div>
+      <div class="save-eval-control save-eval-control-flex">
+        <div style="flex:1;">
+          <div class="save-eval-desc">설정 시 학생들에게 응시를 독려하는 시스템 알림이 전송됩니다.</div>
+          <div class="save-eval-desc save-eval-desc-sub">* 응시 시작일 포함 3일 전/후로 매일 1회 응시 예정 알림 및 응시 독려 알림이 전송됩니다.</div>
+        </div>
+        <button type="button" class="save-eval-toggle" id="saveEvalNotify" onclick="saveEvalToggleNotify(this)" role="switch" aria-checked="false">
+          <span class="save-eval-toggle-dot"></span>
+          <span class="save-eval-toggle-lbl">OFF</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 타이머 — 시/분 셀렉트만 -->
+    <div class="save-eval-row save-eval-row-align-top">
+      <div class="save-eval-label">타이머</div>
+      <div class="save-eval-control">
+        <div class="save-eval-timer-row">
+          <select class="save-eval-sel" id="saveEvalHour"></select>
+          <select class="save-eval-sel" id="saveEvalMin"></select>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 // [ADDED 2026-04] 배점 입력 상태에 따라 인라인 평가 설정 영역 표시/숨김
 window.saveEvalInlineToggle = function(){
   const inline = document.getElementById('saveEvalInline');
   const scoreInp = document.getElementById('smeta-score');
   if(!inline || !scoreInp) return;
+  // [UPDATED 2026-04] 심플모드에서는 항상 노출 (배점 입력 여부와 무관)
+  const isSimple = (typeof lsGetSelectedMode === 'function' && lsGetSelectedMode() === 'simple')
+    || (document.body && document.body.classList.contains('simple-active'));
+  if(isSimple){
+    inline.style.display = 'block';
+    if(!inline.dataset.initialized){
+      inline.dataset.initialized = '1';
+      if(typeof _saveEvalInlineInitSelects === 'function') _saveEvalInlineInitSelects();
+    }
+    return;
+  }
+  // 고급모드는 기존 동작 유지 — 배점 입력 시만 노출
   const v = parseInt(scoreInp.value, 10);
   const show = Number.isFinite(v) && v > 0;
   inline.style.display = show ? 'block' : 'none';
-  // 최초 노출 시 타이머 셀렉트 초기화
   if(show && !inline.dataset.initialized){
     inline.dataset.initialized = '1';
     if(typeof _saveEvalInlineInitSelects === 'function') _saveEvalInlineInitSelects();
@@ -20768,24 +21040,38 @@ function _smSaveGetQuestionBlocks(){
   if(isSimple){
     const sm = document.getElementById('simpleMode');
     if(!sm) return [];
+    // [UPDATED 2026-04] 심플모드 문항 수집 — sm-block-row 레벨에서 개별 블록 식별
+    //   세트지 내부 블록들(선택지/답 등)은 각 문항 sm-block 안에 중첩되어 있으므로
+    //   최상위 .sm-block-row만 순회하면 문항마다 1개씩 잡힘
     const rows = [...sm.querySelectorAll('.sm-block-row')];
     return rows.filter(r => {
       const b = r.querySelector('.sm-block');
       if(!b) return false;
+      // 제목 행 제외
       if(b.dataset.isTitle) return false;
+      if(r.classList.contains('sm-title-row')) return false;
+      // 활동/개념 계열 제외
       const tmpl = (b.dataset.tmpl || '').trim();
-      if(!tmpl) return false;
       if(tmpl.indexOf('활동') >= 0) return false;
       if(tmpl === '빈 문서') return false;
+      if(tmpl === '개념') return false;
+      // 상단 헤더 텍스트로 활동/개념 식별 (추천세트지용)
+      const headerText = b.querySelector('div[style*="background:#EEF1FF"], div[style*="background:#F3E5F5"], div[style*="padding:8px 14px"]')?.textContent || '';
+      if(headerText.includes('개념') || headerText.includes('활동')) return false;
       return true;
-    }).map(r => {
+    }).map((r, idx) => {
       const b = r.querySelector('.sm-block');
-      const qTxt = b.querySelector('.sm-q-text, [contenteditable][data-role="question"], .sm-question')?.textContent?.trim();
-      const firstText = qTxt || b.textContent.trim().slice(0, 40) || b.dataset.tmpl;
+      // 발문 텍스트 추출 — 다양한 selector 시도
+      const qTxt = b.querySelector('.sm-text-block, .sm-q-text, [contenteditable][data-role="question"], .sm-question')?.textContent?.trim();
+      // 헤더 타입 라벨 추출 ("선택형 문항", "단답형 문항" 등)
+      const typeLabel = b.querySelector('span[style*="font-weight:800"]')?.textContent?.trim() || '';
+      const label = b.querySelector('.sm-block-label')?.textContent?.trim() || '';
+      const firstText = qTxt || label || b.textContent.trim().slice(0, 40) || ('문항 ' + (idx+1));
+      if(!b.id) b.id = 'smq-' + Math.random().toString(36).slice(2,8);
       return {
-        id: b.id || ('smq-' + Math.random().toString(36).slice(2,8)),
-        tmpl: b.dataset.tmpl || '문항',
-        title: firstText,
+        id: b.id,
+        tmpl: b.dataset.tmpl || typeLabel || '문항',
+        title: firstText.slice(0, 40),
         el: b
       };
     });
@@ -20796,7 +21082,6 @@ function _smSaveGetQuestionBlocks(){
   if(!slide) return [];
   const cbs = [...slide.querySelectorAll(':scope > .cb')];
   return cbs.filter(cb => cb.dataset.type === 'question').map((cb, idx) => {
-    // 발문 텍스트 추출 — q-txt, .sm-q-text, 첫 contenteditable 등
     const qTxt = cb.querySelector('.q-txt, .sm-q-text, [contenteditable][data-role="question"]')?.textContent?.trim();
     const firstText = qTxt || cb.textContent.trim().slice(0, 40) || (cb.dataset.tmpl || '문항 ' + (idx+1));
     if(!cb.id) cb.id = 'cbq-' + Math.random().toString(36).slice(2,8);
@@ -20881,6 +21166,7 @@ function _smSaveRenderIndivList(){
 }
 
 // [ADDED 2026-04] 심플모드 저장 — 개별 배점 저장
+// [UPDATED 2026-04] 개별 배점 변경 시 상단 배점 입력값 초기화 (혼동 방지)
 window.smSaveSetIndivScore = function(blockId, val){
   if(!window._smQuestionScores) window._smQuestionScores = {};
   const v = parseInt(val, 10);
@@ -20888,6 +21174,13 @@ window.smSaveSetIndivScore = function(blockId, val){
     window._smQuestionScores[blockId] = v;
   } else {
     delete window._smQuestionScores[blockId];
+  }
+  // 개별 배점 설정이 시작된 시점 — 상단 공통 배점 입력값 비우기
+  // (이후 새 값 입력 시만 전체 적용 재실행 가능)
+  const topScoreInp = document.getElementById('smeta-score');
+  if(topScoreInp && topScoreInp.value !== ''){
+    topScoreInp.value = '';
+    // 평가 설정 인라인 영역 상태 유지 (심플모드는 처음부터 노출이라 토글 불필요)
   }
 };
 
@@ -21013,9 +21306,9 @@ function renderSaveStep(){
             <div id="smSaveIndivList" class="save-indiv-list"></div>
           </div>
 
-          <!-- [ADDED 2026-04] 평가 설정 — 배점 입력 시 노출 -->
-          <div id="saveEvalInline" class="save-eval-inline" style="display:none;">
-            ${_saveEvalInlineHtml()}
+          <!-- [UPDATED 2026-04] 평가 설정 — 심플모드는 처음부터 노출 + 간소화 버전 -->
+          <div id="saveEvalInline" class="save-eval-inline" style="display:block;">
+            ${_saveEvalInlineHtmlSimple()}
           </div>
 
           <div class="save-body-footnote">
@@ -21094,12 +21387,12 @@ function renderSaveStep(){
             </div>
           </div>
 
-          <!-- 배점 — 입력 시 평가 설정 영역 노출 -->
+          <!-- 배점 -->
           <div class="save-row">
             <div class="save-row-label">배점</div>
             <div class="save-row-inline" style="flex-wrap:wrap;gap:8px;">
               <input type="number" class="save-inp" id="smeta-score" min="0" max="100" step="1" placeholder="입력" value=""
-                     oninput="saveValidateStep1(); saveEvalInlineToggle()" onfocus="this.select()"
+                     oninput="saveValidateStep1()" onfocus="this.select()"
                      style="width:100px;text-align:center;">
               <span style="font-size:12px;color:#6B7280;">점</span>
               <!-- [ADDED 2026-04] 전체 문항에 동일 배점 적용 -->
@@ -21110,10 +21403,7 @@ function renderSaveStep(){
             </div>
           </div>
 
-          <!-- [ADDED 2026-04] 평가 설정 — 배점 입력 시 노출 -->
-          <div id="saveEvalInline" class="save-eval-inline" style="display:none;">
-            ${_saveEvalInlineHtml()}
-          </div>
+          <!-- [REMOVED 2026-04] 인라인 평가 설정 제거 — 2단계 후 팝업으로 복원 -->
 
           <div class="save-body-footnote">
             필수 값을 모두 설정 하시면 [다음 단계]로 이동하실 수 있습니다.
@@ -21123,6 +21413,17 @@ function renderSaveStep(){
 
     // 초기 검증 실행 — 다음 단계 버튼 disabled 상태 결정
     saveValidateStep1();
+
+    // [ADDED 2026-04] 심플모드에서 평가 설정 영역이 처음부터 노출 — 타이머 셀렉트 초기화
+    const _isSimpleInit = (typeof lsGetSelectedMode === 'function' && lsGetSelectedMode() === 'simple')
+      || (document.body && document.body.classList.contains('simple-active'));
+    if(_isSimpleInit){
+      const evalInline = document.getElementById('saveEvalInline');
+      if(evalInline && !evalInline.dataset.initialized){
+        evalInline.dataset.initialized = '1';
+        if(typeof _saveEvalInlineInitSelects === 'function') _saveEvalInlineInitSelects();
+      }
+    }
 
     // [ADDED 2026-04] AI 추천 있는 필드 3개(학습 맵 / 평가 영역 / 난이도) 자동 매핑
     //   값이 채워지고 "✨ AI 추천됨" 뱃지가 표시됨 — 사용자는 언제든 수정 가능
@@ -21459,28 +21760,31 @@ function openSaveEvalModal(){
   const ov = document.getElementById('saveEvalOverlay');
   if(!ov) return;
 
-  // 타이머 드롭다운 (시 0~12 / 분 0,5,10,...,55) 채우기
+  // [UPDATED 2026-04] 심플모드 인라인 버전과 동일하게 간소화
+  //   - 시간: 0~5시간
+  //   - 분: 0/10/20/30/40/50 (기본값 30분)
   const h = document.getElementById('saveEvalHour');
   const m = document.getElementById('saveEvalMin');
   if(h && !h.options.length){
     let html = '';
-    for(let i=0;i<=12;i++) html += `<option value="${i}">${i}시간</option>`;
+    for(let i=0;i<=5;i++) html += `<option value="${i}">${i}시간</option>`;
     h.innerHTML = html;
   }
   if(m && !m.options.length){
     let html = '';
-    for(let i=0;i<12;i++){ const v = i*5; html += `<option value="${v}">${v}분</option>`; }
+    [0,10,20,30,40,50].forEach(v => { html += `<option value="${v}">${v}분</option>`; });
     m.innerHTML = html;
+    m.value = '30';
   }
 
-  // 기본값: 평가명에 오늘 날짜(YY.MM.DD)
-  const nameInp = document.getElementById('saveEvalName');
-  if(nameInp && !nameInp.value){
+  // [ADDED 2026-04] 시작일에 오늘 날짜 기본값 (심플모드와 동일)
+  const startInp = document.getElementById('saveEvalStart');
+  if(startInp && !startInp.value){
     const d = new Date();
-    const yy = String(d.getFullYear()).slice(2);
+    const yy = d.getFullYear();
     const mm = String(d.getMonth()+1).padStart(2,'0');
     const dd = String(d.getDate()).padStart(2,'0');
-    nameInp.value = `${yy}.${mm}.${dd}`;
+    startInp.value = `${yy}-${mm}-${dd}`;
   }
 
   ov.classList.add('open');
@@ -21580,32 +21884,24 @@ function saveEvalToggleNoTimer(){
 
 // 적용 버튼 — 평가 설정 적용 후 최종 저장까지 이어서 처리
 function applySaveEval(){
-  const category = document.querySelector('input[name="saveEvalCategory"]:checked')?.value || null;
-  if(!category){
-    T('⚠️ 평가 구분을 선택해 주세요');
-    return;
-  }
-  const name = (document.getElementById('saveEvalName')?.value || '').trim();
-  const noPeriod = !!document.getElementById('saveEvalNoPeriod')?.checked;
+  // [UPDATED 2026-04] 평가 구분/평가명 필드 제거됨 — 날짜/타이머/알림만 수집
   const start = document.getElementById('saveEvalStart')?.value || '';
   const end = document.getElementById('saveEvalEnd')?.value || '';
   const notify = !!document.getElementById('saveEvalNotify')?.classList.contains('on');
-  const noTimer = !!document.getElementById('saveEvalNoTimer')?.checked;
   const hours = parseInt(document.getElementById('saveEvalHour')?.value || '0', 10);
   const mins = parseInt(document.getElementById('saveEvalMin')?.value || '0', 10);
-  const timerMin = noTimer ? null : (hours*60 + mins);
+  const timerMin = hours*60 + mins;
 
   window._saveEvalConfig = {
-    category, name,
-    noPeriod, start, end,
-    notify, noTimer, timerMin,
+    start, end,
+    notify, timerMin,
   };
 
   // [UPDATED 2026-04] 평가 설정 모달 닫기 + 저장 모달도 최종 반영 처리
   const ov = document.getElementById('saveEvalOverlay');
   if(ov) ov.classList.remove('open');
   window._saveEvalApplied = true;            // 재진입 방지 플래그
-  T('✅ 평가 설정이 적용되었습니다 (' + category + ')');
+  T('✅ 평가 설정이 적용되었습니다');
   // 약간의 지연 후 저장 모달도 완료 처리
   setTimeout(()=>{ saveFinalize(); }, 250);
 }
@@ -21627,7 +21923,13 @@ function saveNextStep(){
     window._saveCapturedScore = (Number.isFinite(scoreNum) && scoreNum > 0) ? scoreNum : null;
     saveStep=1; renderSaveStep();
   } else {
-    // [UPDATED 2026-04] 평가 설정은 1단계 인라인으로 이동 — 2단계 후 평가 설정 모달 오픈 로직 제거
+    // [UPDATED 2026-04] 고급모드 2단계 최종 반영 — 배점 있으면 평가 설정 팝업 오픈 (평가 설정 적용 후 저장)
+    const hasScore = window._saveCapturedScore != null && window._saveCapturedScore > 0;
+    if(hasScore && !window._saveEvalApplied){
+      openSaveEvalModal();
+      return;
+    }
+    // 배점 없음 or 이미 평가 설정 완료 → 최종 저장
     saveFinalize();
   }
 }
@@ -25417,39 +25719,58 @@ window.lsInsertContent = function(){
       // 심플모드 — 기존처럼 smOpen
       if(typeof smOpen === 'function') smOpen(_lsCurrentItem);
     } else {
-      // 고급모드 — 에디터로 전환 후 insertBlock
+      // [FIXED 2026-04] 고급모드 — 이전 구현은 `insertBlock('question')` 등으로 *빈 템플릿 1개*만 삽입하는
+      //   MVP 스텁이어서, 랜딩 미리보기는 실제 콘텐츠(예: 도입 세트의 3개 문항)를 보여주는데
+      //   저작툴에는 빈 선택형 블록 하나만 들어와 "미리보기와 다르게 삽입" 문제의 핵심이었음.
+      //   실제 콘텐츠를 채워 넣는 cbInsertRecContent / cbInsertRecSet 경로로 위임해
+      //   미리보기와 동일한 구성(세트지 3문항, 개념 정리 본문 등)이 에디터에 들어오도록 수정.
       const landing = document.getElementById('landingScreen');
-      if(landing && landing.style.display !== 'none' && !landing.classList.contains('out')){
-        if(typeof landingOpenEditor === 'function') landingOpenEditor();
+      const onLanding = landing && landing.style.display !== 'none' && !landing.classList.contains('out');
+      if(onLanding && typeof landingOpenEditor === 'function'){
+        landingOpenEditor();
       }
+      document.body.classList.remove('landing-active');
+      const item = _lsCurrentItem;
+      if(!item){
+        if(typeof T === 'function') T('⚠️ 삽입할 항목 정보를 찾지 못했습니다.');
+        return;
+      }
+      // 에디터 전환 애니메이션(약 400ms) 이후 실제 삽입
       setTimeout(()=>{
-        if(typeof insertBlock === 'function' && _lsCurrentItem){
-          const item = _lsCurrentItem;
+        try {
           if(item.type === 'content'){
-            const ctype = (item.item && item.item.contType) || '';
-            const typeStr = (item.item && item.item.type) || '';
-            const mapTmpl = {
-              '선택형':'선택형','단답형':'단답형','OX':'OX형','서술형':'서술형',
-              '연결형':'연결형','순서':'순서입력형'
-            };
-            let tmpl = '선택형';
-            Object.keys(mapTmpl).forEach(k => { if(typeStr.indexOf(k) >= 0) tmpl = mapTmpl[k]; });
-            window.selectedTmplName = tmpl;
-            window.selectedTmplIsOcr = false;
-            insertBlock(ctype === '개념' ? 'concept' : (ctype === '활동' ? 'activity' : 'question'));
+            // 실제 추천 콘텐츠 삽입 (mockType/contType 기반으로 실제 블록 생성)
+            //   item.item = LS_UNITS[uidx].contents[cidx], id는 name/title로 매칭됨
+            const content = item.item || {};
+            const contentId = content.id || content.name || content.title;
+            if(typeof window.cbInsertRecContent === 'function' && contentId){
+              window.cbInsertRecContent(contentId);
+            } else if(typeof window._cbInsertContentItem === 'function'){
+              window._cbInsertContentItem(content);
+            } else if(typeof T === 'function') {
+              T('⚠️ 콘텐츠 삽입 기능을 준비 중입니다.');
+            }
           } else if(item.type === 'set'){
-            // 세트지 — 대표 블록 하나만 빠르게 삽입 (MVP)
-            window.selectedTmplName = '선택형';
-            window.selectedTmplIsOcr = false;
-            insertBlock('question');
+            // 실제 추천 세트지 삽입 (breakdown / previewType 기반으로 _blocksForSet 생성)
+            if(typeof window.cbInsertRecSet === 'function' && item.uidx != null && item.sidx != null){
+              window.cbInsertRecSet(item.uidx, item.sidx);
+            } else if(typeof T === 'function') {
+              T('⚠️ 세트지 삽입 기능을 준비 중입니다.');
+            }
           } else if(item.type === 'tmpl'){
-            window.selectedTmplName = (item.item && item.item.name) || '선택형';
-            window.selectedTmplIsOcr = false;
-            insertBlock('question');
+            // 빈 템플릿은 기존 insertBlock 경로 유지 (실제로 빈 템플릿이 의도된 결과이므로)
+            if(typeof insertBlock === 'function'){
+              window.selectedTmplName = (item.item && item.item.name) || '선택형';
+              window.selectedTmplIsOcr = false;
+              insertBlock('question');
+              if(typeof T === 'function') T('✅ 고급모드에 삽입되었습니다');
+            }
           }
-          if(typeof T === 'function') T('✅ 고급모드에 삽입되었습니다');
+        } catch(e){
+          console.error('[lsInsertContent] 고급모드 삽입 실패:', e);
+          if(typeof T === 'function') T('⚠️ 삽입 중 오류가 발생했습니다.');
         }
-      }, 420);
+      }, onLanding ? 450 : 30);
     }
   }, 240);
 };
@@ -27473,26 +27794,71 @@ window.cbInsertHtmlBlocks = function(html){
   const tmp = document.createElement('div');
   tmp.innerHTML = html;
 
-  // [UPDATED 2026-04] sm-block 각각을 .cb 래퍼로 감싸서 slide1에 삽입
+  // [UPDATED 2026-04] sm-block을 .cb 래퍼로 감싸서 slide1에 삽입
   //   — .cb의 selBlock/속성패널/편집중 뱃지/블록 카운터 등 모든 기존 시스템과 호환
+  //   — sm-vartype 마커는 display:none이므로 건너뜀 (고급모드에선 불필요)
+  //   — 그 외 인접 노드(텍스트/빈 div)는 무시 (세트지 HTML은 대부분 sm-block으로만 구성)
+  // [UPDATED 2026-04] sm-vartype 마커에서 vartype을 읽어 .cb 래퍼 dataset.vartype에 주입
+  //   — _blocksForContent는 [sm-block, sm-vartype, sm-block, sm-vartype, ...] 형태로 블록+vartype 쌍을 만듦
+  //   — 이 vartype을 .cb에 실어두면 속성 패널(renderRp)이 'concept'/'activity'/'question'을 올바르게 인식해
+  //     개념·활동 블록에 '선택형' 속성 UI가 잘못 붙어 미리보기와 외관이 달라지는 문제가 해결됨
   let firstCb = null;
   const insertedCbs = [];
   const children = Array.from(tmp.children);
-  children.forEach(function(node){
+  console.log('[cbInsertHtmlBlocks] top-level children:', children.length, 'types:', children.map(c => c.className || c.tagName).slice(0, 8));
+
+  // 현재 sm-block에 바로 이어지는 sm-vartype 마커(들)에서 vartype을 가져오는 헬퍼
+  //   — 여러 개의 sm-vartype이 연달아 올 수 있으므로 첫 번째 값을 사용
+  function _findVarTypeAfter(startIdx){
+    for(let j = startIdx + 1; j < children.length; j++){
+      const nx = children[j];
+      if(!nx || nx.nodeType !== 1) continue;
+      if(nx.classList && nx.classList.contains('sm-vartype')){
+        return nx.dataset.vartype || '';
+      }
+      // 다른 sm-block을 만나면 마커 없이 끝난 것 — 중단
+      if(nx.classList && nx.classList.contains('sm-block')) break;
+    }
+    return '';
+  }
+  // vartype을 .cb dataset.tmpl로 매핑 (속성 패널 분기에 사용)
+  //   — question/choice → 선택형 (기본 문항 UI)
+  //   — concept → 빈 문서 (CONCEPT_TMPLS에 포함되어 renderRp가 빈 본문을 보장)
+  //   — activity → 서술형 활동 (ACTIVITY_TMPLS에 포함되어 getBlockCategory가 'activity' 반환 →
+  //                 빠른 실행에 '모범 답안 생성' 버튼이 뜸. 이전에 '빈 문서'로 매핑해
+  //                 concept 카테고리로 오인되어 이미지/동영상 추천이 나오던 버그를 수정)
+  function _varTypeToTmpl(vt){
+    if(!vt) return '선택형';
+    if(vt === 'concept')  return '빈 문서';
+    if(vt === 'activity') return '서술형 활동';
+    return '선택형';
+  }
+
+  children.forEach(function(node, idx){
     if(node.nodeType !== 1) return;
+
+    // sm-vartype 등 display:none 마커 — 건너뜀
+    if(node.classList && node.classList.contains('sm-vartype')) return;
+
     if(node.classList && node.classList.contains('sm-block')){
       // sm-block을 .cb 컨테이너로 감쌈
-      blkCnt++;
+      // [FIXED 2026-04] blkCnt는 다른 스크립트 블록(block 2)의 top-level 스코프에 있어
+      //   일부 환경에서 이 블록(block 3)에서 직접 참조 시 undefined가 되어 id가 "NaN"으로 찍히던 문제가 있었음.
+      //   window.blkCnt 경유로 안전하게 접근/증가 (block 2의 var 선언은 window 속성으로 노출되므로 동일 변수).
+      window.blkCnt = (typeof window.blkCnt === 'number' ? window.blkCnt : 0) + 1;
+      try { blkCnt = window.blkCnt; } catch(e){ /* block 2 스코프 접근 실패 시 무시 — window.blkCnt만으로 충분 */ }
+      const _bc = window.blkCnt;
       const cb = document.createElement('div');
       cb.className = 'cb cb-sm-wrap';
-      cb.id = 'blk-question' + blkCnt;
+      cb.id = 'blk-question' + _bc;
       cb.dataset.type = 'question';
-      cb.dataset.tmpl = node.dataset.tmpl || '선택형';
+      // [UPDATED 2026-04] vartype을 sm-vartype 마커에서 추출하여 .cb에 주입
+      const vt = _findVarTypeAfter(idx);
+      if(vt) cb.dataset.vartype = vt;
+      cb.dataset.tmpl = node.dataset.tmpl || _varTypeToTmpl(vt);
       cb.onclick = function(){ selBlock(this); };
-      // 컨트롤 바 + 원본 sm-block 내부 구조
       cb.innerHTML = _cbControlsHtml();
       cb.appendChild(node);
-      // 제목 블록이면 별도 플래그
       if(node.dataset.isTitle) cb.dataset.isTitle = '1';
       else {
         insertedCbs.push(cb);
@@ -27501,7 +27867,7 @@ window.cbInsertHtmlBlocks = function(html){
       if(addArea) slide.insertBefore(cb, addArea);
       else slide.appendChild(cb);
     } else {
-      // sm-block이 아닌 노드는 그대로
+      // 그 외 직계 자식 (거의 없음 — 안전하게 그대로 삽입)
       if(addArea) slide.insertBefore(node, addArea);
       else slide.appendChild(node);
     }
@@ -27564,16 +27930,48 @@ window.cbSelectSmBlock = function(block){
   if(typeof updateRpCtxTag === 'function'){ try { updateRpCtxTag(); } catch(e){} }
 };
 
+// [ADDED 2026-04] 콘텐츠 아이템을 _blocksForContent에 전달하기 전에 mockType/contType 보강
+//   - lgOfficialContents/lgTeacherContents 등 추론 필드가 없는 데이터를 올바른 에디터 블록으로 렌더하기 위함
+//   - 미리보기(lgPreview) / 고급모드 삽입(_cbInsertContentItem) / 심플모드 삽입(smInsertRecContent) 모두 공유해 일관성 보장
+window._enrichItemForBlocks = function(item){
+  const enriched = Object.assign({}, item || {});
+  // name/title 기반 mockType 추론 (이미 있으면 유지)
+  if(!enriched.mockType){
+    const n = enriched.name || enriched.title || '';
+    if(n.includes('덧셈·뺄셈 개념') || (n.includes('받아올림') && n.includes('개념'))) enriched.mockType = 'deduck_concept';
+    else if(n.includes('덧셈·뺄셈') && n.includes('활동')) enriched.mockType = 'deduck_activity';
+    else if(n.includes('직각') && n.includes('활동')) enriched.mockType = 'rightangle_activity';
+    else if(n.includes('도형') && n.includes('개념')) enriched.mockType = 'shape_concept';
+    else if(n.includes('정사각형') && n.includes('활동')) enriched.mockType = 'square_activity';
+  }
+  // contType이 없으면 type/title/name에서 추론
+  if(!enriched.contType){
+    const t = (enriched.type || enriched.title || enriched.name || '');
+    if(t.includes('개념')) enriched.contType = '개념';
+    else if(t.includes('활동')) enriched.contType = '활동';
+    else enriched.contType = '문항';
+  }
+  return enriched;
+};
+
 // [UPDATED 2026-04] 고급모드: 추천 아이템을 심플모드와 동일한 실제 콘텐츠 블록으로 삽입
 //   (이전에는 insertQuestionBlock으로 .cb 블록 생성 → 이제 _blocksForContent로 sm-block 기반 실제 콘텐츠)
 function _cbInsertContentItem(item){
   if(!item) return;
-  const html = (typeof window._blocksForContent === 'function') ? window._blocksForContent(item) : '';
+  console.log('[_cbInsertContentItem] item:', item.id || item.name, 'mockType:', item.mockType, 'contType:', item.contType);
+
+  // [UPDATED 2026-04] 미리보기와 완전히 동일한 HTML을 얻기 위해 공용 enricher 사용
+  const enriched = window._enrichItemForBlocks(item);
+
+  const html = (typeof window._blocksForContent === 'function') ? window._blocksForContent(enriched) : '';
+  console.log('[_cbInsertContentItem] _blocksForContent HTML length:', html ? html.length : 0);
+
   if(html){
     window.cbInsertHtmlBlocks(html);
   } else {
     // 폴백 — 빈 템플릿
-    const tmpl = _cbMapTmplFromItem(item);
+    console.warn('[_cbInsertContentItem] Empty HTML, falling back to empty template');
+    const tmpl = _cbMapTmplFromItem(enriched);
     if(typeof confirmTmpl === 'function') confirmTmpl(tmpl);
   }
 }
@@ -27607,18 +28005,49 @@ window.cbRecInsertSelected = function(){
 
 // 고급모드 콘텐츠 1건 삽입 (카드 단건 클릭)
 window.cbInsertRecContent = function(contentId){
+  // [UPDATED 2026-04] LS_UNITS의 unit.contents도 검색 대상에 추가 — 추천 모달이 LS_UNITS에서 가져온 아이템도 삽입 가능하도록
   const pool = []
     .concat(typeof lgOfficialContents !== 'undefined' ? lgOfficialContents : [])
     .concat(typeof lgTeacherContents  !== 'undefined' ? lgTeacherContents  : []);
-  const item = pool.find(x => x.id === contentId);
-  if(!item) return;
+  // LS_UNITS의 모든 unit의 contents flatten
+  if(typeof LS_UNITS !== 'undefined' && Array.isArray(LS_UNITS)){
+    LS_UNITS.forEach(u => {
+      if(u && Array.isArray(u.contents)){
+        u.contents.forEach(c => {
+          // LS_UNITS 콘텐츠는 id가 없을 수 있음 — name을 id로 사용
+          pool.push(Object.assign({ id: c.id || c.name, _unitNum: u.num, _unitName: u.name }, c));
+        });
+      }
+    });
+  }
+  // id 또는 name으로 매칭
+  const item = pool.find(x => x.id === contentId || x.name === contentId || x.title === contentId);
+  if(!item){
+    console.warn('[cbInsertRecContent] item not found for:', contentId);
+    return;
+  }
+  console.log('[cbInsertRecContent] Found item:', item.name || item.title, 'mockType:', item.mockType);
   const name = item.title || item.name || '';
   if(typeof closeTmplRecommend === 'function') closeTmplRecommend();
   window._cbRecInsertContext = false;
+
+  // [ADDED 2026-04] 랜딩에서 호출된 경우 에디터 전환 대기
+  const landing = document.getElementById('landingScreen');
+  const isOnLanding = landing && landing.style.display !== 'none' && !landing.classList.contains('out');
+  if(isOnLanding && typeof landingOpenEditor === 'function'){
+    landingOpenEditor();
+  }
+  document.body.classList.remove('landing-active');
+
   setTimeout(function(){
+    const slide = document.getElementById('slide1');
+    if(!slide){
+      console.warn('[cbInsertRecContent] #slide1 not found');
+      return;
+    }
     _cbInsertContentItem(item);
     if(typeof T === 'function') T('✅ "' + name + '" 삽입 완료');
-  }, 30);
+  }, isOnLanding ? 450 : 30);
 };
 
 // [UPDATED 2026-04] 고급모드 세트지 삽입 — 심플모드와 동일한 _blocksForSet 사용
@@ -27629,9 +28058,28 @@ window.cbInsertRecSet = function(uidx, sidx){
   if(!s) return;
   const setName = s.name || '';
   const unitNum = (u && u.num) ? String(u.num) : '1';
+  console.log('[cbInsertRecSet] setName:', setName, 'previewType:', s.previewType, 'unitNum:', unitNum);
+
   if(typeof closeTmplRecommend === 'function') closeTmplRecommend();
   window._cbRecInsertContext = false;
+
+  // [ADDED 2026-04] 랜딩 화면에 있으면 먼저 에디터로 전환
+  const landing = document.getElementById('landingScreen');
+  const isOnLanding = landing && landing.style.display !== 'none' && !landing.classList.contains('out');
+  if(isOnLanding && typeof landingOpenEditor === 'function'){
+    landingOpenEditor();
+  }
+  document.body.classList.remove('landing-active');
+
   setTimeout(function(){
+    // #slide1 존재 확인 — 에디터 전환이 완료되었는지
+    const slide = document.getElementById('slide1');
+    if(!slide){
+      console.warn('[cbInsertRecSet] #slide1 not found — editor not ready');
+      if(typeof T === 'function') T('⚠️ 저작툴 준비 중입니다. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
+
     let html = '';
     if(typeof window._blocksForSet === 'function'){
       try {
@@ -27640,18 +28088,19 @@ window.cbInsertRecSet = function(uidx, sidx){
         console.error('[cbInsertRecSet] _blocksForSet failed:', e);
       }
     }
+    console.log('[cbInsertRecSet] _blocksForSet HTML length:', html ? html.length : 0);
 
     if(html && typeof window.cbInsertHtmlBlocks === 'function'){
       window.cbInsertHtmlBlocks(html);
     } else {
-      // 폴백 — _blocksForSetGeneric 사용 (breakdown 구조 있는 레이아웃 HTML)
+      // 폴백 — _blocksForSetGeneric 사용
+      console.warn('[cbInsertRecSet] Falling back to _blocksForSetGeneric');
       if(typeof window._blocksForSetGeneric === 'function'){
         const genericHtml = window._blocksForSetGeneric(setName, s.breakdown || {}, s.questionTypes || null, unitNum);
         if(genericHtml && typeof window.cbInsertHtmlBlocks === 'function'){
           window.cbInsertHtmlBlocks(genericHtml);
         }
       } else {
-        // 최후 폴백 — 빈 템플릿
         const breakdown = s.breakdown || { '선택형': 1 };
         Object.entries(breakdown).forEach(([tmplName, cnt]) => {
           for(let i = 0; i < (cnt || 0); i++) _cbInsertBlockByTmpl(tmplName);
@@ -27659,7 +28108,7 @@ window.cbInsertRecSet = function(uidx, sidx){
       }
     }
     if(typeof T === 'function') T('✅ 세트지 "' + setName + '" 삽입 완료');
-  }, 30);
+  }, isOnLanding ? 450 : 50);
 };
 
 // 고급모드 찜한 콘텐츠 삽입
