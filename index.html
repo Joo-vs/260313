@@ -1689,10 +1689,10 @@ body.landing-active .editor-body{
 #simpleMode.show{display:flex;}
 
 /* ── 심플모드 상단 바 ── */
+/* [UPDATED 2026-04] 심플모드 상단 타이틀바(템플릿명/배지) 숨김 — 툴바를 바로 노출
+   JS에서 smTopTitle/smTopBadge를 계속 참조하므로 엘리먼트는 유지하되 visual만 숨김 */
 .sm-topbar{
-  height:56px;background:white;border-bottom:1.5px solid #E8E7E2;
-  display:flex;align-items:center;padding:0 24px;gap:14px;
-  flex-shrink:0;position:relative;z-index:20;
+  display:none;
 }
 .sm-back-btn{
   display:flex;align-items:center;gap:6px;
@@ -1774,6 +1774,13 @@ body.landing-active .editor-body{
 /* 선택 안된 블록 행의 AI 버튼 숨김 */
 .sm-canvas.has-sel .sm-block-row:not(.sm-row-sel) .sm-ai-icon-btn{
   opacity:0;pointer-events:none;
+}
+/* [ADDED 2026-04] has-sel 상태에서 선택 안된 블록의 :focus-within 파란 테두리 덮기 방지
+   — 자식 input에 포커스가 이동해도 흐린 상태 유지되도록 */
+.sm-canvas.has-sel .sm-block-row:not(.sm-row-sel) .sm-block,
+.sm-canvas.has-sel .sm-block-row:not(.sm-row-sel) .sm-block:focus-within{
+  border-color:#E8E7E2 !important;
+  box-shadow:none !important;
 }
 /* 편집 중 뱃지 */
 .sm-editing-badge{
@@ -1987,6 +1994,99 @@ body.landing-active .editor-body{
 .sm-block:focus-within{
   border-color:#4B6EF5;
   box-shadow:0 0 0 3px rgba(75,110,245,.1);
+}
+
+/* [ADDED 2026-04] 고급모드(#slide1) 내부에 sm-block이 삽입될 때의 레이아웃 보정
+   (심플모드와 동일한 템플릿/콘텐츠 HTML을 재사용하므로 고급모드에서도 자연스럽게 보이도록)
+   .cb 블록과 동일한 700px 고정 너비로 맞춰 슬라이드 내에서 일관된 폭으로 표시 */
+#slide1 .sm-block{
+  width:700px; max-width:700px; box-sizing:border-box;
+  margin:10px auto; align-self:center;
+  box-shadow:0 1px 6px rgba(0,0,0,.05);
+}
+#slide1 .sm-block[data-is-title]{ margin:14px auto 6px; }
+#slide1 .sm-block-row{
+  width:700px; max-width:700px; margin:0 auto; align-self:center;
+}
+#slide1 .sm-block-row > .sm-block{
+  width:auto; max-width:none; margin:0; /* row 안에서는 flex:1로 이미 가득 참 */
+}
+/* [ADDED 2026-04] .cb-sm-wrap 내부 sm-block — cb 래퍼가 이미 700px이므로 안쪽은 auto로 가득 채움 */
+#slide1 .cb.cb-sm-wrap{ padding:0; background:transparent; box-shadow:none; border:none; }
+#slide1 .cb.cb-sm-wrap > .sm-block{
+  width:auto; max-width:none; margin:0;
+}
+#slide1 .cb.cb-sm-wrap.sel > .sm-block{
+  border-color:#4B6EF5;
+  box-shadow:0 0 0 3px rgba(75,110,245,.12), 0 2px 12px rgba(75,110,245,.1);
+}
+/* cb-sm-wrap은 투명하므로 bctrl(상단 우측 제어 버튼)은 위로 띄움 */
+#slide1 .cb.cb-sm-wrap > .bctrl{ z-index:10; }
+/* [ADDED 2026-04] 고급모드 slide1 내 sm-block 선택 상태 시각화
+   .cb와 동일하게 선택 블록은 강조, 비선택은 흐림 */
+#slide1 .sm-block.sel{
+  border-color:#4B6EF5 !important;
+  box-shadow:0 0 0 3px rgba(75,110,245,.12),0 2px 12px rgba(75,110,245,.1) !important;
+}
+#slide1.has-sel .sm-block:not(.sel):not([data-is-title]){
+  opacity:0.38; pointer-events:auto; transition:opacity .15s;
+}
+#slide1.has-sel .sm-block:not(.sel):not([data-is-title]):hover{ opacity:0.65; }
+/* [ADDED 2026-04] .cb-sm-wrap로 감싼 sm-block — 래퍼(.cb)가 .sel이면 안쪽 sm-block은 선명하게 유지 */
+#slide1.has-sel .cb.sel .sm-block{ opacity:1 !important; }
+#slide1.has-sel .cb.cb-sm-wrap:not(.sel) .sm-block:not([data-is-title]){
+  opacity:0.38; transition:opacity .15s;
+}
+#slide1.has-sel .cb.cb-sm-wrap:not(.sel):hover .sm-block:not([data-is-title]){ opacity:0.65; }
+
+/* [UPDATED 2026-04] 문항형 그룹 블록 — 발문·보기·힌트·해설을 하나의 묶음으로 표현
+   (고급모드에서 하나의 .cb 카드로 삽입되는 것과 동일한 시각 구조)
+   sm-block의 overflow:hidden 을 유지하면서 내부 요소들이 연속된 단일 카드로 보이도록 함 */
+.sm-block.sm-qgroup{
+  padding:0 0 12px 0 !important;    /* 하단에 12px 여유 — 해설 섹션과 카드 경계 간격 */
+  border-color:#DFE2ED !important;
+  background:#FFFFFF !important;
+  overflow:hidden !important;
+}
+.sm-block.sm-qgroup:focus-within{
+  border-color:#4B6EF5 !important;
+  box-shadow:0 0 0 3px rgba(75,110,245,.1) !important;
+}
+/* 그룹 내부 섹션(힌트/해설) — 연회색 영역으로 시각적 구분 + 카드 내부 구조로 묶임 */
+.sm-block.sm-qgroup > .sm-qgroup-section{
+  margin:8px 14px !important;
+  border-radius:10px !important;
+  transition:background .15s;
+}
+.sm-block.sm-qgroup > .sm-qgroup-section:focus-within{
+  background:#E6EAF8 !important;
+}
+/* 그룹 내부 섹션만 position:relative — editing-badge 등 absolute 요소는 영향 없이 동작 */
+.sm-block.sm-qgroup > .sm-qgroup-section{
+  position:relative;
+}
+/* [ADDED 2026-04] 편집 중 뱃지는 sm-qgroup 내부에서도 항상 우상단 고정 (absolute 보장) */
+.sm-block.sm-qgroup > .sm-editing-badge{
+  position:absolute !important;
+  top:10px !important;
+  right:12px !important;
+  z-index:3 !important;
+}
+/* 첫 섹션(힌트) 위쪽에 얇은 구분선 — 보기 영역과 자연스럽게 구분 */
+.sm-block.sm-qgroup > .sm-qgroup-section:first-of-type{
+  margin-top:12px !important;
+}
+/* [ADDED 2026-04] sm-vartype 마커는 어떤 경우에도 시각적으로 표시되지 않음 (숨김 마커) */
+.sm-vartype{
+  display:none !important;
+  height:0 !important;
+  overflow:hidden !important;
+}
+/* [ADDED 2026-04] sm-qgroup 내부에 혹시 삽입될 수 있는 보조 바(variation bar 등) 완전 차단 */
+.sm-block.sm-qgroup .sm-block-var-bar,
+.sm-block.sm-qgroup .sm-block-var-bar-ai,
+.sm-block.sm-qgroup > .sm-block-var-bar{
+  display:none !important;
 }
 .sm-block-label{
   font-size:10px;font-weight:800;color:#8A93A8;
@@ -7948,9 +8048,9 @@ body.save-step2 .save-modal{ width:840px; }
     </div>
   </div>
 
-  <div class="right-panel" id="rightPanel">
+  <div class="right-panel rp-open" id="rightPanel">
     <!-- 속성 핸들 (심플모드 툴바 핸들과 동일한 방식) -->
-    <div id="rpAttrHandle" onclick="toggleRpAttrPane()"
+    <div id="rpAttrHandle" class="open" onclick="toggleRpAttrPane()"
       title="속성 패널 열기/닫기">
       <svg id="rpAttrArrow" width="14" height="14" viewBox="0 0 24 24" fill="none">
         <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -7980,7 +8080,7 @@ body.save-step2 .save-modal{ width:840px; }
         <div id="rpSpecBtn" style="display:none;"></div>
         <div id="rpAttrToggleRow" style="display:none;"></div>
         <!-- 속성 내용 -->
-        <div id="rpAttrPane" style="display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;">
+        <div id="rpAttrPane" style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;">
           <div id="rpEmpty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:20px;text-align:center;">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" rx="1" stroke="#C8CDD8" stroke-width="1.5"/></svg>
             <div style="font-size:11px;color:var(--g3);line-height:1.7;">콘텐츠를 선택하면<br>속성을 확인할 수 있어요</div>
@@ -10334,6 +10434,53 @@ window.aiCreateCountChars = function(){
 };
 
 // [UPDATED 2026-04] AI 생성 시작 — 상단 모드 선택에 따라 심플/고급으로 진입
+// [ADDED 2026-04] AI 생성 state → mock 세트지 아이템 변환
+//   state.types(concept/activity/question)와 questionTypes/activityTypes Map을
+//   _blocksForSet이 이해하는 breakdown + questionTypes 구조로 변환
+//   → 추천 세트지와 동일한 경로(_blocksForSetGeneric)로 실제 콘텐츠 생성
+window._aiCreateStateToMockSet = function(state){
+  if(!state) return null;
+  const breakdown = {};
+  const qTypes = [];
+
+  if(state.types && state.types.has('concept')){
+    breakdown['개념'] = 1;
+  }
+  if(state.types && state.types.has('activity') && state.activityTypes){
+    let actTotal = 0;
+    state.activityTypes.forEach(function(cnt){ actTotal += (cnt||0); });
+    if(actTotal > 0) breakdown['활동'] = actTotal;
+  }
+  if(state.types && state.types.has('question') && state.questionTypes){
+    let qTotal = 0;
+    state.questionTypes.forEach(function(cnt, t){
+      qTotal += (cnt||0);
+      for(let i = 0; i < (cnt||0); i++) qTypes.push(t);
+    });
+    if(qTotal > 0) breakdown['문항'] = qTotal;
+  }
+
+  // 최소 1개는 보장 (아무 유형도 없을 때 기본 선택형 1개)
+  if(Object.keys(breakdown).length === 0){
+    breakdown['문항'] = 1;
+    qTypes.push('선택형');
+  }
+
+  const unitName = (state.unit && state.unit.name) ? state.unit.name : '';
+  const unitNum  = (state.unit && state.unit.num)  ? String(state.unit.num) : '1';
+  const setName = unitName ? (unitName + ' AI 생성 콘텐츠') : 'AI 생성 콘텐츠';
+
+  return {
+    mockSet: {
+      name: setName,
+      breakdown: breakdown,
+      questionTypes: qTypes.length > 0 ? qTypes : null,
+      // previewType 없음 → _blocksForSetGeneric 경로로 가서 레이아웃 있는 HTML 생성
+    },
+    unitNum: unitNum
+  };
+};
+
 window.startAiCreate = function(){
   const state = window._aiCreateState || {};
   const prompt = (document.getElementById('aiCreatePrompt')?.value || '').trim();
@@ -10344,20 +10491,41 @@ window.startAiCreate = function(){
   }
   closeAiCreatePopup();
 
+  // [UPDATED 2026-04] AI 생성 → 추천 세트지와 동일한 경로로 완성된 콘텐츠 삽입
+  const converted = window._aiCreateStateToMockSet(state);
+  const mockSet = converted && converted.mockSet;
+  const unitNum = converted && converted.unitNum;
+
   const mode = (typeof lsGetSelectedMode === 'function') ? lsGetSelectedMode() : 'simple';
+
   if(mode === 'advanced'){
-    // 고급모드 — 에디터 전환 + 기존 AI 시작 팝업
-    landingOpenEditor();
+    // 고급모드 — 랜딩 → 에디터 전환 후 _blocksForSet HTML을 cbInsertHtmlBlocks로 삽입
+    const landing = document.getElementById('landingScreen');
+    const isOnLanding = landing && landing.style.display !== 'none' && !landing.classList.contains('out');
+    if(isOnLanding && typeof landingOpenEditor === 'function') landingOpenEditor();
+    document.body.classList.remove('landing-active');
     setTimeout(() => {
-      if(typeof openAiStartPopup === 'function') openAiStartPopup();
-      T && T('✨ AI 콘텐츠 생성을 준비 중입니다');
-    }, 420);
+      let html = '';
+      if(mockSet && typeof window._blocksForSet === 'function'){
+        try { html = window._blocksForSet(mockSet, unitNum); } catch(e){ console.error(e); }
+      }
+      if(html && typeof window.cbInsertHtmlBlocks === 'function'){
+        window.cbInsertHtmlBlocks(html);
+      } else if(typeof openAiStartPopup === 'function'){
+        // 폴백 — 기존 AI 시작 팝업
+        openAiStartPopup();
+      }
+      T && T('✨ AI 콘텐츠 생성 완료');
+    }, isOnLanding ? 450 : 50);
   } else {
-    // 심플모드 — 빈 문서 템플릿으로 smOpen + AI 진행 안내
-    const tmpl = { name: '빈 문서' };
-    if(typeof smOpen === 'function'){
-      smOpen({ type:'tmpl', item: tmpl });
-      setTimeout(() => { T && T('✨ AI 콘텐츠가 심플모드에 생성됩니다'); }, 120);
+    // 심플모드 — smOpen의 type:'set' 경로 재사용 (추천 세트지와 동일한 흐름)
+    if(mockSet && typeof smOpen === 'function'){
+      smOpen({ type:'set', item: mockSet, unitNum: unitNum });
+      setTimeout(() => { T && T('✨ AI 콘텐츠 생성 완료'); }, 120);
+    } else {
+      // 폴백 — 빈 문서
+      const tmpl = { name: '빈 문서' };
+      if(typeof smOpen === 'function') smOpen({ type:'tmpl', item: tmpl });
     }
   }
 };
@@ -14348,14 +14516,25 @@ function startResize(e, side){
 }
 
 function updateBlockCounter(selectedEl){
-  const blocks = [...document.querySelectorAll('#slide1 .cb')];
+  // [UPDATED 2026-04] 카운트 로직 정리 — 중복 카운트 방지
+  //   .cb 블록은 모두 1로 카운트 (cb-sm-wrap 포함)
+  //   .sm-block은 slide1 직속(자유 삽입된 경우)만 카운트, .cb 래퍼 안쪽은 이미 .cb로 카운트 되었으므로 제외
+  const cbBlocks = [...document.querySelectorAll('#slide1 > .cb')];
+  const smBlocksFree = [...document.querySelectorAll('#slide1 > .sm-block:not([data-is-title])')];
+  const blocks = cbBlocks.concat(smBlocksFree);
   const total = blocks.length;
   const counterEl = document.getElementById('blockCounter');
   const curEl = document.getElementById('blockCounterCur');
   const totalEl = document.getElementById('blockCounterTotal');
   if(!counterEl) return;
   if(!selectedEl || total === 0){ counterEl.style.display='none'; return; }
-  const idx = blocks.indexOf(selectedEl);
+  // 선택된 요소가 .cb 래퍼의 자식 sm-block인 경우 — 래퍼를 대상으로 찾음
+  let target = selectedEl;
+  if(target && target.classList && target.classList.contains('sm-block')){
+    const wrap = target.closest('.cb');
+    if(wrap) target = wrap;
+  }
+  const idx = blocks.indexOf(target);
   curEl.textContent = idx >= 0 ? idx + 1 : 1;
   totalEl.textContent = total;
   counterEl.style.display = 'block';
@@ -14363,17 +14542,23 @@ function updateBlockCounter(selectedEl){
 
 function checkSlideEmpty(){
   const slide=document.getElementById('slide1');
-  const blocks=slide.querySelectorAll('.cb');
+  if(!slide) return; // slide1이 아직 없으면 무동작 (DOMContentLoaded 전 호출 방어)
+  // [UPDATED 2026-04] 카운트 로직 정리 — 중복 카운트 방지
+  //   .cb 블록은 모두 포함 (cb-sm-wrap 포함)
+  //   .sm-block은 slide1 직속만 (cb 래퍼 안쪽은 이미 .cb로 카운트)
+  const cbBlocks = slide.querySelectorAll(':scope > .cb');
+  const smBlocksFree = slide.querySelectorAll(':scope > .sm-block:not([data-is-title])');
+  const blockCount = cbBlocks.length + smBlocksFree.length;
   const empty=document.getElementById('emptySlate');
   const addArea=document.getElementById('addArea');
-  if(blocks.length===0){
+  if(blockCount===0){
     if(empty)empty.style.display='flex'; if(addArea)addArea.style.display='none';
     // 블록 없으면 속성 패널 숨김
     if(typeof ctxHideAll === 'function') ctxHideAll();
   }
   else{ if(empty)empty.style.display='none'; if(addArea)addArea.style.display='flex'; }
   const totalEl = document.getElementById('blockCounterTotal');
-  if(totalEl) totalEl.textContent = blocks.length;
+  if(totalEl) totalEl.textContent = blockCount;
   // 퀵메뉴: 고급모드이고 블록이 있을 때만 표시
   const eqm = document.getElementById('editorQuickMenu');
   const landing = document.getElementById('landingScreen');
@@ -14381,7 +14566,7 @@ function checkSlideEmpty(){
   const isEditor = landing && landing.style.display==='none'
                    && simpleMode && !simpleMode.classList.contains('show');
   if(eqm){
-    if(isEditor && blocks.length > 0){
+    if(isEditor && blockCount > 0){
       eqm.classList.add('eqm-visible');
     } else {
       eqm.classList.remove('eqm-visible');
@@ -14587,7 +14772,12 @@ function selBlock(el){
   // 이전 블록 채팅 저장
   if(curBlock && curBlock.id) saveRpAiChatForBlock(curBlock.id);
 
-  document.querySelectorAll('.cb').forEach(b=>{
+  // [UPDATED 2026-04] .cb / sm-block 양쪽 모두 지원
+  //   (고급모드에 심플모드 스타일 sm-block도 삽입될 수 있으므로)
+  const isSmBlock = el.classList.contains('sm-block');
+
+  // 모든 블록 선택 상태 초기화
+  document.querySelectorAll('.cb, .sm-block').forEach(b=>{
     b.classList.remove('sel');
     b.querySelector('.cb-editing-badge')?.remove();
   });
@@ -14599,7 +14789,9 @@ function selBlock(el){
   el.appendChild(badge);
   // 비선택 블록 흐림
   document.getElementById('slide1').classList.add('has-sel');
-  curBlock=el; curType=el.dataset.type;
+  curBlock=el;
+  // sm-block의 경우 type이 없을 수 있으므로 'question'으로 기본 설정 (속성 패널이 정상 동작하도록)
+  curType = el.dataset.type || (isSmBlock ? 'question' : (el.dataset.type || ''));
   window.curBlock = el; window.curType = curType; // 퀵메뉴 카테고리 감지용
   renderCtx(curType);
   document.getElementById('sbSel').textContent={'question':'문제 블록 선택됨','image':'이미지 블록 선택됨','table':'표 블록 선택됨','concept':'개념 설명 블록 선택됨'}[curType]||'블록 선택됨';
@@ -18976,6 +19168,35 @@ function insertQuestionBlock(q){
   return el.id;
 }
 
+// [ADDED 2026-04] 고급모드 연쇄형 — "하위 콘텐츠 추가" 버튼 클릭 핸들러
+function adChainAddChild(btnEl){
+  if(!btnEl) return;
+  // 버튼 다음 형제로 ad-chain-children 컨테이너 찾기
+  const container = btnEl.nextElementSibling;
+  if(!container || !container.classList.contains('ad-chain-children')) return;
+  const idx = container.children.length + 1;
+  const childId = 'ad-chain-' + Date.now() + '-' + idx;
+  const childHtml = `
+    <div class="ad-chain-child" style="background:#F7F8FC;border:1.5px solid #E5E7EB;border-radius:10px;padding:12px 14px;position:relative;">
+      <button type="button" onclick="event.stopPropagation();this.closest('.ad-chain-child').remove();" title="삭제"
+              style="position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:5px;border:none;background:transparent;color:#9CA3AF;cursor:pointer;display:flex;align-items:center;justify-content:center;"
+              onmouseover="this.style.background='#FFF0F0';this.style.color='#FF4F6A';"
+              onmouseout="this.style.background='transparent';this.style.color='#9CA3AF';">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div style="display:flex;align-items:flex-start;gap:10px;">
+        <div style="min-width:26px;height:26px;border-radius:6px;background:#8A93A8;color:white;font-size:11.5px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${idx}</div>
+        <div id="${childId}" class="q-ctxt" contenteditable="true" data-ph="하위 발문을 입력합니다."
+             style="flex:1;border:none;border-bottom:1px dashed #D0D0D8;border-radius:0;padding:2px 0 6px;font-size:13px;min-height:22px;outline:none;"></div>
+      </div>
+    </div>`;
+  container.insertAdjacentHTML('beforeend', childHtml);
+  setTimeout(() => {
+    const el = document.getElementById(childId);
+    if(el) el.focus();
+  }, 30);
+}
+
 // 타입별 선택지/입력 영역 HTML 생성
 function buildChoicesHtml(qtype, q, ci){
   ci = ci||['①','②','③','④','⑤'];
@@ -19032,10 +19253,17 @@ function buildChoicesHtml(qtype, q, ci){
   }
 
   // ── 4. 단답형 ──
+  // [UPDATED 2026-04] 심플모드와 동일한 디자인 — 검은 테두리 박스 + 우상단 ! 뱃지 + 힌트/해설 섹션
   if(qtype==='단답형'){
-    return `<div style="padding:8px 20px 12px;">
-      <div style="height:40px;border-radius:8px;border:1.5px dashed var(--g3);background:var(--g1);display:flex;align-items:center;padding:0 14px;">
-        <div class="qsub" contenteditable="true" data-ph="선택지를 입력합니다." oninput="onBlockTextInput(this,'question','hint')" style="flex:1;outline:none;font-size:13px;">${q.answer||''}</div>
+    const ans = (q.answer || (Array.isArray(q.choices) && q.choices[0]) || '');
+    const hintTxt = q.hint || '';
+    const expTxt = q.explanation || q.solution || '';
+    return `<div style="padding:14px 20px 18px;">
+      <div style="position:relative;display:inline-block;">
+        <div style="border:1.5px solid #1E2340;border-radius:5px;padding:8px 14px;min-width:160px;font-size:12px;">
+          <input class="qsub sm-ans-input" oninput="onBlockTextInput(this,'question','hint')" value="${String(ans).replace(/"/g,'&quot;')}" placeholder="답을 입력합니다." style="border:none;outline:none;font-size:12.5px;color:#555;font-family:'Noto Sans KR',sans-serif;width:140px;background:transparent;">
+        </div>
+        <div style="position:absolute;top:-9px;right:-9px;width:18px;height:18px;border-radius:50%;background:#1E2340;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;">!</div>
       </div>
     </div>`;
   }
@@ -19129,6 +19357,23 @@ function buildChoicesHtml(qtype, q, ci){
                      border:none;font-size:9px;cursor:default;">▶</button>
           </div>
         </div>`).join('')}
+    </div>`;
+  }
+
+  // [ADDED 2026-04] ── 9-a. 연쇄형 ── (연결형보다 앞에 체크)
+  if(qtype==='연쇄형' || qtype==='연쇄형 활동'){
+    // 발문 + "하위 콘텐츠 추가" 버튼 + (힌트/해설은 외부에서 붙임)
+    return `<div style="padding:12px 20px 14px;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 0 4px;cursor:pointer;border-radius:8px;transition:background .15s;"
+           onclick="event.stopPropagation();adChainAddChild(this);"
+           onmouseover="this.style.background='#F5F7FF';" onmouseout="this.style.background='';">
+        <span style="font-size:13px;font-weight:700;color:#1E2340;">하위 콘텐츠 추가</span>
+        <div style="width:28px;height:28px;border-radius:7px;border:1.5px solid #4B6EF5;background:#EEF1FF;display:flex;align-items:center;justify-content:center;color:#4B6EF5;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+      <!-- 하위 콘텐츠가 추가될 컨테이너 -->
+      <div class="ad-chain-children" style="display:flex;flex-direction:column;gap:10px;margin-top:10px;"></div>
     </div>`;
   }
 
@@ -19491,6 +19736,9 @@ function openTmplRecommend(){
 
 function closeTmplRecommend(){
   document.getElementById('tmplRecommendScreen').style.display = 'none';
+  // [ADDED 2026-04] smOpenRecommend가 주입한 강제 스타일 태그 제거 (display:none 적용되도록)
+  const forceStyle = document.getElementById('smOpenRecForceStyle');
+  if(forceStyle) forceStyle.remove();
   // [ADDED 2026-04] 심플모드 진입 플래그 리셋
   window._smRecInsertContext = false;
   // [ADDED 2026-04] 고급모드 진입 플래그 리셋
@@ -19644,11 +19892,13 @@ function tmplRecRenderContents(grid, unitFilter){
     const bg = item.color || typeColor[item.type] || '#F3F4F6';
     const ac = item.accent || typeAccent[item.type] || '#4B6EF5';
     if(isInsertMode){
-      const isOn = selSet && selSet.has(item.id);
-      return `<div class="sm-rec-card${isOn?' on':''}" data-id="${item.id}" onclick="smRecToggleSelect('${item.id}', this)" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-        <div class="sm-rec-checkbox" aria-hidden="true">
-          <svg class="sm-rec-checkbox-ico" width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5 9-11" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
+      // [UPDATED 2026-04] 카드 클릭 시 즉시 삽입 (복수선택 UX 제거)
+      //   심플모드 → smInsertRecContent (_blocksForContent로 실제 콘텐츠 블록)
+      //   고급모드 → cbInsertRecContent (insertQuestionBlock으로 데이터 채운 .cb 블록)
+      const insertCall = isSm
+        ? `smInsertRecContent('${item.id}')`
+        : `cbInsertRecContent('${item.id}')`;
+      return `<div class="sm-rec-card" data-id="${item.id}" onclick="event.stopPropagation();${insertCall}" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5';" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0';">
         <div style="height:130px;background:${bg};display:flex;align-items:center;justify-content:center;position:relative;">
           <span style="font-size:52px;">${item.icon||'📄'}</span>
           <span style="position:absolute;top:12px;left:12px;padding:3px 10px;border-radius:20px;background:${ac};color:white;font-size:10px;font-weight:700;">${item.type}</span>
@@ -19703,20 +19953,39 @@ function tmplRecRenderSets(grid, unitFilter){
   }
 
   const badgeMap = { ai: ['AI 추천','#F3EEFF','#7C4DFF'], new:['신규','#EEF1FF','#4B6EF5'], hot:['인기','#FFF0F3','#FF4F6A'] };
+  // [ADDED 2026-04] 세트지 썸네일 — 배경 그라데이션 + 대표 이모지 (콘텐츠 카드와 동일 패턴)
+  //   badge 종류/인덱스에 따라 다양한 색상·이모지 조합 부여
+  const thumbSet = [
+    { bg:'linear-gradient(135deg,#EEF1FF,#D6DFFF)', emoji:'📚' },
+    { bg:'linear-gradient(135deg,#F3EEFF,#E8DCFF)', emoji:'🎯' },
+    { bg:'linear-gradient(135deg,#E8F5E9,#C8E6C9)', emoji:'🧩' },
+    { bg:'linear-gradient(135deg,#FFF3E0,#FFE0B2)', emoji:'📝' },
+    { bg:'linear-gradient(135deg,#FFF0F3,#FFD6DE)', emoji:'⭐' },
+    { bg:'linear-gradient(135deg,#E1F5FE,#B3E5FC)', emoji:'🔍' },
+  ];
 
-  grid.innerHTML = items.map(it => {
+  // [ADDED 2026-04] 삽입 모드 여부 — 세트지도 복수 선택 UI 지원
+  const isSm = !!window._smRecInsertContext;
+  const isCb = !!window._cbRecInsertContext;
+  const isInsertMode = isSm || isCb;
+
+  grid.innerHTML = items.map((it, idx) => {
     const b = badgeMap[it.badge] || ['추천','#EEF1FF','#4B6EF5'];
+    const th = thumbSet[idx % thumbSet.length];
     const summary = it.breakdown
       ? Object.entries(it.breakdown).map(([k,v]) => `${k} ${v}개`).join(' · ')
       : '';
-    return `<div onclick="tmplRecInsertSet(${it.uidx},${it.sidx})" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:16px;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0'">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-        <span style="padding:3px 9px;border-radius:20px;background:${b[1]};color:${b[2]};font-size:10px;font-weight:800;">${b[0]}</span>
-        <span style="font-size:10.5px;font-weight:700;color:#FF8C42;background:#FFF6EF;padding:2px 7px;border-radius:5px;">세트지</span>
+    return `<div onclick="tmplRecInsertSet(${it.uidx},${it.sidx})" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0'">
+      <div style="height:130px;background:${th.bg};display:flex;align-items:center;justify-content:center;position:relative;">
+        <span style="font-size:52px;">${th.emoji}</span>
+        <span style="position:absolute;top:12px;left:12px;padding:3px 10px;border-radius:20px;background:#FF8C42;color:white;font-size:10px;font-weight:700;">세트지</span>
+        <span style="position:absolute;top:12px;right:12px;padding:3px 9px;border-radius:20px;background:${b[1]};color:${b[2]};font-size:10px;font-weight:800;">${b[0]}</span>
       </div>
-      <div style="font-size:14px;font-weight:800;color:#1C1F2E;margin-bottom:6px;line-height:1.35;">${it.name}</div>
-      <div style="font-size:11px;color:#6B7280;margin-bottom:4px;">📚 ${it.unit}</div>
-      <div style="font-size:11px;color:#9CA3AF;">${summary}</div>
+      <div style="padding:14px 16px;">
+        <div style="font-size:14px;font-weight:800;color:#1C1F2E;margin-bottom:6px;line-height:1.35;">${it.name}</div>
+        <div style="font-size:11px;color:#6B7280;margin-bottom:4px;">📚 ${it.unit}</div>
+        <div style="font-size:11px;color:#9CA3AF;">${summary}</div>
+      </div>
     </div>`;
   }).join('');
 }
@@ -19781,15 +20050,51 @@ function tmplRecInsertSet(uidx, sidx){
     return;
   }
   const units = (typeof LS_UNITS !== 'undefined') ? LS_UNITS : (window._lsDataSource || []);
-  const s = units[uidx] && units[uidx].sets ? units[uidx].sets[sidx] : null;
+  const u = units[uidx];
+  const s = u && u.sets ? u.sets[sidx] : null;
   if(!s) return;
+  const unitNum = (u && u.num) ? String(u.num) : '1';
+  const setName = s.name || '';
   closeTmplRecommend();
   closeTmplModal && closeTmplModal();
-  if(typeof showAiQuickLoading === 'function') showAiQuickLoading();
+
+  // [UPDATED 2026-04] 랜딩에서 추천세트지 직접 삽입 — 심플모드와 동일한 _blocksForSet 사용
+  //   (이전에는 토스트만 띄우고 실제 블록은 삽입 안 함 → 미리보기 화면과 다르게 보이던 원인)
+  //   상단 모드 선택에 따라 심플/고급으로 진입
+  const mode = (typeof lsGetSelectedMode === 'function') ? lsGetSelectedMode() : 'advanced';
+  const _isSimple = (mode === 'simple');
+
+  if(_isSimple){
+    // 심플모드로 진입하여 세트지 열기 (smOpen의 type='set' 경로)
+    if(typeof smOpen === 'function'){
+      smOpen({ type:'set', item: s, unitNum: unitNum });
+    }
+    T(`✅ 세트지 "${setName}" 삽입 완료`);
+    return;
+  }
+
+  // 고급모드 경로 — 랜딩 → 에디터 전환 후 _blocksForSet HTML을 cbInsertHtmlBlocks로 삽입
+  const landing = document.getElementById('landingScreen');
+  const isOnLanding = landing && landing.style.display !== 'none' && !landing.classList.contains('out');
+  if(isOnLanding && typeof landingOpenEditor === 'function'){
+    landingOpenEditor();
+  }
+  document.body.classList.remove('landing-active');
   setTimeout(function(){
-    if(typeof hideAiQuickLoading === 'function') hideAiQuickLoading();
-    T(`✅ 세트지 "${s.name}" 삽입 완료`);
-  }, 900);
+    const html = (typeof window._blocksForSet === 'function') ? window._blocksForSet(s, unitNum) : '';
+    if(html && typeof window.cbInsertHtmlBlocks === 'function'){
+      window.cbInsertHtmlBlocks(html);
+    } else {
+      // 폴백 — breakdown 기반 빈 템플릿
+      const breakdown = s.breakdown || { '선택형': 1 };
+      Object.entries(breakdown).forEach(([tmplName, cnt]) => {
+        for(let i = 0; i < (cnt || 0); i++){
+          if(typeof confirmTmpl === 'function') confirmTmpl(tmplName);
+        }
+      });
+    }
+    T(`✅ 세트지 "${setName}" 삽입 완료`);
+  }, isOnLanding ? 450 : 50);
 }
 
 // 찜한 콘텐츠 삽입
@@ -19928,18 +20233,51 @@ function confirmTmpl(tmplArg){
 
   if(selectedTmplIsOcr){ T('📷 OCR 기능 실행'); }
   else {
-    insertBlock('question');
-    // blockAddBelow로 열린 경우: 새 블록을 지정 위치로 이동
-    if(window._insertAfterBlock){
-      const slide = document.getElementById('slide1');
-      const allBlocks = [...slide.querySelectorAll('.cb')];
-      const newBlock = allBlocks[allBlocks.length - 1];
-      const afterBlock = window._insertAfterBlock;
-      if(newBlock && afterBlock && newBlock !== afterBlock){
-        slide.insertBefore(newBlock, afterBlock.nextSibling);
-        selBlock(newBlock);
+    // [UPDATED 2026-04] 고급모드 빈 템플릿 삽입을 심플모드와 동일한 HTML로 통일
+    //   (_blocksForTemplate이 반환하는 sm-block 구조를 slide1에 주입)
+    const _usedNewPath = (function(){
+      const tmplName = selectedTmplName || '선택형';
+      const tmplObj = (typeof LS_TEMPLATES !== 'undefined')
+        ? LS_TEMPLATES.find(t => t.name === tmplName)
+        : null;
+      const item = tmplObj || { name: tmplName };
+      const html = (typeof window._blocksForTemplate === 'function') ? window._blocksForTemplate(item) : '';
+      if(!html) return false;
+      if(typeof window.cbInsertHtmlBlocks === 'function'){
+        window.cbInsertHtmlBlocks(html);
+        // blockAddBelow로 열린 경우: 새 블록을 지정 위치로 이동
+        if(window._insertAfterBlock){
+          const slide = document.getElementById('slide1');
+          const allBlocks = [...slide.querySelectorAll('.sm-block')];
+          // 마지막에 추가된 발문 블록(문항 블록) — sm-block 중 title이 아닌 것의 마지막
+          let newBlock = null;
+          for(let i = allBlocks.length - 1; i >= 0; i--){
+            if(!allBlocks[i].dataset.isTitle){ newBlock = allBlocks[i]; break; }
+          }
+          const afterBlock = window._insertAfterBlock;
+          if(newBlock && afterBlock && newBlock !== afterBlock){
+            slide.insertBefore(newBlock, afterBlock.nextSibling);
+          }
+          window._insertAfterBlock = null;
+        }
+        return true;
       }
-      window._insertAfterBlock = null;
+      return false;
+    })();
+    if(!_usedNewPath){
+      // 폴백 — 기존 insertBlock 경로
+      insertBlock('question');
+      if(window._insertAfterBlock){
+        const slide = document.getElementById('slide1');
+        const allBlocks = [...slide.querySelectorAll('.cb')];
+        const newBlock = allBlocks[allBlocks.length - 1];
+        const afterBlock = window._insertAfterBlock;
+        if(newBlock && afterBlock && newBlock !== afterBlock){
+          slide.insertBefore(newBlock, afterBlock.nextSibling);
+          selBlock(newBlock);
+        }
+        window._insertAfterBlock = null;
+      }
     }
     T(`✅ '${selectedTmplName}' 템플릿 추가됨`);
   }
@@ -25654,7 +25992,15 @@ function _blocksForSetMultiplyFull(name){
 }
 
 function _blocksForTemplate(tmpl){
-  const n = tmpl.name;
+  let n = tmpl.name;
+  // [ADDED 2026-04] 템플릿 이름 별칭 매핑 — 고급모드/심플모드의 templtate 카드가 서로 다른 이름으로
+  //   동일 템플릿을 참조하는 경우가 있어 표준명으로 통일
+  //   예: '서술형' → '서술형 활동'(활동 탭에서 고급모드 카드가 '서술형'으로 전달함)
+  const _ALIAS = {
+    '서술형': '서술형 활동',
+    '연쇄형 활동': '연쇄형',  // 활동 탭의 연쇄형도 동일한 연쇄형 템플릿 사용
+  };
+  if(_ALIAS[n]) n = _ALIAS[n];
 
   // ── 공통 헬퍼 블록 ──
   // 발문 블록: 번호 뱃지 + 발문 텍스트 입력
@@ -25671,6 +26017,18 @@ function _blocksForTemplate(tmpl){
     </div>`;
   }
 
+  // [ADDED 2026-04] 그룹 내부용: sm-block 래퍼 없이 발문 컨텐츠만
+  function _qContent(num){
+    const id=bid();
+    return `<div style="display:flex;align-items:flex-start;gap:10px;padding:14px 16px 12px;">
+      <div style="min-width:32px;height:32px;border-radius:7px;background:#4B5691;color:white;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${num}</div>
+      <div id="${id}" class="sm-text-block" contenteditable="true"
+           data-placeholder="발문을 입력합니다."
+           onfocus="smSaveCursor()" onkeyup="smSaveCursor()" onmouseup="smSaveCursor()"
+           style="flex:1;border:none;border-bottom:1px dashed #D0D0D8;border-radius:0;padding:4px 0 10px;font-size:14px;min-height:28px;"></div>
+    </div>`;
+  }
+
   // 힌트/모범답안/해설 등 섹션 블록
   function _sectionBlock(label, ph){
     const id=bid();
@@ -25682,6 +26040,18 @@ function _blocksForTemplate(tmpl){
              onfocus="smTopMediaActivate(this,'${id}')" onkeyup="smSaveCursor()" onmouseup="smSaveCursor()"
              style="background:transparent;border:none;border-bottom:1px dashed #C0C8D8;border-radius:0;padding:2px 0 8px;font-size:12.5px;min-height:22px;"></div>
       </div>
+    </div>`;
+  }
+
+  // [ADDED 2026-04] 그룹 내부용: sm-block 래퍼 없이 섹션 컨텐츠만 (배경만 유지)
+  function _sectionContent(label, ph){
+    const id=bid();
+    return `<div class="sm-qgroup-section" style="background:#EEF0F8;border-radius:10px;margin:8px 14px;padding:10px 16px 6px;">
+      <div style="display:inline-block;background:#4B5691;color:white;border-radius:20px;padding:3px 12px;font-size:10.5px;font-weight:700;margin-bottom:8px;">${label}</div>
+      <div id="${id}" class="sm-text-block" contenteditable="true"
+           data-placeholder="${ph}" data-label="${label}"
+           onfocus="smTopMediaActivate(this,'${id}')" onkeyup="smSaveCursor()" onmouseup="smSaveCursor()"
+           style="background:transparent;border:none;border-bottom:1px dashed #C0C8D8;border-radius:0;padding:2px 0 8px;font-size:12.5px;min-height:22px;"></div>
     </div>`;
   }
 
@@ -25753,6 +26123,13 @@ function _blocksForTemplate(tmpl){
     </div>`;
   }
 
+  // [ADDED 2026-04] 문항형(선택형/단답형/OX/TF/순서/연결 등) 그룹 — 발문/보기/힌트/해설을
+  //   하나의 묶음 카드(.sm-qgroup)로 감싸서 고급모드처럼 시각적으로 하나의 덩어리로 보이게 함
+  //   내부 섹션은 기존과 동일한 ID/클래스/contenteditable을 유지하여 편집 로직 호환
+  function _questionGroup(innerHtml){
+    return `<div class="sm-block sm-qgroup">${innerHtml}</div>`;
+  }
+
   // ── 각 템플릿 조합 ──
   if(n==='빈 문서'){
     return _titleBlock('제목을 입력하세요')
@@ -25766,20 +26143,35 @@ function _blocksForTemplate(tmpl){
       + _smBlockVarBar('개념2','concept');
 
   } else if(n==='서술형 활동'){
+    // [UPDATED 2026-04] 고급모드 서술형 활동 템플릿과 동일한 구조
+    //   · 발문 + 입력 방식 탭(키보드/손글씨) + 답안 입력 큰 영역(140px min-height) + 우하단 아이콘
+    //   · 힌트 / 모범 답안 / 해설 3개 섹션
+    const answerId = bid();
     return _titleBlock('제목을 입력하세요')
-      + _qBlock(1)
-      + `<div class="sm-block">
-          <div style="display:flex;justify-content:flex-end;gap:8px;padding:4px 16px 8px;">
-            <div style="border:1.5px solid #4B5691;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:700;color:#4B5691;">키보드</div>
-            <div style="border:1px solid #D0D0D0;border-radius:6px;padding:4px 12px;font-size:11px;color:#AAA;">손글씨</div>
-          </div>
-          <div class="sm-essay-wrap" style="padding:0 16px 14px;">
-            <textarea class="sm-essay-area" placeholder="학생 답안 공간" style="min-height:90px;"></textarea>
-          </div>
-        </div>`
-      + _sectionBlock('힌트','힌트를 입력합니다.')
-      + _sectionBlock('모범 답안','모범 답안을 입력합니다.')
-      + _sectionBlock('해설','해설을 입력합니다.')
+      + _questionGroup(
+          _qContent(1)
+          + `<!-- 입력 방식 탭 -->
+            <div style="display:flex;justify-content:flex-end;gap:6px;padding:6px 16px 10px;">
+              <button type="button" style="height:30px;padding:0 14px;border-radius:7px;border:1.5px solid #4B6EF5;background:white;color:#4B6EF5;font-size:11px;font-weight:700;cursor:default;font-family:'Noto Sans KR',sans-serif;">키보드</button>
+              <button type="button" style="height:30px;padding:0 14px;border-radius:7px;border:1.5px solid #E5E7EB;background:white;color:#8A93A8;font-size:11px;cursor:default;font-family:'Noto Sans KR',sans-serif;">손글씨</button>
+              <button type="button" title="수식 추가" style="height:30px;width:30px;border-radius:7px;border:1.5px solid #E5E7EB;background:white;color:#8A93A8;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;" onmouseover="this.style.borderColor='#4B6EF5';this.style.color='#4B6EF5';" onmouseout="this.style.borderColor='#E5E7EB';this.style.color='#8A93A8';">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="5" r="2" fill="currentColor"/><circle cx="12" cy="5" r="2" fill="currentColor"/><circle cx="19" cy="5" r="2" fill="currentColor"/><circle cx="5" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="19" cy="12" r="2" fill="currentColor"/><circle cx="5" cy="19" r="2" fill="currentColor"/><circle cx="12" cy="19" r="2" fill="currentColor"/><circle cx="19" cy="19" r="2" fill="currentColor"/></svg>
+              </button>
+            </div>
+            <!-- 답안 입력 영역 -->
+            <div style="margin:0 16px 14px;background:#F7F8FC;border-radius:10px;border:1.5px solid #E5E7EB;min-height:140px;padding:14px 16px 10px;position:relative;">
+              <div id="${answerId}" class="sm-text-block" contenteditable="true"
+                   data-placeholder="답안을 입력합니다." data-label="답안"
+                   onfocus="smSaveCursor()" onkeyup="smSaveCursor()" onmouseup="smSaveCursor()"
+                   style="outline:none;font-size:13px;line-height:1.8;min-height:100px;color:#1E2340;border:none;padding:0;background:transparent;"></div>
+              <div style="position:absolute;bottom:8px;right:10px;opacity:.3;pointer-events:none;">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M14 14H2M14 2v8l-3 4H2V2h12z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+              </div>
+            </div>`
+          + _sectionContent('힌트','힌트를 입력합니다.')
+          + _sectionContent('모범 답안','모범 답안을 입력합니다.')
+          + _sectionContent('해설','해설을 입력합니다.')
+        )
       + _smBlockVarBar('활동1','activity');
 
   } else if(n==='선택형'){
@@ -25789,65 +26181,138 @@ function _blocksForTemplate(tmpl){
         <input style="flex:1;border:1px dashed #C8C8D0;border-radius:4px;padding:6px 10px;font-size:12.5px;color:#555;font-family:'Noto Sans KR',sans-serif;" placeholder="선택지를 입력합니다.">
       </div>`).join('');
     return _titleBlock('제목을 입력하세요')
-      + _qBlock(1)
-      + `<div class="sm-block" style="padding:10px 16px 14px;">${items}</div>`
-      + _sectionBlock('힌트','힌트를 입력합니다.')
-      + _sectionBlock('해설','해설을 입력합니다.')
+      + _questionGroup(
+          _qContent(1)
+          + `<div style="padding:10px 16px 14px;">${items}</div>`
+          + _sectionContent('힌트','힌트를 입력합니다.')
+          + _sectionContent('해설','해설을 입력합니다.')
+        )
       + _smBlockVarBar('문항1','choice');
 
   } else if(n==='단답형'){
     return _titleBlock('제목을 입력하세요')
-      + _qBlock(1)
-      + `<div class="sm-block" style="padding:14px 16px 18px;">
-          <div style="position:relative;display:inline-block;">
-            <div style="border:1.5px solid #1E2340;border-radius:5px;padding:8px 14px;min-width:160px;font-size:12px;color:#C8C8D0;">
-              <input style="border:none;outline:none;font-size:12.5px;color:#555;font-family:'Noto Sans KR',sans-serif;width:140px;" placeholder="답을 입력합니다.">
-            </div>
-            <div style="position:absolute;top:-9px;right:-9px;width:18px;height:18px;border-radius:50%;background:#1E2340;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;">!</div>
-          </div>
-        </div>`
-      + _sectionBlock('힌트','힌트를 입력합니다.')
-      + _sectionBlock('해설','해설을 입력합니다.')
+      + _questionGroup(
+          _qContent(1)
+          + `<div style="padding:14px 16px 18px;">
+              <div style="position:relative;display:inline-block;">
+                <div style="border:1.5px solid #1E2340;border-radius:5px;padding:8px 14px;min-width:160px;font-size:12px;color:#C8C8D0;">
+                  <input style="border:none;outline:none;font-size:12.5px;color:#555;font-family:'Noto Sans KR',sans-serif;width:140px;" placeholder="답을 입력합니다.">
+                </div>
+                <div style="position:absolute;top:-9px;right:-9px;width:18px;height:18px;border-radius:50%;background:#1E2340;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;">!</div>
+              </div>
+            </div>`
+          + _sectionContent('힌트','힌트를 입력합니다.')
+          + _sectionContent('해설','해설을 입력합니다.')
+        )
       + _smBlockVarBar('문항1','question');
 
   } else if(n==='OX형'){
     return _titleBlock('제목을 입력하세요')
-      + _qBlock(1)
-      + _oxChoiceBlock()
-      + _sectionBlock('힌트','힌트를 입력합니다.')
-      + _sectionBlock('해설','해설을 입력합니다.')
+      + _questionGroup(
+          _qContent(1)
+          + `<div style="display:flex;gap:24px;justify-content:center;padding:20px 0 10px;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+                <div style="font-size:54px;font-weight:100;color:#888;line-height:1;">○</div>
+                <input style="border:1px dashed #C8C8D0;border-radius:4px;padding:6px 10px;font-size:12px;color:#555;width:120px;font-family:'Noto Sans KR',sans-serif;" placeholder="힌트를 입력합니다.">
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+                <div style="font-size:54px;font-weight:900;color:#888;line-height:1;">✕</div>
+                <input style="border:1px dashed #C8C8D0;border-radius:4px;padding:6px 10px;font-size:12px;color:#555;width:120px;font-family:'Noto Sans KR',sans-serif;" placeholder="힌트를 입력합니다.">
+              </div>
+            </div>`
+          + _sectionContent('힌트','힌트를 입력합니다.')
+          + _sectionContent('해설','해설을 입력합니다.')
+        )
       + _smBlockVarBar('문항1','choice');
 
   } else if(n==='TF형'){
     return _titleBlock('제목을 입력하세요')
-      + _qBlock(1)
-      + `<div class="sm-block" style="padding:14px 16px 10px;">${_tfRowBlock()}${_tfRowBlock()}</div>`
-      + _sectionBlock('힌트','힌트를 입력합니다.')
-      + _sectionBlock('해설','해설을 입력합니다.')
+      + _questionGroup(
+          _qContent(1)
+          + `<div style="padding:14px 16px 10px;">${_tfRowBlock()}${_tfRowBlock()}</div>`
+          + _sectionContent('힌트','힌트를 입력합니다.')
+          + _sectionContent('해설','해설을 입력합니다.')
+        )
       + _smBlockVarBar('문항1','choice');
 
   } else if(n==='순서입력형'){
     return _titleBlock('제목을 입력하세요')
-      + _qBlock(1)
-      + `<div class="sm-block" style="padding:14px 16px 10px;">${_seqRowBlock()}</div>`
-      + _sectionBlock('힌트','힌트를 입력합니다.')
-      + _sectionBlock('해설','해설을 입력합니다.')
+      + _questionGroup(
+          _qContent(1)
+          + `<div style="padding:14px 16px 10px;">${_seqRowBlock()}</div>`
+          + _sectionContent('힌트','힌트를 입력합니다.')
+          + _sectionContent('해설','해설을 입력합니다.')
+        )
       + _smBlockVarBar('문항1','choice');
 
   } else if(n==='순서조합형'){
     return _titleBlock('제목을 입력하세요')
-      + _qBlock(1)
-      + _comboCardBlock()
-      + _sectionBlock('힌트','힌트를 입력합니다.')
-      + _sectionBlock('해설','해설을 입력합니다.')
+      + _questionGroup(
+          _qContent(1)
+          + `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 16px 8px;">
+              <div style="display:flex;flex-direction:column;gap:5px;">
+                <input style="border:1px dashed #C8C8D0;border-radius:6px;padding:14px 8px;font-size:11px;color:#C0C8D8;text-align:center;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;" placeholder="선택지를 입력합니다.">
+                <div style="display:flex;align-items:center;justify-content:center;gap:6px;"><span style="color:#4B5691;font-weight:900;font-size:13px;">◄</span><span style="font-size:11px;font-weight:700;color:#555;">선택</span><span style="color:#4B5691;font-weight:900;font-size:13px;">►</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px;">
+                <input style="border:1px dashed #C8C8D0;border-radius:6px;padding:14px 8px;font-size:11px;color:#C0C8D8;text-align:center;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;" placeholder="선택지를 입력합니다.">
+                <div style="display:flex;align-items:center;justify-content:center;gap:6px;"><span style="color:#4B5691;font-weight:900;font-size:13px;">◄</span><span style="font-size:11px;font-weight:700;color:#555;">선택</span><span style="color:#4B5691;font-weight:900;font-size:13px;">►</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px;">
+                <input style="border:1px dashed #C8C8D0;border-radius:6px;padding:14px 8px;font-size:11px;color:#C0C8D8;text-align:center;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;" placeholder="선택지를 입력합니다.">
+                <div style="display:flex;align-items:center;justify-content:center;gap:6px;"><span style="color:#4B5691;font-weight:900;font-size:13px;">◄</span><span style="font-size:11px;font-weight:700;color:#555;">선택</span><span style="color:#4B5691;font-weight:900;font-size:13px;">►</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:5px;">
+                <input style="border:1px dashed #C8C8D0;border-radius:6px;padding:14px 8px;font-size:11px;color:#C0C8D8;text-align:center;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;" placeholder="선택지를 입력합니다.">
+                <div style="display:flex;align-items:center;justify-content:center;gap:6px;"><span style="color:#4B5691;font-weight:900;font-size:13px;">◄</span><span style="font-size:11px;font-weight:700;color:#555;">선택</span><span style="color:#4B5691;font-weight:900;font-size:13px;">►</span></div>
+              </div>
+            </div>`
+          + _sectionContent('힌트','힌트를 입력합니다.')
+          + _sectionContent('해설','해설을 입력합니다.')
+        )
+      + _smBlockVarBar('문항1','choice');
+
+  } else if(n==='연쇄형'){
+    // [ADDED 2026-04] 연쇄형 — 발문 + "하위 콘텐츠 추가" 버튼 + 힌트 + 해설
+    return _titleBlock('제목을 입력하세요')
+      + _questionGroup(
+          _qContent(1)
+          + `<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:18px 16px 22px;cursor:pointer;" onclick="smAddChainChild(this)" onmouseover="this.style.background='#F5F7FF';" onmouseout="this.style.background='';">
+              <span style="font-size:13px;font-weight:700;color:#1E2340;">하위 콘텐츠 추가</span>
+              <div style="width:28px;height:28px;border-radius:7px;border:1.5px solid #4B6EF5;background:#EEF1FF;display:flex;align-items:center;justify-content:center;color:#4B6EF5;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+            <!-- 하위 콘텐츠가 추가될 컨테이너 -->
+            <div class="sm-chain-children" style="padding:0 16px 10px;display:flex;flex-direction:column;gap:10px;"></div>`
+          + _sectionContent('힌트','힌트를 입력합니다.')
+          + _sectionContent('해설','해설을 입력합니다.')
+        )
       + _smBlockVarBar('문항1','choice');
 
   } else if(n==='연결형'){
     return _titleBlock('제목을 입력하세요')
-      + _qBlock(1)
-      + _matchGridBlock()
-      + _sectionBlock('힌트','힌트를 입력합니다.')
-      + _sectionBlock('해설','해설을 입력합니다.')
+      + _questionGroup(
+          _qContent(1)
+          + `<div style="padding:14px 16px 10px;">
+              <div style="display:grid;grid-template-columns:1fr 14px 48px 14px 1fr;align-items:center;gap:4px;margin-bottom:8px;">
+                <input style="border:1px dashed #C8C8D0;border-radius:4px;padding:6px 8px;font-size:11.5px;color:#555;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;" placeholder="선택지를 입력합니다.">
+                <div style="display:flex;justify-content:center;"><div style="width:7px;height:7px;border-radius:50%;background:#888;"></div></div>
+                <div></div>
+                <div style="display:flex;justify-content:center;"><div style="width:7px;height:7px;border-radius:50%;background:#888;"></div></div>
+                <input style="border:1px dashed #C8C8D0;border-radius:4px;padding:6px 8px;font-size:11.5px;color:#555;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;" placeholder="선택지를 입력합니다.">
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 14px 48px 14px 1fr;align-items:center;gap:4px;margin-bottom:8px;">
+                <input style="border:1px dashed #C8C8D0;border-radius:4px;padding:6px 8px;font-size:11.5px;color:#555;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;" placeholder="선택지를 입력합니다.">
+                <div style="display:flex;justify-content:center;"><div style="width:7px;height:7px;border-radius:50%;background:#888;"></div></div>
+                <div></div>
+                <div style="display:flex;justify-content:center;"><div style="width:7px;height:7px;border-radius:50%;background:#888;"></div></div>
+                <input style="border:1px dashed #C8C8D0;border-radius:4px;padding:6px 8px;font-size:11.5px;color:#555;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;" placeholder="선택지를 입력합니다.">
+              </div>
+            </div>`
+          + _sectionContent('힌트','힌트를 입력합니다.')
+          + _sectionContent('해설','해설을 입력합니다.')
+        )
       + _smBlockVarBar('문항1','choice');
 
   } else if(n==='문제추출(OCR)' || n==='문제추출'){
@@ -25897,7 +26362,7 @@ window.smOpen = function(itemInfo){
   // [UPDATED 2026-04] 컴팩트 스타일 — 외부 래퍼 제거, 단일 인라인 버튼 형태
   const tmplBarHtml = (type === 'content' || type === 'set' || type === 'tmpl') ? `
   <div style="padding:10px 0 6px;display:flex;justify-content:center;">
-    <button class="sm-tmpl-rec-card" onclick="smOpenRecommend()" style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px 8px 12px;border:1.5px solid #D6DFFF;background:linear-gradient(135deg,#EEF1FF 0%,#F3EEFF 100%);border-radius:999px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;box-shadow:0 1px 3px rgba(75,110,245,.08);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 3px 10px rgba(75,110,245,.18)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 3px rgba(75,110,245,.08)';">
+    <button class="sm-tmpl-rec-card" onclick="event.stopPropagation();smOpenRecommend();" style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px 8px 12px;border:1.5px solid #D6DFFF;background:linear-gradient(135deg,#EEF1FF 0%,#F3EEFF 100%);border-radius:999px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;box-shadow:0 1px 3px rgba(75,110,245,.08);" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 3px 10px rgba(75,110,245,.18)';" onmouseout="this.style.transform='';this.style.boxShadow='0 1px 3px rgba(75,110,245,.08)';">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" fill="#7C4DFF"/></svg>
       <span style="font-size:12px;font-weight:800;color:#1E2340;letter-spacing:-.2px;">추천 보기</span>
       <span style="font-size:10.5px;font-weight:500;color:#6B7280;">콘텐츠 · 세트지 · 찜</span>
@@ -25960,15 +26425,144 @@ window.smAiBottomOpen = function(){ T('AI 추천 기능을 준비 중입니다!'
 // 기존 openTmplRecommend() 모달을 재사용하되, 삽입 동작이 심플모드 캔버스로
 // 향하도록 컨텍스트 플래그를 세팅.
 window.smOpenRecommend = function(){
+  console.log('[smOpenRecommend] called');
+
+  // 1. 컨텍스트 플래그 초기화
   window._smRecInsertContext = true;
-  // [ADDED 2026-04] 선택 상태 초기화 (새로 열 때마다 깨끗하게)
+  window._cbRecInsertContext = false;
   window._smRecSelected = new Set();
-  if(typeof openTmplRecommend === 'function'){
-    openTmplRecommend();
-  } else {
-    const scr = document.getElementById('tmplRecommendScreen');
-    if(scr) scr.style.display = 'flex';
+
+  // 2. 이전 DOM 잔존물 제거
+  const prevBar = document.getElementById('smRecSelBar');
+  if(prevBar) prevBar.remove();
+  document.querySelectorAll('.sm-rec-card.on').forEach(el => el.classList.remove('on'));
+
+  // 3. AI 로딩 오버레이 강제 제거
+  try { if(typeof hideAiQuickLoading === 'function') hideAiQuickLoading(); } catch(e){}
+  document.querySelectorAll('.ai-quick-loading').forEach(el => el.remove());
+
+  // 4. 모달 찾기
+  const scr = document.getElementById('tmplRecommendScreen');
+  if(!scr){
+    console.error('[smOpenRecommend] #tmplRecommendScreen 요소를 찾을 수 없음!');
+    return;
   }
+  console.log('[smOpenRecommend] 현재 display:', getComputedStyle(scr).display, '/ inline:', scr.style.display);
+  console.log('[smOpenRecommend] 모달 부모:', scr.parentElement && scr.parentElement.tagName, scr.parentElement && scr.parentElement.id);
+
+  // 4-b. ⚠️ 모달을 document.body 마지막 자식으로 이동 — stacking context 최상단 확보
+  //      (심플모드 내부에 잠기거나, 다른 높은 z-index 요소에 가려지는 문제 방지)
+  if(scr.parentElement !== document.body || scr !== document.body.lastElementChild){
+    document.body.appendChild(scr);
+    console.log('[smOpenRecommend] 모달을 body 마지막 자식으로 이동');
+  }
+
+  // 4-c. ⚠️ Artifacts iframe/스크롤 환경 대응 — 페이지 스크롤을 맨 위로 이동
+  //      (position:fixed 요소가 iframe 뷰포트 기준으로 배치되어, 스크롤된 상태에서는
+  //       사용자의 현재 뷰포트 밖에 모달이 그려지는 문제 해결)
+  try {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  } catch(e){
+    window.scrollTo(0, 0);
+  }
+
+  // 5. ⚠️ 전역 style 태그로 강제 — 어떤 CSS도 덮어쓸 수 없는 최강 수단
+  //    (cssText의 !important가 무시되는 브라우저 대비)
+  let forceStyle = document.getElementById('smOpenRecForceStyle');
+  if(!forceStyle){
+    forceStyle = document.createElement('style');
+    forceStyle.id = 'smOpenRecForceStyle';
+    document.head.appendChild(forceStyle);
+  }
+  forceStyle.textContent = `
+    html, body {
+      overflow: visible !important;
+    }
+    #tmplRecommendScreen {
+      display: flex !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 2147483647 !important;
+      background: rgba(15,18,35,.45) !important;
+      backdrop-filter: blur(4px) !important;
+      align-items: center !important;
+      justify-content: center !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      transform: none !important;
+      clip-path: none !important;
+    }
+    #tmplRecommendScreen > * {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+      visibility: visible !important;
+      position: relative !important;
+      z-index: 1 !important;
+    }
+  `;
+
+  // 6. 인라인 style도 동시에 보정
+  scr.removeAttribute('hidden');
+  scr.style.display = 'flex';
+
+  // 7. 내부 팝업 카드 — 애니메이션이 from 상태(opacity:0)에 머무는 문제 해결
+  //    애니메이션을 완전히 제거하고 최종 상태(opacity:1, transform:none)로 고정
+  //    CSS animation이 인라인 style을 덮어쓰므로 반드시 animation:none !important로 차단
+  const innerCard = scr.firstElementChild;
+  if(innerCard){
+    innerCard.style.setProperty('animation', 'none', 'important');
+    innerCard.style.setProperty('opacity', '1', 'important');
+    innerCard.style.setProperty('transform', 'none', 'important');
+    innerCard.style.setProperty('visibility', 'visible', 'important');
+  }
+
+  // 8. 내부 스크롤 초기화
+  const scrollWrap = scr.querySelector('div[style*="overflow-y:auto"]');
+  if(scrollWrap) scrollWrap.scrollTop = 0;
+
+  // 9. 컨텐츠 렌더
+  setTimeout(function(){
+    try {
+      if(typeof openTmplRecommend === 'function'){
+        openTmplRecommend();
+      }
+      console.log('[smOpenRecommend] 최종 computed display:', getComputedStyle(scr).display);
+      // scr 자체의 rect (오버레이 배경)
+      const scrRect = scr.getBoundingClientRect();
+      console.log('[smOpenRecommend] scr rect:', JSON.stringify({top:scrRect.top, left:scrRect.left, width:scrRect.width, height:scrRect.height}));
+      // 뷰포트 크기
+      console.log('[smOpenRecommend] window.innerWidth:', window.innerWidth, '/ innerHeight:', window.innerHeight);
+      console.log('[smOpenRecommend] document.documentElement size:', document.documentElement.clientWidth, 'x', document.documentElement.clientHeight);
+      console.log('[smOpenRecommend] scroll Y:', window.scrollY, '/ X:', window.scrollX);
+      // body 크기
+      console.log('[smOpenRecommend] body rect:', JSON.stringify({width:document.body.getBoundingClientRect().width, height:document.body.getBoundingClientRect().height}));
+      if(innerCard){
+        innerCard.scrollIntoView({ behavior:'instant', block:'center', inline:'center' });
+        const cs = getComputedStyle(innerCard);
+        console.log('[smOpenRecommend] innerCard opacity:', cs.opacity, '/ transform:', cs.transform, '/ visibility:', cs.visibility);
+        const rect = innerCard.getBoundingClientRect();
+        console.log('[smOpenRecommend] innerCard rect:', JSON.stringify({top:rect.top, left:rect.left, width:rect.width, height:rect.height}));
+        console.log('[smOpenRecommend] scr z-index:', getComputedStyle(scr).zIndex);
+        const cx = rect.left + rect.width/2;
+        const cy = rect.top + rect.height/2;
+        const topEl = document.elementFromPoint(cx, cy);
+        console.log('[smOpenRecommend] 모달 중앙 좌표에 있는 요소:', topEl && topEl.tagName, topEl && topEl.id, topEl && topEl.className);
+      }
+    } catch(e){
+      console.error('[smOpenRecommend] openTmplRecommend 에러:', e);
+    }
+  }, 0);
 };
 
 // [ADDED 2026-04] 추천 콘텐츠 카드 선택 토글
@@ -26052,81 +26646,139 @@ window.smRecInsertSelected = function(){
   if(typeof closeTmplRecommend === 'function') closeTmplRecommend();
   window._smRecInsertContext = false;
   window._smRecSelected = new Set();
-  if(typeof showAiQuickLoading === 'function') showAiQuickLoading();
+  // [UPDATED 2026-04] AI 로딩 알럿 제거 — 즉시 일괄 삽입 + 스크롤
+  itemsToInsert.forEach(function(item){
+    smInsertBlockFromRec(mapTmpl(item), item.title || item.name || '');
+  });
   setTimeout(function(){
-    if(typeof hideAiQuickLoading === 'function') hideAiQuickLoading();
-    itemsToInsert.forEach(function(item){
-      smInsertBlockFromRec(mapTmpl(item), item.title || item.name || '');
-    });
-    if(typeof showAiQuickToast === 'function'){
-      showAiQuickToast(total + '개 콘텐츠를 삽입했어요');
-    }
-  }, 700);
+    const first = window._smFirstInsertedRow && window._smFirstInsertedRow.block;
+    if(first) first.scrollIntoView({ behavior:'smooth', block:'center' });
+    if(typeof T === 'function') T('✅ ' + total + '개 콘텐츠를 삽입했어요');
+  }, 100);
 };
 
 // 심플모드 캔버스에 템플릿 블록 1개 삽입 (smQuickAdd와 동일한 시각 구조)
 // - tmplName: '선택형'|'단답형'|'OX형'|'TF형'|'연결형'|'서술형'|'순서입력형'
-// - titleText: 블록 상단 라벨에 넣을 커스텀 제목 (없으면 기본값)
-window.smInsertBlockFromRec = function(tmplName, titleText){
+// - titleText: (사용 안 함 — 상단 라벨 불필요하다는 피드백으로 주입 생략)
+window.smInsertBlockFromRec = function(tmplName, titleText, opts){
   if(typeof window.smQuickAdd !== 'function') return;
   // smQuickAdd가 내부에서 '선택형' 외 템플릿도 처리 가능한 범위 — 안전하게 기본 호출
-  window.smQuickAdd(tmplName || '선택형');
-  // 첫 블록 제목 보강
-  if(titleText){
-    const first = window._smFirstInsertedRow && window._smFirstInsertedRow.block;
-    const label = first && first.querySelector('.sm-block-label');
-    if(label) label.textContent = titleText + ' · ' + (tmplName || '선택형');
-  }
+  window.smQuickAdd(tmplName || '선택형', opts);
+  // [UPDATED 2026-04] titleText가 있어도 상단 라벨에 주입하지 않음 (깔끔한 빈 블록 유지)
 };
 
 // 추천/찜한 콘텐츠 삽입 — 심플모드 전용
+// [UPDATED 2026-04] 빈 템플릿이 아닌 실제 콘텐츠 블록을 삽입 (_blocksForContent 사용)
 window.smInsertRecContent = function(contentId){
   const pool = []
     .concat(typeof lgOfficialContents !== 'undefined' ? lgOfficialContents : [])
     .concat(typeof lgTeacherContents  !== 'undefined' ? lgTeacherContents  : []);
   const item = pool.find(x => x.id === contentId);
   if(!item) return;
-  // 콘텐츠 타입 → 템플릿 매핑
-  const raw = (item.type || '') + ' ' + (item.title || '');
-  let tmpl = '선택형';
-  if(raw.indexOf('서술') >= 0) tmpl = '서술형';
-  else if(raw.indexOf('단답') >= 0) tmpl = '단답형';
-  else if(raw.indexOf('OX') >= 0) tmpl = 'OX형';
-  else if(raw.indexOf('연결') >= 0) tmpl = '연결형';
-  else if(raw.indexOf('순서') >= 0) tmpl = '순서입력형';
+  const name = item.title || item.name || '';
+
   if(typeof closeTmplRecommend === 'function') closeTmplRecommend();
   window._smRecInsertContext = false;
-  if(typeof showAiQuickLoading === 'function') showAiQuickLoading();
   setTimeout(function(){
-    if(typeof hideAiQuickLoading === 'function') hideAiQuickLoading();
-    smInsertBlockFromRec(tmpl, item.title || item.name || '');
-    if(typeof showAiQuickToast === 'function'){
-      showAiQuickToast('"' + (item.title||item.name||'') + '" 삽입 완료');
+    // _blocksForContent가 실제 콘텐츠 HTML을 반환 (선택형 실시계, 단답형 대화형 등)
+    const html = (typeof window._blocksForContent === 'function') ? window._blocksForContent(item) : '';
+    if(html){
+      smInsertHtmlBlocks(html);
+      if(typeof T === 'function') T('✅ "' + name + '" 삽입 완료');
+    } else {
+      // 폴백 — _blocksForContent가 없으면 빈 템플릿이라도 삽입
+      const raw = (item.type || '') + ' ' + name;
+      let tmpl = '선택형';
+      if(raw.indexOf('서술') >= 0) tmpl = '서술형';
+      else if(raw.indexOf('단답') >= 0) tmpl = '단답형';
+      else if(raw.indexOf('OX') >= 0) tmpl = 'OX형';
+      else if(raw.indexOf('연결') >= 0) tmpl = '연결형';
+      else if(raw.indexOf('순서') >= 0) tmpl = '순서입력형';
+      smInsertBlockFromRec(tmpl, name);
+      if(typeof T === 'function') T('✅ "' + name + '" 삽입 완료');
     }
-  }, 700);
+  }, 30);
 };
 
 // 추천/찜한 세트지 삽입 — 심플모드 전용
+// [UPDATED 2026-04] 빈 템플릿이 아닌 실제 세트지 블록 삽입 (_blocksForSet 사용)
 window.smInsertRecSet = function(uidx, sidx){
   const units = (typeof LS_UNITS !== 'undefined') ? LS_UNITS : (window._lsDataSource || []);
-  const s = units[uidx] && units[uidx].sets ? units[uidx].sets[sidx] : null;
+  const u = units[uidx];
+  const s = u && u.sets ? u.sets[sidx] : null;
   if(!s) return;
+  const setName = s.name || '';
+  const unitNum = (u && u.num) ? String(u.num) : '1';
+
   if(typeof closeTmplRecommend === 'function') closeTmplRecommend();
   window._smRecInsertContext = false;
-  if(typeof showAiQuickLoading === 'function') showAiQuickLoading();
-  // 세트지 breakdown에 따라 여러 블록 삽입
-  const breakdown = s.breakdown || { '선택형': 1 };
   setTimeout(function(){
-    if(typeof hideAiQuickLoading === 'function') hideAiQuickLoading();
-    Object.entries(breakdown).forEach(([tmplName, cnt]) => {
-      for(let i = 0; i < (cnt || 0); i++){
-        smInsertBlockFromRec(tmplName, s.name);
-      }
-    });
-    if(typeof showAiQuickToast === 'function'){
-      showAiQuickToast('세트지 "' + s.name + '" 삽입 완료');
+    const html = (typeof window._blocksForSet === 'function') ? window._blocksForSet(s, unitNum) : '';
+    if(html){
+      smInsertHtmlBlocks(html);
+      if(typeof T === 'function') T('✅ 세트지 "' + setName + '" 삽입 완료');
+    } else {
+      // 폴백 — breakdown 기반 빈 템플릿
+      const breakdown = s.breakdown || { '선택형': 1 };
+      const queue = [];
+      Object.entries(breakdown).forEach(([tmplName, cnt]) => {
+        for(let i = 0; i < (cnt || 0); i++) queue.push(tmplName);
+      });
+      queue.forEach(function(tmplName, idx){
+        const isLast = (idx === queue.length - 1);
+        smInsertBlockFromRec(tmplName, setName, { skipSelect: !isLast });
+      });
+      if(typeof T === 'function') T('✅ 세트지 "' + setName + '" 삽입 완료');
     }
-  }, 900);
+  }, 30);
+};
+
+// [ADDED 2026-04] 심플모드 캔버스에 HTML 문자열을 "여러 블록으로" 삽입하는 공통 헬퍼
+//   추천 보기 버튼(.sm-tmpl-rec-card)을 감싸는 컨테이너 앞에 삽입하여
+//   새 블록은 위에 쌓이고 추천 버튼은 항상 맨 아래로 유지됨
+window.smInsertHtmlBlocks = function(html){
+  const canvas = document.getElementById('smCanvas');
+  if(!canvas || !html) return;
+  const recCard = canvas.querySelector('.sm-tmpl-rec-card');
+  const recWrap = recCard ? recCard.parentElement : null;
+  const tmplBarWrap = canvas.querySelector('.tmpl-bar') ? canvas.querySelector('.tmpl-bar').parentElement : null;
+  const insertBefore = recWrap || tmplBarWrap;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  // 첫 번째 삽입 블록을 기억 (스크롤/선택 타겟)
+  let firstBlock = null;
+  let firstRow = null;
+  const inserted = [];
+  while(tmp.firstChild){
+    const node = tmp.firstChild;
+    if(insertBefore) canvas.insertBefore(node, insertBefore);
+    else canvas.appendChild(node);
+    // sm-block인 경우 기억
+    if(node.classList && node.classList.contains('sm-block')){
+      inserted.push(node);
+      if(!firstBlock && !node.dataset.isTitle){
+        firstBlock = node;
+      }
+    }
+  }
+  // AI 버튼/이벤트 재연결 — 기존 smAttachAiButtons 활용
+  if(typeof smAttachAiButtons === 'function'){
+    try { smAttachAiButtons(); } catch(e){}
+  }
+  // 첫 블록 선택 + 스크롤
+  if(firstBlock){
+    // sm-block-row로 감싸진 상태일 것 (smAttachAiButtons 이후)
+    const row = firstBlock.closest('.sm-block-row');
+    window._smFirstInsertedRow = { row: row, block: firstBlock };
+    setTimeout(function(){
+      if(row && typeof smSelectBlock === 'function'){
+        const total = canvas.querySelectorAll('.sm-block-row').length;
+        const aiBtnEl = document.getElementById('smGlobalAiBtn');
+        try { smSelectBlock(row, firstBlock, total, aiBtnEl); } catch(e){}
+      }
+      firstBlock.scrollIntoView({ behavior:'smooth', block:'center' });
+    }, 80);
+  }
 };
 
 // 심플모드 찜한 콘텐츠 삽입
@@ -26142,14 +26794,13 @@ window.smInsertRecLikedContent = function(wishId){
   else if(type.indexOf('순서') >= 0) tmpl = '순서입력형';
   if(typeof closeTmplRecommend === 'function') closeTmplRecommend();
   window._smRecInsertContext = false;
-  if(typeof showAiQuickLoading === 'function') showAiQuickLoading();
+  // [UPDATED 2026-04] AI 로딩 알럿 제거 — 즉시 삽입 + 스크롤
+  smInsertBlockFromRec(tmpl, (info.data && info.data.name) || '');
   setTimeout(function(){
-    if(typeof hideAiQuickLoading === 'function') hideAiQuickLoading();
-    smInsertBlockFromRec(tmpl, (info.data && info.data.name) || '');
-    if(typeof showAiQuickToast === 'function'){
-      showAiQuickToast('"' + ((info.data && info.data.name) || '') + '" 삽입 완료');
-    }
-  }, 700);
+    const first = window._smFirstInsertedRow && window._smFirstInsertedRow.block;
+    if(first) first.scrollIntoView({ behavior:'smooth', block:'center' });
+    if(typeof T === 'function') T('✅ "' + ((info.data && info.data.name) || '') + '" 삽입 완료');
+  }, 100);
 };
 
 // 심플모드 찜한 세트지 삽입
@@ -26188,7 +26839,137 @@ function _cbMapTmplFromItem(item){
   return '선택형';
 }
 
-// 고급모드: 템플릿 이름으로 블록 1개 추가
+// [ADDED 2026-04] 고급모드 캔버스(slide1)에 HTML 문자열을 여러 블록으로 삽입
+//   심플모드의 smInsertHtmlBlocks와 동일한 역할 — slide1의 .add-area 앞에 추가
+//   (_blocksForContent / _blocksForSet이 반환하는 sm-block 기반 HTML을 그대로 활용)
+// [ADDED 2026-04] .cb 블록 공통 컨트롤 바(위/아래/복사/삭제) HTML 생성
+function _cbControlsHtml(){
+  return '<div class="bctrl">'
+    + '<button onclick="event.stopPropagation();blockMoveUp(this)" title="위로">▲</button>'
+    + '<button onclick="event.stopPropagation();blockMoveDown(this)" title="아래로">▼</button>'
+    + '<button onclick="event.stopPropagation();blockAddBelow(this)" title="아래에 콘텐츠 추가">'
+    +   '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+    + '</button>'
+    + '<button onclick="event.stopPropagation();blockCopyBelow(this)" title="복사">'
+    +   '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="1.8"/></svg>'
+    + '</button>'
+    + '<button class="del" onclick="event.stopPropagation();rmBlock(this)" title="삭제">✕</button>'
+    + '</div>';
+}
+
+window.cbInsertHtmlBlocks = function(html){
+  const slide = document.getElementById('slide1');
+  if(!slide || !html) return;
+  const addArea = slide.querySelector('.add-area');
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+
+  // [UPDATED 2026-04] sm-block 각각을 .cb 래퍼로 감싸서 slide1에 삽입
+  //   — .cb의 selBlock/속성패널/편집중 뱃지/블록 카운터 등 모든 기존 시스템과 호환
+  let firstCb = null;
+  const insertedCbs = [];
+  const children = Array.from(tmp.children);
+  children.forEach(function(node){
+    if(node.nodeType !== 1) return;
+    if(node.classList && node.classList.contains('sm-block')){
+      // sm-block을 .cb 컨테이너로 감쌈
+      blkCnt++;
+      const cb = document.createElement('div');
+      cb.className = 'cb cb-sm-wrap';
+      cb.id = 'blk-question' + blkCnt;
+      cb.dataset.type = 'question';
+      cb.dataset.tmpl = node.dataset.tmpl || '선택형';
+      cb.onclick = function(){ selBlock(this); };
+      // 컨트롤 바 + 원본 sm-block 내부 구조
+      cb.innerHTML = _cbControlsHtml();
+      cb.appendChild(node);
+      // 제목 블록이면 별도 플래그
+      if(node.dataset.isTitle) cb.dataset.isTitle = '1';
+      else {
+        insertedCbs.push(cb);
+        if(!firstCb) firstCb = cb;
+      }
+      if(addArea) slide.insertBefore(cb, addArea);
+      else slide.appendChild(cb);
+    } else {
+      // sm-block이 아닌 노드는 그대로
+      if(addArea) slide.insertBefore(node, addArea);
+      else slide.appendChild(node);
+    }
+  });
+
+  // 고급모드 빈 상태 해제
+  if(typeof checkSlideEmpty === 'function'){
+    try { checkSlideEmpty(); } catch(e){}
+  }
+
+  // [UPDATED 2026-04] 첫 블록 자동 선택 — 랜딩→에디터 전환 애니메이션(400ms) 완료 후 실행
+  if(firstCb){
+    setTimeout(function(){
+      document.body.classList.remove('landing-active');
+      if(typeof selBlock === 'function') selBlock(firstCb);
+      firstCb.scrollIntoView({ behavior:'smooth', block:'center' });
+    }, 450);
+  }
+  return insertedCbs.length;
+};
+
+// [ADDED 2026-04] 고급모드 slide1에 삽입된 sm-block 선택 핸들러
+//   .cb용 selBlock과 유사하게: 편집중 뱃지, has-sel 클래스, window.curBlock, 속성패널 표시, 카운터 갱신
+window.cbSelectSmBlock = function(block){
+  if(!block) return;
+  const slide = document.getElementById('slide1');
+  // 기존 선택 상태 제거 — cb 블록과 sm-block 모두
+  slide.querySelectorAll('.cb.sel').forEach(b => {
+    b.classList.remove('sel');
+    b.querySelector('.cb-editing-badge')?.remove();
+  });
+  slide.querySelectorAll('.sm-block.sel').forEach(b => {
+    b.classList.remove('sel');
+    b.querySelector('.cb-editing-badge')?.remove();
+  });
+  // 선택 상태 적용
+  block.classList.add('sel');
+  // "편집 중" 배지 추가
+  const badge = document.createElement('div');
+  badge.className = 'cb-editing-badge';
+  badge.textContent = '편집 중';
+  if(getComputedStyle(block).position === 'static') block.style.position = 'relative';
+  block.appendChild(badge);
+  // slide1에 has-sel — 비선택 블록 흐림 처리
+  slide.classList.add('has-sel');
+  // curBlock 설정 — renderRp가 참조
+  window.curBlock = block;
+  window.curType = block.dataset.type || 'question';
+  if(typeof curBlock !== 'undefined'){ try { curBlock = block; } catch(e){} }
+  if(typeof curType !== 'undefined'){ try { curType = window.curType; } catch(e){} }
+  // 속성 패널 렌더
+  if(typeof showRightPanel === 'function') showRightPanel();
+  if(typeof renderRp === 'function') renderRp();
+  // 상태바
+  const sbSel = document.getElementById('sbSel');
+  if(sbSel) sbSel.textContent = '문제 블록 선택됨';
+  // 우측 상단 블록 카운터
+  if(typeof updateBlockCounter === 'function') updateBlockCounter(block);
+  // AI 컨텍스트 태그
+  if(typeof updateRpCtxTag === 'function'){ try { updateRpCtxTag(); } catch(e){} }
+};
+
+// [UPDATED 2026-04] 고급모드: 추천 아이템을 심플모드와 동일한 실제 콘텐츠 블록으로 삽입
+//   (이전에는 insertQuestionBlock으로 .cb 블록 생성 → 이제 _blocksForContent로 sm-block 기반 실제 콘텐츠)
+function _cbInsertContentItem(item){
+  if(!item) return;
+  const html = (typeof window._blocksForContent === 'function') ? window._blocksForContent(item) : '';
+  if(html){
+    window.cbInsertHtmlBlocks(html);
+  } else {
+    // 폴백 — 빈 템플릿
+    const tmpl = _cbMapTmplFromItem(item);
+    if(typeof confirmTmpl === 'function') confirmTmpl(tmpl);
+  }
+}
+
+// 기존 헬퍼는 하위 호환을 위해 유지 — 빈 템플릿 생성 (템플릿 바에서 직접 호출 등 폴백 경로)
 function _cbInsertBlockByTmpl(tmplName){
   if(typeof confirmTmpl === 'function'){
     confirmTmpl(tmplName || '선택형');
@@ -26209,65 +26990,86 @@ window.cbRecInsertSelected = function(){
   if(typeof closeTmplRecommend === 'function') closeTmplRecommend();
   window._cbRecInsertContext = false;
   window._smRecSelected = new Set();
-  if(typeof showAiQuickLoading === 'function') showAiQuickLoading();
   setTimeout(function(){
-    if(typeof hideAiQuickLoading === 'function') hideAiQuickLoading();
-    itemsToInsert.forEach(function(item){
-      _cbInsertBlockByTmpl(_cbMapTmplFromItem(item));
-    });
-    if(typeof showAiQuickToast === 'function'){
-      showAiQuickToast(total + '개 콘텐츠를 삽입했어요');
-    } else if(typeof T === 'function'){
-      T(total + '개 콘텐츠를 삽입했어요');
-    }
-  }, 700);
+    itemsToInsert.forEach(function(item){ _cbInsertContentItem(item); });
+    if(typeof T === 'function') T('✅ ' + total + '개 콘텐츠를 삽입했어요');
+  }, 30);
 };
 
-// 고급모드 세트지 삽입 (breakdown 순회하여 블록 여러 개 생성)
-window.cbInsertRecSet = function(uidx, sidx){
-  const units = (typeof LS_UNITS !== 'undefined') ? LS_UNITS : (window._lsDataSource || []);
-  const s = units[uidx] && units[uidx].sets ? units[uidx].sets[sidx] : null;
-  if(!s) return;
+// 고급모드 콘텐츠 1건 삽입 (카드 단건 클릭)
+window.cbInsertRecContent = function(contentId){
+  const pool = []
+    .concat(typeof lgOfficialContents !== 'undefined' ? lgOfficialContents : [])
+    .concat(typeof lgTeacherContents  !== 'undefined' ? lgTeacherContents  : []);
+  const item = pool.find(x => x.id === contentId);
+  if(!item) return;
+  const name = item.title || item.name || '';
   if(typeof closeTmplRecommend === 'function') closeTmplRecommend();
   window._cbRecInsertContext = false;
-  if(typeof showAiQuickLoading === 'function') showAiQuickLoading();
-  const breakdown = s.breakdown || { '선택형': 1 };
   setTimeout(function(){
-    if(typeof hideAiQuickLoading === 'function') hideAiQuickLoading();
-    Object.entries(breakdown).forEach(([tmplName, cnt]) => {
-      for(let i = 0; i < (cnt || 0); i++){
-        _cbInsertBlockByTmpl(tmplName);
+    _cbInsertContentItem(item);
+    if(typeof T === 'function') T('✅ "' + name + '" 삽입 완료');
+  }, 30);
+};
+
+// [UPDATED 2026-04] 고급모드 세트지 삽입 — 심플모드와 동일한 _blocksForSet 사용
+window.cbInsertRecSet = function(uidx, sidx){
+  const units = (typeof LS_UNITS !== 'undefined') ? LS_UNITS : (window._lsDataSource || []);
+  const u = units[uidx];
+  const s = u && u.sets ? u.sets[sidx] : null;
+  if(!s) return;
+  const setName = s.name || '';
+  const unitNum = (u && u.num) ? String(u.num) : '1';
+  if(typeof closeTmplRecommend === 'function') closeTmplRecommend();
+  window._cbRecInsertContext = false;
+  setTimeout(function(){
+    let html = '';
+    if(typeof window._blocksForSet === 'function'){
+      try {
+        html = window._blocksForSet(s, unitNum);
+      } catch(e){
+        console.error('[cbInsertRecSet] _blocksForSet failed:', e);
       }
-    });
-    if(typeof showAiQuickToast === 'function'){
-      showAiQuickToast('세트지 "' + s.name + '" 삽입 완료');
-    } else if(typeof T === 'function'){
-      T('세트지 "' + s.name + '" 삽입 완료');
     }
-  }, 900);
+
+    if(html && typeof window.cbInsertHtmlBlocks === 'function'){
+      window.cbInsertHtmlBlocks(html);
+    } else {
+      // 폴백 — _blocksForSetGeneric 사용 (breakdown 구조 있는 레이아웃 HTML)
+      if(typeof window._blocksForSetGeneric === 'function'){
+        const genericHtml = window._blocksForSetGeneric(setName, s.breakdown || {}, s.questionTypes || null, unitNum);
+        if(genericHtml && typeof window.cbInsertHtmlBlocks === 'function'){
+          window.cbInsertHtmlBlocks(genericHtml);
+        }
+      } else {
+        // 최후 폴백 — 빈 템플릿
+        const breakdown = s.breakdown || { '선택형': 1 };
+        Object.entries(breakdown).forEach(([tmplName, cnt]) => {
+          for(let i = 0; i < (cnt || 0); i++) _cbInsertBlockByTmpl(tmplName);
+        });
+      }
+    }
+    if(typeof T === 'function') T('✅ 세트지 "' + setName + '" 삽입 완료');
+  }, 30);
 };
 
 // 고급모드 찜한 콘텐츠 삽입
 window.cbInsertRecLikedContent = function(wishId){
   const info = window._lsWished && window._lsWished.get(wishId);
   if(!info) return;
-  const type = (info.data && info.data.type) || '';
-  let tmpl = '선택형';
-  if(type.indexOf('서술') >= 0) tmpl = '서술형';
-  else if(type.indexOf('단답') >= 0) tmpl = '단답형';
-  else if(type.indexOf('OX') >= 0) tmpl = 'OX형';
-  else if(type.indexOf('연결') >= 0) tmpl = '연결형';
-  else if(type.indexOf('순서') >= 0) tmpl = '순서입력형';
+  const id = info.id || wishId;
+  const pool = []
+    .concat(typeof lgOfficialContents !== 'undefined' ? lgOfficialContents : [])
+    .concat(typeof lgTeacherContents  !== 'undefined' ? lgTeacherContents  : []);
+  const item = pool.find(x => x.id === id) || (info.data ? Object.assign({id:id}, info.data) : null);
+  if(!item) return;
+  const name = item.title || item.name || '';
   if(typeof closeTmplRecommend === 'function') closeTmplRecommend();
   window._cbRecInsertContext = false;
-  if(typeof showAiQuickLoading === 'function') showAiQuickLoading();
   setTimeout(function(){
-    if(typeof hideAiQuickLoading === 'function') hideAiQuickLoading();
-    _cbInsertBlockByTmpl(tmpl);
-    if(typeof showAiQuickToast === 'function'){
-      showAiQuickToast('"' + ((info.data && info.data.name) || '') + '" 삽입 완료');
-    }
-  }, 700);
+    _cbInsertContentItem(item);
+    if(typeof T === 'function') T('✅ "' + name + '" 삽입 완료');
+  }, 30);
 };
 
 // 고급모드 찜한 세트지 삽입
@@ -26277,29 +27079,80 @@ window.cbInsertRecLikedSet = function(wishId){
   cbInsertRecSet(info.uidx, info.sidx);
 };
 
-window.smQuickAdd = function(tmplName){
+window.smQuickAdd = function(tmplName, opts){
+  // [UPDATED 2026-04] opts.skipSelect — 일괄 삽입(세트지 등)에서 개별 선택 스킵
+  // [UPDATED 2026-04] opts.data — {question, choices[], answer, hint, explanation} 데이터 주입
+  opts = opts || {};
+  const data = opts.data || {};
   const canvas = document.getElementById('smCanvas');
   if(!canvas) return;
   const aiBtnEl = document.getElementById('smGlobalAiBtn');
-  // tmpl-bar 래퍼 앞에 삽입
+  // [UPDATED 2026-04] 심플모드: 추천 보기 pill 버튼을 감싸는 컨테이너 앞에 삽입하여
+  //   새로 추가되는 블록은 위에 쌓이고 "추천 보기" 버튼은 항상 맨 아래에 위치하도록 함
+  //   (이전에는 .tmpl-bar만 검색해서 심플모드에서는 찾지 못해 canvas 끝에 append됨)
+  const recCard = canvas.querySelector('.sm-tmpl-rec-card');
+  const recWrap = recCard ? recCard.parentElement : null;  // pill을 감싸는 <div>
   const tmplBarWrap = canvas.querySelector('.tmpl-bar') ? canvas.querySelector('.tmpl-bar').parentElement : null;
+  const insertBefore = recWrap || tmplBarWrap;
   // 빈 블록 생성
   const block = document.createElement('div');
   block.className = 'sm-block sm-var-inserted';
   block.dataset.vartype = 'choice';
   block.dataset.tmpl = tmplName; // ★ 빈 템플릿 감지/카테고리 분류용
-  block.dataset.source = 'template'; // 빈 템플릿 출처 표시
-  block.innerHTML = '<div class="sm-block-label">' + tmplName + ' 문항</div>' +
-    '<div class="sm-text-block" contenteditable="true" data-placeholder="문제를 입력하세요" onkeyup="smSaveCursor()" onmouseup="smSaveCursor()"></div>' +
-    (tmplName==='단답형'||tmplName==='서술형' ? '<div class="sm-short-wrap"><input class="sm-short-input" placeholder="정답을 입력하세요"></div>' :
-    '<div class="sm-block-label">선택지</div><div class="sm-choice-wrap">' +
-    ['①','②','③','④'].map(n=>'<div class="sm-choice-item"><div class="sm-choice-num">'+n+'</div><input class="sm-choice-input" placeholder="선택지 내용을 입력하세요"></div>').join('') +
-    '</div>');
+  block.dataset.source = data.question ? 'recommendation' : 'template'; // 데이터 출처 표시
+
+  // HTML 조립 — opts.data가 있으면 값 채움
+  const qText = data.question || '';
+  const hintText = data.hint || '';
+  const expText = data.explanation || data.solution || '';
+  const answerIdx = (typeof data.answer === 'number') ? data.answer : -1;
+
+  let bodyHtml = '';
+  if(tmplName === '단답형' || tmplName === '서술형' || tmplName === '서술형 활동'){
+    const ans = (Array.isArray(data.choices) && data.choices[0]) || data.answer || '';
+    bodyHtml = '<div class="sm-short-wrap"><input class="sm-short-input" placeholder="정답을 입력하세요"'
+            + (ans ? ' value="' + String(ans).replace(/"/g,'&quot;') + '"' : '')
+            + '></div>';
+  } else {
+    const choices = (Array.isArray(data.choices) && data.choices.length)
+      ? data.choices
+      : ['', '', '', ''];
+    const nums = ['①','②','③','④','⑤'];
+    bodyHtml = '<div class="sm-choice-wrap">' +
+      choices.slice(0,5).map(function(ch, i){
+        const isAns = (answerIdx === i+1 || answerIdx === i);
+        return '<div class="sm-choice-item' + (isAns ? ' is-answer' : '') + '">'
+             +   '<div class="sm-choice-num"' + (isAns ? ' style="background:#4B6EF5;color:white;"' : '') + '>' + nums[i] + '</div>'
+             +   '<input class="sm-choice-input" placeholder="선택지 내용을 입력하세요" value="' + String(ch || '').replace(/"/g,'&quot;') + '">'
+             + '</div>';
+      }).join('') + '</div>';
+  }
+
+  // 힌트/해설 섹션 — 데이터가 있을 때만 노출
+  let extraHtml = '';
+  if(hintText || expText){
+    if(hintText){
+      extraHtml += '<div class="sm-qgroup-section" style="background:#EEF0F8;border-radius:10px;margin:10px 14px 0;padding:10px 16px;">'
+        + '<div style="display:inline-block;background:#4B5691;color:white;border-radius:20px;padding:3px 12px;font-size:10.5px;font-weight:700;margin-bottom:6px;">힌트</div>'
+        + '<div contenteditable="true" style="font-size:12.5px;color:#1E2340;outline:none;border-bottom:1px dashed #C0C8D8;padding:2px 0 6px;min-height:20px;">' + hintText.replace(/</g,'&lt;') + '</div>'
+        + '</div>';
+    }
+    if(expText){
+      extraHtml += '<div class="sm-qgroup-section" style="background:#EEF0F8;border-radius:10px;margin:8px 14px 12px;padding:10px 16px;">'
+        + '<div style="display:inline-block;background:#4B5691;color:white;border-radius:20px;padding:3px 12px;font-size:10.5px;font-weight:700;margin-bottom:6px;">해설</div>'
+        + '<div contenteditable="true" style="font-size:12.5px;color:#1E2340;outline:none;border-bottom:1px dashed #C0C8D8;padding:2px 0 6px;min-height:20px;">' + expText.replace(/</g,'&lt;') + '</div>'
+        + '</div>';
+    }
+  }
+
+  block.innerHTML =
+    '<div class="sm-text-block" contenteditable="true" data-placeholder="문제를 입력하세요" onkeyup="smSaveCursor()" onmouseup="smSaveCursor()">' + qText.replace(/</g,'&lt;') + '</div>' +
+    bodyHtml + extraHtml;
   const row = document.createElement('div');
   row.className = 'sm-block-row';
   row.appendChild(block);
   block.style.opacity = '0'; block.style.transform = 'translateY(8px)';
-  if(tmplBarWrap) canvas.insertBefore(row, tmplBarWrap);
+  if(insertBefore) canvas.insertBefore(row, insertBefore);
   else canvas.appendChild(row);
   setTimeout(function(){ block.style.transition='opacity .25s,transform .25s'; block.style.opacity='1'; block.style.transform=''; }, 20);
   window._smFirstInsertedRow = {row, block};
@@ -26320,7 +27173,7 @@ window.smQuickAdd = function(tmplName){
     block.querySelectorAll('[contenteditable],input,textarea').forEach(el=>el.addEventListener('focus',onSel));
   });
   const first = window._smFirstInsertedRow;
-  if(first && first.row && first.block){
+  if(first && first.row && first.block && !opts.skipSelect){
     setTimeout(function(){ smSelectBlock(first.row, first.block, total, aiBtnEl); first.block.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 80);
   }
 };
@@ -27646,6 +28499,42 @@ window.smSave = function(){
 // 전역 노출 (IIFE 외부에서 접근 가능하도록)
 window._blocksForTemplate = _blocksForTemplate;
 window._titleBlock = _titleBlock;
+// [ADDED 2026-04] 심플모드 추천 삽입 시 실제 콘텐츠 블록을 생성하기 위해 전역 노출
+window._blocksForContent = _blocksForContent;
+window._blocksForSet = _blocksForSet;
+window._blocksForSetGeneric = _blocksForSetGeneric;
+
+// [ADDED 2026-04] 심플모드 연쇄형 — "하위 콘텐츠 추가" 버튼 클릭 핸들러
+window.smAddChainChild = function(btnEl){
+  if(!btnEl) return;
+  // 버튼 바로 뒤의 sm-chain-children 컨테이너 찾기
+  const container = btnEl.nextElementSibling;
+  if(!container || !container.classList.contains('sm-chain-children')) return;
+  // 간단한 하위 발문 블록 하나 추가 (연쇄형의 한 단계)
+  const idx = container.children.length + 1;
+  const childId = 'chain-' + Date.now() + '-' + idx;
+  const childHtml = `
+    <div class="sm-chain-child" style="background:#F7F8FC;border:1.5px solid #E5E7EB;border-radius:10px;padding:12px 14px;position:relative;">
+      <button type="button" onclick="this.closest('.sm-chain-child').remove();" title="삭제"
+              style="position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:5px;border:none;background:transparent;color:#9CA3AF;cursor:pointer;display:flex;align-items:center;justify-content:center;"
+              onmouseover="this.style.background='#FFF0F0';this.style.color='#FF4F6A';"
+              onmouseout="this.style.background='transparent';this.style.color='#9CA3AF';">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div style="display:flex;align-items:flex-start;gap:10px;">
+        <div style="min-width:26px;height:26px;border-radius:6px;background:#8A93A8;color:white;font-size:11.5px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${idx}</div>
+        <div id="${childId}" class="sm-text-block" contenteditable="true"
+             data-placeholder="하위 발문을 입력합니다."
+             style="flex:1;border:none;border-bottom:1px dashed #D0D0D8;border-radius:0;padding:2px 0 6px;font-size:13px;min-height:22px;outline:none;"></div>
+      </div>
+    </div>`;
+  container.insertAdjacentHTML('beforeend', childHtml);
+  // 추가된 요소에 포커스
+  setTimeout(() => {
+    const el = document.getElementById(childId);
+    if(el) el.focus();
+  }, 30);
+};
 
 // ── 랜딩 렌더 함수 전역 노출 ──
 window.LS_UNITS = LS_UNITS;
