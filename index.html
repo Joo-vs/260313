@@ -4042,7 +4042,9 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
   letter-spacing:-.2px;
 }
 .rp-ai-quick-grid{
-  display:grid;grid-template-columns:repeat(3, 1fr);gap:7px;
+  display:grid;grid-template-columns:repeat(3, 1fr);
+  /* [UPDATED 2026-04] 빠른실행 버튼 크기 키우기 — gap도 함께 증가 */
+  gap:9px;
 }
 
 /* ── 미디어 제안 (이미지/영상/오디오) ── */
@@ -4105,21 +4107,24 @@ body:has(.right-panel.resizing) .editor-body{ transition: none !important; }
 }
 .rp-ai-btn{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2px;padding:6px 2px;
+  /* [UPDATED 2026-04] 빠른실행 버튼 크기 키우기 — 너무 작다는 피드백 반영
+     gap 2→4, padding 6/2 → 10/4, min-height 44 → 64 */
+  gap:4px;padding:10px 4px;
   border:1.5px solid #EAECF8;background:#FAFBFF;
-  border-radius:7px;cursor:pointer;transition:all .13s;
+  border-radius:9px;cursor:pointer;transition:all .13s;
   font-family:'Noto Sans KR',sans-serif;
-  min-height:44px;min-width:0;
+  min-height:64px;min-width:0;
 }
 .rp-ai-btn:hover{
   border-color:#4B6EF5;background:#EEF1FF;
   transform:translateY(-1px);
   box-shadow:0 2px 6px rgba(75,110,245,.12);
 }
-.rp-ai-btn-icon{ font-size:12px;line-height:1; }
+/* [UPDATED 2026-04] 아이콘 12 → 18, 라벨 8.5 → 11 */
+.rp-ai-btn-icon{ font-size:18px;line-height:1; }
 .rp-ai-btn-label{
-  font-size:8.5px;font-weight:700;color:#555E75;
-  text-align:center;line-height:1.2;
+  font-size:11px;font-weight:700;color:#555E75;
+  text-align:center;line-height:1.25;
   overflow:hidden;
   display:-webkit-box;
   -webkit-line-clamp:2;
@@ -5612,7 +5617,11 @@ body.save-step2 .save-modal{ width:840px; }
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2l2 6h6l-5 3.5 2 6L12 14l-5 3.5 2-6L4 8h6l2-6z" fill="currentColor"/></svg>
             </span>
             <span class="ls-new-menu-body">
-              <span class="ls-new-menu-title">AI로 생성하기</span>
+              <!-- [UPDATED 2026-04] 심플모드에서는 "AI로 문항생성하기"로 표시
+                   - 두 텍스트를 모두 두고 lsSelectMode가 모드별로 display 토글
+                   - 기본은 심플(메뉴 진입 시 항상 모드 상태에 맞춰 갱신되므로 둘 중 하나만 보임) -->
+              <span class="ls-new-menu-title ls-new-menu-title-simple">AI로 문항생성하기</span>
+              <span class="ls-new-menu-title ls-new-menu-title-advanced" style="display:none;">AI로 생성하기</span>
               <span class="ls-new-menu-desc">유형 및 원하는 내용을 입력하면 AI가 자동 생성</span>
             </span>
             <svg class="ls-new-menu-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -8569,6 +8578,27 @@ body.save-step2 .save-modal{ width:840px; }
   box-sizing:border-box;
   justify-self:stretch;
 }
+
+/* [ADDED 2026-04] 심플모드 빠른실행 팝업의 버튼 크기 키우기
+   — 사용자 피드백: 빠른실행 AI 버튼이 작아 인지/탭하기 어려움
+   — 다른 곳에서 쓰이는 .eqm-grid-btn에 영향이 없도록 #smqmPopup 스코프로 한정 */
+#smqmPopup .eqm-btn-grid{
+  gap:8px !important;
+  padding:12px 14px 14px;
+}
+#smqmPopup .eqm-btn-grid > .eqm-grid-btn{
+  min-height:78px;
+  padding:10px 6px;
+  border-radius:11px;
+  gap:6px;
+}
+#smqmPopup .eqm-btn-grid > .eqm-grid-btn .eqm-grid-icon{
+  font-size:20px;
+}
+#smqmPopup .eqm-btn-grid > .eqm-grid-btn .eqm-grid-label{
+  font-size:11.5px;
+  line-height:1.3;
+}
 .eqm-grid-btn{
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
   padding:8px 4px;border-radius:10px;border:1.5px solid #EAECF8;
@@ -8850,7 +8880,10 @@ body.save-step2 .save-modal{ width:840px; }
 
 <!-- 추천 콘텐츠 화면 (추천 콘텐츠 / 추천 세트지 / 찜한 것) -->
 <div id="tmplRecommendScreen" style="display:none;position:fixed;inset:0;z-index:3100;background:rgba(15,18,35,.45);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeTmplRecommend()">
-  <div style="background:white;border-radius:20px;width:820px;max-width:calc(100vw - 32px);max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.22);overflow:hidden;animation:popupIn .25s cubic-bezier(.34,1.56,.64,1);">
+  <!-- [UPDATED 2026-04] 탭 전환 시 팝업 크기가 콘텐츠 양에 따라 변하던 문제 수정
+       — max-height만 있어 찜한 항목 빈 상태 등에선 팝업이 작아져 보였음
+       — height를 고정값(88vh)으로 지정해 항상 동일 크기 유지, 내용은 내부 그리드 영역에서 스크롤 -->
+  <div style="background:white;border-radius:20px;width:820px;max-width:calc(100vw - 32px);height:88vh;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.22);overflow:hidden;animation:popupIn .25s cubic-bezier(.34,1.56,.64,1);">
     <!-- 헤더 -->
     <div style="padding:22px 28px 0;border-bottom:1px solid #F3F4F6;flex-shrink:0;">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
@@ -9062,14 +9095,13 @@ body.save-step2 .save-modal{ width:840px; }
     </div>
     <div class="save-eval-body">
 
-      <!-- [UPDATED 2026-04] 심플모드와 동일한 구조로 간소화
-           - 평가 구분/평가명 제거
-           - 기간 설정: 프리셋(3/5/7/15/30일) + '설정 안 함' 체크박스 제거 → 날짜만
-           - 타이머: 프리셋(30분/1시간) + '제한 없음' 체크박스 + 힌트 제거 → 시/분 셀렉트만 -->
+      <!-- [UPDATED 2026-04] 라벨/순서 변경
+           - 라벨: "기간 설정" → "평가 기간", "타이머" → "평가 시간"
+           - 순서: 평가 기간 → 평가 시간 → 알림 전송 -->
 
-      <!-- 기간 설정 -->
+      <!-- 평가 기간 -->
       <div class="save-eval-row save-eval-row-align-top">
-        <div class="save-eval-label">기간 설정</div>
+        <div class="save-eval-label">평가 기간</div>
         <div class="save-eval-control">
           <div class="save-eval-date-row">
             <div class="save-eval-date">
@@ -9081,6 +9113,17 @@ body.save-step2 .save-modal{ width:840px; }
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
               <input type="date" id="saveEvalEnd">
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 평가 시간 -->
+      <div class="save-eval-row save-eval-row-align-top">
+        <div class="save-eval-label">평가 시간</div>
+        <div class="save-eval-control">
+          <div class="save-eval-timer-row">
+            <select class="save-eval-sel" id="saveEvalHour"></select>
+            <select class="save-eval-sel" id="saveEvalMin"></select>
           </div>
         </div>
       </div>
@@ -9097,17 +9140,6 @@ body.save-step2 .save-modal{ width:840px; }
             <span class="save-eval-toggle-dot"></span>
             <span class="save-eval-toggle-lbl">OFF</span>
           </button>
-        </div>
-      </div>
-
-      <!-- 타이머 -->
-      <div class="save-eval-row save-eval-row-align-top">
-        <div class="save-eval-label">타이머</div>
-        <div class="save-eval-control">
-          <div class="save-eval-timer-row">
-            <select class="save-eval-sel" id="saveEvalHour"></select>
-            <select class="save-eval-sel" id="saveEvalMin"></select>
-          </div>
         </div>
       </div>
 
@@ -10091,6 +10123,14 @@ window.lsSelectMode = function(mode, clickedBtn){
   document.querySelectorAll('.ls-hero-new-desc-tmpl').forEach(el => {
     el.style.display = (window._lsSelectedMode === 'advanced') ? '' : 'none';
   });
+  // [ADDED 2026-04] "AI로 생성하기" 메뉴 제목 — 심플모드에서는 "AI로 문항생성하기"로 표시
+  const isSimple = (window._lsSelectedMode !== 'advanced');
+  document.querySelectorAll('.ls-new-menu-title-simple').forEach(el => {
+    el.style.display = isSimple ? '' : 'none';
+  });
+  document.querySelectorAll('.ls-new-menu-title-advanced').forEach(el => {
+    el.style.display = isSimple ? 'none' : '';
+  });
 };
 
 // 선택된 모드 getter (기본 'simple')
@@ -10143,6 +10183,14 @@ window.toggleLandingNewMenu = function(btn){
   const isSimple = (typeof lsGetSelectedMode === 'function') && lsGetSelectedMode() === 'simple';
   const tmplBtn = menu.querySelector('button[onclick="landingNewTmpl()"]');
   if(tmplBtn) tmplBtn.style.display = isSimple ? 'none' : '';
+  // [ADDED 2026-04] "AI로 생성하기" 메뉴 제목 — 심플모드에서는 "AI로 문항생성하기"로 표시
+  //   - lsSelectMode에서도 동기화하지만 메뉴 오픈 시점에 한 번 더 적용해 어떤 진입 경로에서도 안전하게 반영
+  menu.querySelectorAll('.ls-new-menu-title-simple').forEach(el => {
+    el.style.display = isSimple ? '' : 'none';
+  });
+  menu.querySelectorAll('.ls-new-menu-title-advanced').forEach(el => {
+    el.style.display = isSimple ? 'none' : '';
+  });
   // 열기
   menu.classList.add('open');
   trigger.classList.add('open');
@@ -10194,6 +10242,16 @@ window._aiCreateState = {
 window.openAiCreatePopup = function(){
   const overlay = document.getElementById('aiCreateOverlay');
   if(!overlay) return;
+
+  // [ADDED 2026-04] 심플모드에서는 팝업 제목을 "AI 문항 생성"으로 표시 (고급모드는 "AI 콘텐츠 생성" 유지)
+  //   매 오픈 시점에 갱신하여 모드 전환 후에도 항상 일치하는 제목이 보이도록 함
+  const _aiTitleEl = document.getElementById('aiCreateTitle');
+  if(_aiTitleEl){
+    const _isSimple = (typeof lsGetSelectedMode === 'function' && lsGetSelectedMode() === 'simple')
+      || (document.body && document.body.classList.contains('simple-active'));
+    _aiTitleEl.textContent = _isSimple ? 'AI 문항 생성' : 'AI 콘텐츠 생성';
+  }
+
   window._aiCreateState = {
     unit: null,
     types: new Set(),
@@ -20430,35 +20488,68 @@ function tmplRecRenderLiked(grid){
     return;
   }
 
-  grid.innerHTML = wishes.map(([wishId, info]) => {
+  // [ADDED 2026-04] 찜한 항목 카드에도 추천 콘텐츠/세트지와 동일한 썸네일 영역 노출
+  //   - 찜 데이터는 LS_UNITS의 contents/sets 항목을 직접 참조하므로
+  //     필드는 thumb(이모지), thumbBg(그라데이션), contType(개념/활동/문항) 사용
+  //   - thumb/thumbBg가 비어 있는 항목은 인덱스 기반 thumbSet 폴백 사용 (추천 세트지와 동일 패턴)
+  //   - contType별 배지 색은 추천 세트지/콘텐츠와 일관된 톤 유지
+  const contTypeAccent = {개념:'#22C98B', 활동:'#7C4DFF', 문항:'#FF4F6A', 평가:'#4B6EF5'};
+  const thumbSet = [
+    { bg:'linear-gradient(135deg,#EEF1FF,#D6DFFF)', emoji:'📚' },
+    { bg:'linear-gradient(135deg,#F3EEFF,#E8DCFF)', emoji:'🎯' },
+    { bg:'linear-gradient(135deg,#E8F5E9,#C8E6C9)', emoji:'🧩' },
+    { bg:'linear-gradient(135deg,#FFF3E0,#FFE0B2)', emoji:'📝' },
+    { bg:'linear-gradient(135deg,#FFF0F3,#FFD6DE)', emoji:'⭐' },
+    { bg:'linear-gradient(135deg,#E1F5FE,#B3E5FC)', emoji:'🔍' },
+  ];
+
+  grid.innerHTML = wishes.map(([wishId, info], idx) => {
     if(!info || !info.kind){
       // 구형 wishId만 저장된 경우 — 안전 스킵
       return '';
     }
     if(info.kind === 'cont'){
       const c = info.data || {};
-      return `<div onclick="tmplRecInsertLikedContent('${wishId}')" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:16px;position:relative;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0'">
-        <button onclick="event.stopPropagation();tmplRecUnfav('${wishId}')" title="찜 해제" style="position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:8px;border:none;background:#FFFBEB;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#FBBF24" stroke="#F59E0B" stroke-width="1.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        </button>
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-          <span style="padding:3px 9px;border-radius:20px;background:#EEF1FF;color:#4B6EF5;font-size:10px;font-weight:800;">${c.type||'콘텐츠'}</span>
+      // LS_UNITS의 thumb/thumbBg 우선, 없으면 인덱스 기반 폴백
+      const fallback = thumbSet[idx % thumbSet.length];
+      const bg    = c.thumbBg || fallback.bg;
+      const emoji = c.thumb   || fallback.emoji;
+      const ctype = c.contType || '콘텐츠';
+      const ac    = contTypeAccent[ctype] || '#4B6EF5';
+      return `<div onclick="tmplRecInsertLikedContent('${wishId}')" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);position:relative;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0'">
+        <!-- 썸네일 영역 (추천 콘텐츠 카드와 동일 스타일) -->
+        <div style="height:130px;background:${bg};display:flex;align-items:center;justify-content:center;position:relative;">
+          <span style="font-size:52px;">${emoji}</span>
+          <span style="position:absolute;top:12px;left:12px;padding:3px 10px;border-radius:20px;background:${ac};color:white;font-size:10px;font-weight:700;">${ctype}</span>
+          <button onclick="event.stopPropagation();tmplRecUnfav('${wishId}')" title="찜 해제" style="position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.92);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);box-shadow:0 1px 4px rgba(0,0,0,.08);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#FBBF24" stroke="#F59E0B" stroke-width="1.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </button>
         </div>
-        <div style="font-size:14px;font-weight:800;color:#1C1F2E;margin-bottom:6px;line-height:1.35;padding-right:28px;">${c.name||'이름 없음'}</div>
-        <div style="font-size:11px;color:#6B7280;">📚 ${info.unitName||''}</div>
+        <div style="padding:14px 16px;">
+          <div style="font-size:14px;font-weight:800;color:#1C1F2E;margin-bottom:6px;line-height:1.35;">${c.name||'이름 없음'}</div>
+          <div style="font-size:11px;color:#6B7280;">📚 ${info.unitName||''}</div>
+        </div>
       </div>`;
     } else {
       // set
       const s = info.data || {};
-      return `<div onclick="tmplRecInsertLikedSet('${wishId}')" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);padding:16px;position:relative;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0'">
-        <button onclick="event.stopPropagation();tmplRecUnfav('${wishId}')" title="찜 해제" style="position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:8px;border:none;background:#FFFBEB;cursor:pointer;display:flex;align-items:center;justify-content:center;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#FBBF24" stroke="#F59E0B" stroke-width="1.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-        </button>
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-          <span style="padding:3px 9px;border-radius:20px;background:#FFF6EF;color:#FF8C42;font-size:10px;font-weight:800;">세트지</span>
+      // 세트지도 thumb/thumbBg 우선, 없으면 인덱스 기반 폴백
+      const fallback = thumbSet[idx % thumbSet.length];
+      const bg    = s.thumbBg || fallback.bg;
+      const emoji = s.thumb   || fallback.emoji;
+      return `<div onclick="tmplRecInsertLikedSet('${wishId}')" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);position:relative;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0'">
+        <!-- 썸네일 영역 (추천 세트지 카드와 동일 스타일) -->
+        <div style="height:130px;background:${bg};display:flex;align-items:center;justify-content:center;position:relative;">
+          <span style="font-size:52px;">${emoji}</span>
+          <span style="position:absolute;top:12px;left:12px;padding:3px 10px;border-radius:20px;background:#FF8C42;color:white;font-size:10px;font-weight:700;">세트지</span>
+          <button onclick="event.stopPropagation();tmplRecUnfav('${wishId}')" title="찜 해제" style="position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.92);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);box-shadow:0 1px 4px rgba(0,0,0,.08);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#FBBF24" stroke="#F59E0B" stroke-width="1.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </button>
         </div>
-        <div style="font-size:14px;font-weight:800;color:#1C1F2E;margin-bottom:6px;line-height:1.35;padding-right:28px;">${s.name||'세트지'}</div>
-        <div style="font-size:11px;color:#6B7280;">📚 ${info.unitName||''}</div>
+        <div style="padding:14px 16px;">
+          <div style="font-size:14px;font-weight:800;color:#1C1F2E;margin-bottom:6px;line-height:1.35;">${s.name||'세트지'}</div>
+          <div style="font-size:11px;color:#6B7280;">📚 ${info.unitName||''}</div>
+        </div>
       </div>`;
     }
   }).filter(Boolean).join('');
@@ -20852,9 +20943,13 @@ function _saveEvalInlineHtml(){
   return `
     <div class="save-eval-inline-title">평가 설정</div>
 
-    <!-- 기간 설정 -->
+    <!-- [UPDATED 2026-04] 라벨/순서 변경
+         - "기간 설정" → "평가 기간", "타이머" → "평가 시간"
+         - 순서: 평가 기간 → 평가 시간 → 알림 전송 -->
+
+    <!-- 평가 기간 -->
     <div class="save-eval-row save-eval-row-align-top">
-      <div class="save-eval-label">기간 설정</div>
+      <div class="save-eval-label">평가 기간</div>
       <div class="save-eval-control">
         <div class="save-eval-preset-row">
           <button type="button" class="save-eval-preset" data-days="3"  onclick="saveEvalSetPreset(3,this)">3일</button>
@@ -20882,24 +20977,9 @@ function _saveEvalInlineHtml(){
       </div>
     </div>
 
-    <!-- 알림 전송 -->
+    <!-- 평가 시간 -->
     <div class="save-eval-row save-eval-row-align-top">
-      <div class="save-eval-label">알림 전송</div>
-      <div class="save-eval-control save-eval-control-flex">
-        <div style="flex:1;">
-          <div class="save-eval-desc">설정 시 학생들에게 응시를 독려하는 시스템 알림이 전송됩니다.</div>
-          <div class="save-eval-desc save-eval-desc-sub">* 응시 시작일 포함 3일 전/후로 매일 1회 응시 예정 알림 및 응시 독려 알림이 전송됩니다.</div>
-        </div>
-        <button type="button" class="save-eval-toggle" id="saveEvalNotify" onclick="saveEvalToggleNotify(this)" role="switch" aria-checked="false">
-          <span class="save-eval-toggle-dot"></span>
-          <span class="save-eval-toggle-lbl">OFF</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- 타이머 -->
-    <div class="save-eval-row save-eval-row-align-top">
-      <div class="save-eval-label">타이머</div>
+      <div class="save-eval-label">평가 시간</div>
       <div class="save-eval-control">
         <div class="save-eval-preset-row">
           <button type="button" class="save-eval-preset" data-min="30" onclick="saveEvalSetTimerPreset(30,this)">30분</button>
@@ -20915,9 +20995,24 @@ function _saveEvalInlineHtml(){
           </label>
         </div>
         <div class="save-eval-hint">
-          * 예) 기간 설정: 2025-01-01 ~ 2025-01-03 / 타이머 : 50분<br>
-          &nbsp;&nbsp;&nbsp;→ 1/1~1/3(3일) 기간 내 응시 가능 + 응시 시작 시, 타이머 50분 제한
+          * 예) 평가 기간: 2025-01-01 ~ 2025-01-03 / 평가 시간 : 50분<br>
+          &nbsp;&nbsp;&nbsp;→ 1/1~1/3(3일) 기간 내 응시 가능 + 응시 시작 시, 평가 시간 50분 제한
         </div>
+      </div>
+    </div>
+
+    <!-- 알림 전송 -->
+    <div class="save-eval-row save-eval-row-align-top">
+      <div class="save-eval-label">알림 전송</div>
+      <div class="save-eval-control save-eval-control-flex">
+        <div style="flex:1;">
+          <div class="save-eval-desc">설정 시 학생들에게 응시를 독려하는 시스템 알림이 전송됩니다.</div>
+          <div class="save-eval-desc save-eval-desc-sub">* 응시 시작일 포함 3일 전/후로 매일 1회 응시 예정 알림 및 응시 독려 알림이 전송됩니다.</div>
+        </div>
+        <button type="button" class="save-eval-toggle" id="saveEvalNotify" onclick="saveEvalToggleNotify(this)" role="switch" aria-checked="false">
+          <span class="save-eval-toggle-dot"></span>
+          <span class="save-eval-toggle-lbl">OFF</span>
+        </button>
       </div>
     </div>
   `;
@@ -20937,9 +21032,13 @@ function _saveEvalInlineHtmlSimple(){
   return `
     <div class="save-eval-inline-title">평가 설정</div>
 
-    <!-- 기간 설정 — 날짜 입력만 (시작일은 오늘 기본값) -->
+    <!-- [UPDATED 2026-04] 라벨/순서 변경
+         - "기간 설정" → "평가 기간", "타이머" → "평가 시간"
+         - 순서: 평가 기간 → 평가 시간 → 알림 전송 -->
+
+    <!-- 평가 기간 — 날짜 입력만 (시작일은 오늘 기본값) -->
     <div class="save-eval-row save-eval-row-align-top">
-      <div class="save-eval-label">기간 설정</div>
+      <div class="save-eval-label">평가 기간</div>
       <div class="save-eval-control">
         <div class="save-eval-date-row">
           <div class="save-eval-date">
@@ -20951,6 +21050,17 @@ function _saveEvalInlineHtmlSimple(){
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             <input type="date" id="saveEvalEnd">
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 평가 시간 — 시/분 셀렉트만 -->
+    <div class="save-eval-row save-eval-row-align-top">
+      <div class="save-eval-label">평가 시간</div>
+      <div class="save-eval-control">
+        <div class="save-eval-timer-row">
+          <select class="save-eval-sel" id="saveEvalHour"></select>
+          <select class="save-eval-sel" id="saveEvalMin"></select>
         </div>
       </div>
     </div>
@@ -20967,17 +21077,6 @@ function _saveEvalInlineHtmlSimple(){
           <span class="save-eval-toggle-dot"></span>
           <span class="save-eval-toggle-lbl">OFF</span>
         </button>
-      </div>
-    </div>
-
-    <!-- 타이머 — 시/분 셀렉트만 -->
-    <div class="save-eval-row save-eval-row-align-top">
-      <div class="save-eval-label">타이머</div>
-      <div class="save-eval-control">
-        <div class="save-eval-timer-row">
-          <select class="save-eval-sel" id="saveEvalHour"></select>
-          <select class="save-eval-sel" id="saveEvalMin"></select>
-        </div>
       </div>
     </div>
   `;
@@ -21135,6 +21234,7 @@ window.smSaveToggleIndiv = function(){
 };
 
 // [ADDED 2026-04] 심플모드 저장 — 개별 배점 리스트 렌더
+// [UPDATED 2026-04] 공통 배점 입력 필드(#smeta-score)가 심플모드에서 제거됨 → defaultVal 폴백 제거
 function _smSaveRenderIndivList(){
   const list = document.getElementById('smSaveIndivList');
   if(!list) return;
@@ -21144,10 +21244,8 @@ function _smSaveRenderIndivList(){
     return;
   }
   const scores = window._smQuestionScores || {};
-  const defaultScore = parseInt(document.getElementById('smeta-score')?.value, 10);
-  const defaultVal = Number.isFinite(defaultScore) && defaultScore > 0 ? defaultScore : '';
   list.innerHTML = blocks.map((b, idx) => {
-    const cur = scores[b.id] != null ? scores[b.id] : defaultVal;
+    const cur = scores[b.id] != null ? scores[b.id] : '';
     const safeTitle = (b.title || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').slice(0, 30) || ('문항 ' + (idx+1));
     return `
       <div class="save-indiv-item" data-block-id="${b.id}">
@@ -21166,7 +21264,7 @@ function _smSaveRenderIndivList(){
 }
 
 // [ADDED 2026-04] 심플모드 저장 — 개별 배점 저장
-// [UPDATED 2026-04] 개별 배점 변경 시 상단 배점 입력값 초기화 (혼동 방지)
+// [UPDATED 2026-04] 심플모드의 공통 배점 입력 필드는 제거됨 — topScoreInp 가드는 고급모드 호환용으로만 유지
 window.smSaveSetIndivScore = function(blockId, val){
   if(!window._smQuestionScores) window._smQuestionScores = {};
   const v = parseInt(val, 10);
@@ -21175,12 +21273,10 @@ window.smSaveSetIndivScore = function(blockId, val){
   } else {
     delete window._smQuestionScores[blockId];
   }
-  // 개별 배점 설정이 시작된 시점 — 상단 공통 배점 입력값 비우기
-  // (이후 새 값 입력 시만 전체 적용 재실행 가능)
+  // (구) 상단 공통 배점 입력값 초기화 — 고급모드에서 #smeta-score가 존재하는 경우만 동작
   const topScoreInp = document.getElementById('smeta-score');
   if(topScoreInp && topScoreInp.value !== ''){
     topScoreInp.value = '';
-    // 평가 설정 인라인 영역 상태 유지 (심플모드는 처음부터 노출이라 토글 불필요)
   }
 };
 
@@ -21278,31 +21374,18 @@ function renderSaveStep(){
             </div>
           </div>
 
-          <!-- 배점 — 입력 시 평가 설정 영역 노출 -->
+          <!-- [UPDATED 2026-04] 심플모드 배점 영역 단순화
+               — 사용자 요청: 공통 배점 입력 필드 / "개별 배점 설정" 토글 버튼 모두 제거
+               — 개별 배점 입력 리스트를 항상 펼쳐진 상태로 노출 -->
           <div class="save-row">
             <div class="save-row-label">배점</div>
-            <div class="save-row-inline" style="flex-wrap:wrap;gap:8px;">
-              <input type="number" class="save-inp" id="smeta-score" min="0" max="100" step="1" placeholder="입력" value=""
-                     oninput="saveValidateStep1(); saveEvalInlineToggle()" onfocus="this.select()"
-                     style="width:100px;text-align:center;">
-              <span style="font-size:12px;color:#6B7280;">점</span>
-              <!-- [ADDED 2026-04] 전체 문항에 동일 배점 적용 버튼 -->
-              <button type="button" class="save-apply-all-btn" onclick="smSaveApplyAllScores()">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                전체 문항 동일 적용
-              </button>
-              <!-- [ADDED 2026-04] 개별 배점 토글 -->
-              <button type="button" class="save-indiv-toggle" id="smSaveIndivToggle" onclick="smSaveToggleIndiv()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" id="smSaveIndivChevron" style="transition:transform .2s;"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                개별 배점 설정
-              </button>
+            <div class="save-row-inline">
+              <span style="font-size:12px;color:#6B7280;">각 문항별로 배점을 입력해 주세요.</span>
             </div>
           </div>
 
-          <!-- [ADDED 2026-04] 개별 배점 설정 영역 — 토글로 노출 -->
-          <div id="smSaveIndivPanel" class="save-indiv-panel" style="display:none;">
-            <div class="save-indiv-panel-title">개별 배점 설정</div>
-            <div class="save-indiv-panel-desc">각 문항에 개별 배점을 입력해 주세요.</div>
+          <!-- [UPDATED 2026-04] 개별 배점 설정 영역 — 항상 노출 (이전엔 토글로 숨김 처리) -->
+          <div id="smSaveIndivPanel" class="save-indiv-panel" style="display:block;">
             <div id="smSaveIndivList" class="save-indiv-list"></div>
           </div>
 
@@ -21422,6 +21505,11 @@ function renderSaveStep(){
       if(evalInline && !evalInline.dataset.initialized){
         evalInline.dataset.initialized = '1';
         if(typeof _saveEvalInlineInitSelects === 'function') _saveEvalInlineInitSelects();
+      }
+      // [ADDED 2026-04] 개별 배점 리스트 자동 렌더 — 토글이 사라지고 패널이 항상 펼쳐진 상태이므로
+      //   1단계 진입 시 곧바로 채워줘야 비어 보이지 않음
+      if(typeof _smSaveRenderIndivList === 'function'){
+        _smSaveRenderIndivList();
       }
     }
 
@@ -21918,8 +22006,19 @@ function saveNextStep(){
   if(saveStep===0){
     // [FIXED 2026-04] 1→2단계 이동 시점에 배점값을 캡처해서 저장
     //   2단계는 body.innerHTML을 새로 그리므로 #smeta-score DOM이 사라짐 — 그 전에 저장 필요
-    const scoreVal = (document.getElementById('smeta-score')?.value || '').trim();
-    const scoreNum = parseInt(scoreVal, 10);
+    // [UPDATED 2026-04] 심플모드는 공통 입력 필드(#smeta-score)가 제거됨
+    //   → 개별 배점 맵(window._smQuestionScores)의 합을 캡처해 동일하게 동작
+    const scoreInpEl = document.getElementById('smeta-score');
+    let scoreNum;
+    if(scoreInpEl){
+      const scoreVal = (scoreInpEl.value || '').trim();
+      scoreNum = parseInt(scoreVal, 10);
+    } else {
+      // 심플모드: 개별 배점 합계
+      const map = window._smQuestionScores || {};
+      const sum = Object.values(map).reduce((a, v) => a + (Number.isFinite(+v) ? +v : 0), 0);
+      scoreNum = sum;
+    }
     window._saveCapturedScore = (Number.isFinite(scoreNum) && scoreNum > 0) ? scoreNum : null;
     saveStep=1; renderSaveStep();
   } else {
