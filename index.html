@@ -1051,6 +1051,168 @@ body.landing-active .editor-body{
 }
 /* [REMOVED 2026-04] 직접 입력 행 CSS 제거 */
 
+/* [ADDED 2026-04] 심플모드 — AI 문항 생성 "총 문항 수" 카드 + 유형별 펼침 트리거 (안 1) */
+.ai-sm-total-section{ margin-bottom:18px; }
+.ai-sm-total-card{
+  background:white;
+  border:1px solid #E5E7F0;
+  border-radius:12px;
+  padding:14px 16px;
+  margin-bottom:10px;
+}
+.ai-sm-total-head{ margin-bottom:10px; }
+.ai-sm-total-title{
+  font-size:13.5px;font-weight:700;color:#1E2340;
+  font-family:'Noto Sans KR',sans-serif;letter-spacing:-.2px;
+  margin-bottom:3px;
+}
+.ai-sm-total-desc{
+  font-size:11.5px;color:#6B7280;
+  font-family:'Noto Sans KR',sans-serif;line-height:1.5;
+}
+.ai-sm-total-row{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.ai-sm-total-unit{
+  font-size:12px;color:#9CA3AF;font-weight:600;
+  margin-left:-2px;
+}
+.ai-sm-total-quick{
+  margin-left:auto;display:flex;gap:5px;
+}
+.ai-sm-total-quick-btn{
+  font-size:11.5px;font-weight:600;
+  padding:5px 11px;
+  border:1px solid #E5E7F0;background:white;color:#6B7280;
+  border-radius:7px;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  transition:all .12s;
+}
+.ai-sm-total-quick-btn:hover{ border-color:#4B6EF5;color:#4B6EF5; }
+.ai-sm-total-quick-btn.on{
+  border-color:#4B6EF5;background:#EEF1FF;color:#4B6EF5;
+}
+
+/* [ADDED 2026-04] 안 A — 읽기 전용 합계 표시 (유형별 입력이 있을 때) */
+.ai-sm-total-row-readonly{
+  display:flex;align-items:baseline;gap:8px;
+  padding:2px 0;
+}
+.ai-sm-total-readonly-num{
+  font-size:22px;font-weight:700;color:#1E2340;
+  font-family:'Noto Sans KR',sans-serif;letter-spacing:-.4px;
+}
+.ai-sm-total-readonly-unit{
+  font-size:13px;color:#6B7280;font-weight:600;
+  margin-right:4px;
+}
+.ai-sm-total-readonly-tag{
+  font-size:11px;color:#4B6EF5;
+  background:#EEF1FF;border:1px solid #DDE3FF;
+  padding:2px 8px;border-radius:10px;font-weight:600;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.ai-sm-total-card.is-readonly .ai-sm-total-desc{
+  color:#9CA3AF;
+}
+
+/* [ADDED 2026-04] 문항 난이도 카드 (심플모드 전용) */
+.ai-sm-difficulty-card{
+  background:white;
+  border:1px solid #E5E7F0;
+  border-radius:12px;
+  padding:14px 16px;
+  margin-bottom:10px;
+}
+.ai-sm-difficulty-row{
+  display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;
+}
+.ai-sm-difficulty-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;
+  padding:12px 8px 10px;
+  border:1.5px solid #E5E7F0;background:#FAFBFF;
+  border-radius:9px;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  transition:all .14s;
+  min-height:74px;
+}
+.ai-sm-difficulty-btn:hover{
+  border-color:#4B6EF5;background:#EEF1FF;
+}
+.ai-sm-difficulty-btn.on{
+  border-color:#4B6EF5;background:#EEF1FF;
+  box-shadow:0 1px 4px rgba(75,110,245,.12);
+}
+.ai-sm-difficulty-dot{
+  width:8px;height:8px;border-radius:50%;
+  margin-bottom:2px;
+}
+.ai-sm-difficulty-label{
+  font-size:14px;font-weight:800;color:#1E2340;
+  letter-spacing:-.2px;
+}
+.ai-sm-difficulty-btn.on .ai-sm-difficulty-label{ color:#4B6EF5; }
+.ai-sm-difficulty-desc{
+  font-size:11px;color:#6B7280;font-weight:500;
+}
+.ai-sm-difficulty-btn.on .ai-sm-difficulty-desc{ color:#4B6EF5; }
+
+.ai-sm-detail-toggle{
+  display:flex;align-items:center;gap:6px;
+  padding:10px 4px 4px;
+  cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  user-select:none;
+  border-top:1px dashed #E5E7F0;
+  margin-top:2px;
+}
+.ai-sm-detail-toggle:hover .ai-sm-detail-toggle-label{ color:#4B6EF5; }
+.ai-sm-detail-chev{
+  color:#9CA3AF;flex-shrink:0;
+  transition:transform .2s;
+}
+.ai-sm-detail-toggle.on .ai-sm-detail-chev{ transform:rotate(180deg);color:#4B6EF5; }
+.ai-sm-detail-toggle-label{
+  font-size:12px;font-weight:600;color:#6B7280;
+  transition:color .12s;
+}
+.ai-sm-detail-toggle-hint{
+  margin-left:auto;
+  font-size:11px;color:#C4C9D4;font-weight:500;
+}
+
+/* [ADDED 2026-04] 안 A — 유형별 펼침 시 상단 총 개수 잠금 상태 */
+.ai-sm-total-card-locked{
+  background:#FAFBFF;
+  border-color:#E0E6FF;
+}
+.ai-sm-total-card-locked .ai-sm-total-title{
+  color:#7C88B7;
+}
+.ai-sm-total-card-locked .ai-sm-total-desc{
+  color:#9CA3AF;
+}
+.ai-sm-total-card-locked .ai-create-stepper{
+  opacity:.5;pointer-events:none;
+  background:#F4F5F9;
+}
+.ai-sm-total-card-locked .ai-create-step-input{
+  color:#4B6EF5;font-weight:700;
+}
+.ai-sm-total-card-locked .ai-sm-total-quick-btn{
+  opacity:.45;pointer-events:none;
+  background:#F4F5F9;color:#9CA3AF;border-color:#E5E7F0;
+}
+.ai-sm-total-auto-badge{
+  display:inline-flex;align-items:center;
+  margin-left:6px;
+  padding:2px 8px;border-radius:10px;
+  background:#EEF1FF;color:#4B6EF5;
+  font-size:10.5px;font-weight:700;
+  letter-spacing:.02em;
+}
+
 /* 구분선 */
 .ai-create-divider{
   display:flex;align-items:center;gap:12px;
@@ -2185,15 +2347,30 @@ body.landing-active .editor-body{
 .sm-choice-item{
   display:flex;align-items:center;gap:10px;
   padding:9px 12px;border-radius:9px;border:1.5px solid #E8E7E2;
-  background:#FAFAF8;transition:border-color .12s;
+  background:#FAFAF8;transition:border-color .12s, background .12s;
+  cursor:pointer;
 }
 .sm-choice-item:focus-within{border-color:#4B6EF5;background:white;}
+/* [ADDED 2026-04] 정답 마킹 — 사용자 요청 */
+.sm-choice-item.correct{
+  background:#FFF0F3;border-color:#FFC8D3;
+}
+.sm-choice-item.correct .sm-choice-num{
+  background:#FF4F6A;color:white;
+}
+.sm-choice-item.correct .sm-choice-input{
+  color:#B8253D;font-weight:700;
+}
 .sm-choice-num{
   width:24px;height:24px;border-radius:7px;
   background:#EEF1FF;color:#4B6EF5;
   font-size:11px;font-weight:800;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:transform .1s;
+  user-select:none;
 }
+.sm-choice-num:hover{ transform:scale(1.08); }
 .sm-choice-num.ox-o{background:#FFF0F2;color:#FF4F6A;width:32px;height:32px;border-radius:50%;font-size:16px;}
 .sm-choice-num.ox-x{background:#EEF1FF;color:#4B6EF5;width:32px;height:32px;border-radius:50%;font-size:16px;}
 .sm-choice-num.tf-t{background:#E8F5E9;color:#2E7D32;width:40px;border-radius:8px;font-size:13px;}
@@ -2203,6 +2380,50 @@ body.landing-active .editor-body{
   font-size:13px;color:#1E2340;font-family:'Noto Sans KR',sans-serif;
 }
 .sm-choice-input::placeholder{color:#C8CDD8;}
+
+/* [ADDED 2026-04] 선택지 레이아웃 변형 — 사용자 요청 (이미지 5종)
+   sm-choice-wrap에 모드 클래스 부여 → 그리드/플렉스 변경
+   - layout-1: 1열 (기본/현재)
+   - layout-2: 2열 그리드
+   - layout-3: 3열 그리드
+   - layout-4: 4열 그리드
+   - layout-5: 5열 그리드 */
+.sm-choice-wrap.layout-2,
+.sm-choice-wrap.layout-3,
+.sm-choice-wrap.layout-4,
+.sm-choice-wrap.layout-5{
+  display:grid; gap:6px;
+  /* [ADDED 2026-04] 잘림 방지 — 사용자 요청. 콘텐츠 폭에 항상 맞게 그리드 셀이 줄어들도록 */
+  width:100%; box-sizing:border-box;
+}
+.sm-choice-wrap.layout-2{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+.sm-choice-wrap.layout-3{ grid-template-columns:repeat(3, minmax(0, 1fr)); gap:5px; }
+.sm-choice-wrap.layout-4{ grid-template-columns:repeat(4, minmax(0, 1fr)); gap:4px; }
+.sm-choice-wrap.layout-5{ grid-template-columns:repeat(5, minmax(0, 1fr)); gap:4px; }
+.sm-choice-wrap.layout-2 .sm-choice-item,
+.sm-choice-wrap.layout-3 .sm-choice-item,
+.sm-choice-wrap.layout-4 .sm-choice-item,
+.sm-choice-wrap.layout-5 .sm-choice-item{
+  padding:7px 8px;
+  min-width:0;     /* 그리드 셀이 줄어들 수 있게 */
+  overflow:hidden; /* 자식이 셀을 넘지 않도록 */
+}
+.sm-choice-wrap.layout-2 .sm-choice-input,
+.sm-choice-wrap.layout-3 .sm-choice-input,
+.sm-choice-wrap.layout-4 .sm-choice-input,
+.sm-choice-wrap.layout-5 .sm-choice-input{
+  /* input이 부모 셀 폭을 초과하지 않도록 */
+  min-width:0; width:100%;
+  text-overflow:ellipsis;
+}
+.sm-choice-wrap.layout-3 .sm-choice-input{ font-size:12px; }
+.sm-choice-wrap.layout-4 .sm-choice-input,
+.sm-choice-wrap.layout-5 .sm-choice-input{ font-size:11.5px; }
+/* layout-4, layout-5는 번호도 살짝 작게 */
+.sm-choice-wrap.layout-4 .sm-choice-num,
+.sm-choice-wrap.layout-5 .sm-choice-num{
+  width:20px; height:20px; font-size:10px;
+}
 
 /* 순서형 */
 .sm-order-wrap{padding:8px 14px 14px;display:flex;flex-direction:column;gap:6px;}
@@ -2318,6 +2539,85 @@ body.landing-active .editor-body{
 /* OX 퀴즈 식 영역 미디어 바 */
 .sm-oxquiz-media-row{
   padding:0;gap:6px;
+}
+
+/* [ADDED 2026-04] 순서조합형 — 기본은 가변폭, 동일크기 모드는 4열 그리드 */
+.sm-combo-wrap{
+  display:flex; flex-wrap:wrap; gap:8px;
+  align-items:flex-start;
+}
+.sm-combo-card{
+  /* 텍스트 길이에 맞게 콘텐츠 폭으로 늘어남 */
+  flex: 0 0 auto;
+}
+.sm-combo-card .sm-combo-input{
+  /* JS로 width를 직접 설정하므로 인라인 width 그대로 사용 */
+  width: 90px;       /* 초기값 (JS가 즉시 덮어씀) */
+  box-sizing: border-box;
+}
+/* 동일크기 모드 — 4열 그리드 */
+.sm-combo-wrap.sm-combo-equal{
+  display:grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap:8px;
+}
+.sm-combo-wrap.sm-combo-equal .sm-combo-card{
+  width: 100%;
+}
+.sm-combo-wrap.sm-combo-equal .sm-combo-input{
+  width: 100% !important;
+}
+
+/* [ADDED 2026-04] 연결형 빈 템플릿 — 2단/3단 모드
+   주의: 추천 콘텐츠의 .sm-match-wrap (라인 2444)와 충돌 방지를 위해 .sm-match2-* 사용 */
+.sm-match2-wrap{ display:flex; flex-direction:column; gap:8px; position:relative; }
+.sm-match2-row{
+  display:grid; align-items:center; gap:6px;
+}
+.sm-match2-input{
+  border:1px dashed #C8C8D0; border-radius:4px; padding:6px 8px;
+  font-size:11.5px; color:#555;
+  font-family:'Noto Sans KR', sans-serif;
+  width:100%; box-sizing:border-box;
+  min-width:0;
+}
+.sm-match2-dot{
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  cursor:pointer;
+  width:18px; height:18px;
+  /* hit area를 시각적 크기보다 넓게 — 드래그 정확도 향상 */
+  position:relative;
+  transition:transform .12s;
+}
+.sm-match2-dot::before{
+  /* 클릭/드래그 hit area 확장 */
+  content:'';
+  position:absolute;
+  inset:-6px;
+}
+.sm-match2-dot:hover{ transform:scale(1.2); }
+.sm-match2-dot > span{
+  display:inline-block;
+  width:9px; height:9px; border-radius:50%; background:#888;
+  transition:background .12s, transform .12s;
+  pointer-events:none;
+}
+.sm-match2-dot.sm-match2-dot-active > span,
+.sm-match2-dot.sm-match2-dot-hover > span{
+  background:#4B6EF5; transform:scale(1.4);
+}
+.sm-match2-dot.sm-match2-dot-connected > span{
+  background:#4B6EF5;
+}
+.sm-match2-gap{ /* 가운데 빈 공간 */ }
+/* 2단: input - dot - gap - dot - input */
+.sm-match2-cols-2 .sm-match2-row{
+  grid-template-columns: 1fr 18px minmax(40px, 1fr) 18px 1fr;
+}
+/* 3단: input - dot - gap - dot - input - dot - gap - dot - input */
+.sm-match2-cols-3 .sm-match2-row{
+  grid-template-columns: 1fr 18px minmax(20px, .6fr) 18px 1fr 18px minmax(20px, .6fr) 18px 1fr;
 }
 
 /* OX 퀴즈 편집 블록 */
@@ -6091,6 +6391,77 @@ body.save-step2 .save-modal{ width:840px; }
       <div class="ai-create-section">
         <div class="ai-create-section-title">단원</div>
         <div class="ai-create-chips" id="aiCreateUnits"></div>
+      </div>
+
+      <!-- [ADDED 2026-04] 심플모드 — 총 문항 수 입력 (기본 노출) -->
+      <!--   안 1: 단원 다음 기본은 "총 개수"만 보여주고, 유형별 정밀 조정은 접힘 영역으로 제공 -->
+      <!--   동기화 정책 (안 A · 표시만): 유형별을 펼치고 1개라도 입력하면
+              상단은 "읽기 전용 합계"로 전환 — 입력 충돌 원천 차단 -->
+      <div class="ai-create-section ai-sm-total-section" id="aiCreateSmTotalSection" style="display:none;">
+        <div class="ai-sm-total-card" id="aiCreateSmTotalCard">
+          <div class="ai-sm-total-head">
+            <div>
+              <div class="ai-sm-total-title">생성할 문항 수</div>
+              <div class="ai-sm-total-desc">AI가 단원에 적합한 유형으로 자동 구성합니다.</div>
+            </div>
+          </div>
+          <!-- 편집 가능 상태 — 기본 노출 -->
+          <div class="ai-sm-total-row" id="aiCreateSmTotalRowEdit">
+            <div class="ai-create-stepper">
+              <button type="button" class="ai-create-step-btn" onclick="aiCreateStepSmTotal(-1)" aria-label="감소">−</button>
+              <input type="number" class="ai-create-step-input" id="aiCreateSmTotalInput" min="1" max="50" value="5" onchange="aiCreateSetSmTotal(this.value)" onfocus="this.select()" style="width:64px;">
+              <button type="button" class="ai-create-step-btn" onclick="aiCreateStepSmTotal(1)" aria-label="증가">+</button>
+            </div>
+            <span class="ai-sm-total-unit">개</span>
+            <div class="ai-sm-total-quick">
+              <button type="button" class="ai-sm-total-quick-btn" data-quick="3" onclick="aiCreateSetSmTotal(3)">3</button>
+              <button type="button" class="ai-sm-total-quick-btn on" data-quick="5" onclick="aiCreateSetSmTotal(5)">5</button>
+              <button type="button" class="ai-sm-total-quick-btn" data-quick="10" onclick="aiCreateSetSmTotal(10)">10</button>
+            </div>
+          </div>
+          <!-- 읽기 전용 합계 상태 — 유형별 입력 합 > 0 일 때만 표시 -->
+          <div class="ai-sm-total-row-readonly" id="aiCreateSmTotalRowReadonly" style="display:none;">
+            <span class="ai-sm-total-readonly-num" id="aiCreateSmTotalReadonlyNum">0</span>
+            <span class="ai-sm-total-readonly-unit">개</span>
+            <span class="ai-sm-total-readonly-tag">유형별 합계</span>
+          </div>
+        </div>
+
+        <!-- [ADDED 2026-04] 문항 난이도 카드 — 사용자 요청 (심플모드 전용) -->
+        <div class="ai-sm-difficulty-card">
+          <div class="ai-sm-total-head">
+            <div>
+              <div class="ai-sm-total-title">문항 난이도</div>
+              <div class="ai-sm-total-desc">생성될 문항의 난이도 수준을 선택해 주세요.</div>
+            </div>
+          </div>
+          <div class="ai-sm-difficulty-row">
+            <button type="button" class="ai-sm-difficulty-btn" data-level="easy" onclick="aiCreateSetSmDifficulty('easy')">
+              <span class="ai-sm-difficulty-dot" style="background:#22C98B;"></span>
+              <span class="ai-sm-difficulty-label">하</span>
+              <span class="ai-sm-difficulty-desc">기본 개념 이해</span>
+            </button>
+            <button type="button" class="ai-sm-difficulty-btn on" data-level="medium" onclick="aiCreateSetSmDifficulty('medium')">
+              <span class="ai-sm-difficulty-dot" style="background:#4B6EF5;"></span>
+              <span class="ai-sm-difficulty-label">중</span>
+              <span class="ai-sm-difficulty-desc">교과 표준 수준</span>
+            </button>
+            <button type="button" class="ai-sm-difficulty-btn" data-level="hard" onclick="aiCreateSetSmDifficulty('hard')">
+              <span class="ai-sm-difficulty-dot" style="background:#FF4F6A;"></span>
+              <span class="ai-sm-difficulty-label">상</span>
+              <span class="ai-sm-difficulty-desc">응용 · 심화</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 펼침 트리거 — 클릭하면 아래 문항 세부 유형 섹션이 슬라이드 펼쳐짐 -->
+        <div class="ai-sm-detail-toggle" id="aiCreateSmDetailToggle" onclick="aiCreateToggleSmDetail()">
+          <svg class="ai-sm-detail-chev" width="12" height="12" viewBox="0 0 24 24" fill="none">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="ai-sm-detail-toggle-label">유형별로 직접 정하기</span>
+          <!-- [REMOVED 2026-04] 사용자 요청 — "선택형 N개 · 단답형 N개..." 미리보기 텍스트 제거 -->
+        </div>
       </div>
 
       <div class="ai-create-section" id="aiCreateTypeSection">
@@ -10281,6 +10652,14 @@ window.lsSelectMode = function(mode, clickedBtn){
   document.querySelectorAll('.ls-new-menu-title-advanced').forEach(el => {
     el.style.display = isSimple ? 'none' : '';
   });
+  // [ADDED 2026-04] 모드 전환 시 추천 세트지/콘텐츠 영역 즉시 재렌더
+  //   - 심플모드: 개념·활동 카드/필터/세트지 breakdown 숨김
+  //   - 고급모드: 모두 복원
+  //   현재 활성 단원 탭을 다시 클릭해 _renderAll/_renderUnit 재실행
+  const activeTab = document.querySelector('.ls-unit-tab.on');
+  if(activeTab){
+    setTimeout(() => activeTab.click(), 0);
+  }
 };
 
 // 선택된 모드 getter (기본 'simple')
@@ -10501,6 +10880,39 @@ window.aiCreateApplyModeLayout = function(){
     const typeSectionHideEl = document.getElementById('aiCreateTypeSection');
     if(typeSectionHideEl) typeSectionHideEl.style.display = 'none';
 
+    // [ADDED 2026-04] 심플모드 안 1 — "생성할 문항 수" 카드 노출, 유형별 섹션은 기본 접힘
+    const smTotalSec = document.getElementById('aiCreateSmTotalSection');
+    if(smTotalSec) smTotalSec.style.display = 'block';
+    const smDetailToggle = document.getElementById('aiCreateSmDetailToggle');
+    if(smDetailToggle) smDetailToggle.classList.remove('on'); // 접힘 상태로 시작
+    // 총 개수 기본값 5
+    const smTotalInp = document.getElementById('aiCreateSmTotalInput');
+    if(smTotalInp){
+      smTotalInp.value = '5';
+      if(!window._aiCreateState) window._aiCreateState = {};
+      window._aiCreateState.smTotal = 5;
+    }
+    // 빠른 칩 기본 on(5)
+    document.querySelectorAll('.ai-sm-total-quick-btn').forEach(b => {
+      b.classList.toggle('on', b.dataset.quick === '5');
+    });
+    // [ADDED 2026-04] 안 A — 모달 진입 시 편집 가능 상태로 초기화 (이전 세션의 readonly 잔재 제거)
+    const smCard = document.getElementById('aiCreateSmTotalCard');
+    if(smCard) smCard.classList.remove('is-readonly');
+    const smRowEdit = document.getElementById('aiCreateSmTotalRowEdit');
+    if(smRowEdit) smRowEdit.style.display = '';
+    const smRowReadonly = document.getElementById('aiCreateSmTotalRowReadonly');
+    if(smRowReadonly) smRowReadonly.style.display = 'none';
+    // [ADDED 2026-04] 안 A — 팝업 진입 시 잠금 해제 (펼침이 접힘 상태이므로)
+    if(typeof _aiCreateApplySmTotalLock === 'function') _aiCreateApplySmTotalLock(false);
+
+    // [ADDED 2026-04] 문항 난이도 기본값 — 중
+    if(!window._aiCreateState) window._aiCreateState = {};
+    window._aiCreateState.smDifficulty = 'medium';
+    document.querySelectorAll('.ai-sm-difficulty-btn').forEach(b => {
+      b.classList.toggle('on', b.dataset.level === 'medium');
+    });
+
     // 칩 자체는 개별 제어 유지 (혹시 외부에서 참조될 수 있으므로)
     if(conceptChip){
       conceptChip.style.display = 'none';
@@ -10531,8 +10943,8 @@ window.aiCreateApplyModeLayout = function(){
     st.types.delete('concept');
     if(st.activityTypes && typeof st.activityTypes.clear === 'function') st.activityTypes.clear();
 
-    // 문항 세부 유형 섹션만 표시, 활동/개념 섹션 숨김
-    if(qSection) qSection.style.display = 'block';
+    // 문항 세부 유형 섹션 — [UPDATED 2026-04] 심플모드 안 1: 기본 접힘 (펼침 트리거로 열기)
+    if(qSection) qSection.style.display = 'none';
     if(aSection) aSection.style.display = 'none';
 
     // 문항 세부 유형 리스트를 심플모드 전용 순서로 재렌더
@@ -10567,6 +10979,9 @@ window.aiCreateApplyModeLayout = function(){
     // [ADDED 2026-04] 심플모드에서 숨겨졌을 수 있는 콘텐츠 유형 섹션 복원
     const typeSectionShowEl = document.getElementById('aiCreateTypeSection');
     if(typeSectionShowEl) typeSectionShowEl.style.display = '';
+    // [ADDED 2026-04] 심플모드 전용 섹션은 고급모드에서 숨김
+    const smTotalSecHide = document.getElementById('aiCreateSmTotalSection');
+    if(smTotalSecHide) smTotalSecHide.style.display = 'none';
     if(conceptChip){  conceptChip.style.display  = ''; conceptChip.classList.remove('on'); }
     if(activityChip){ activityChip.style.display = ''; activityChip.classList.remove('on'); }
     if(questionChip){
@@ -10711,6 +11126,8 @@ window.aiCreateToggleQType = function(chkbox, qtype){
     map.delete(qtype);
     if(inputEl) inputEl.value = 0;
   }
+  // [ADDED 2026-04] 심플모드 안 1 — 상단 총 개수 동기화
+  if(typeof _aiCreateUpdateSmDetailHint === 'function') _aiCreateUpdateSmDetailHint();
 };
 
 // [ADDED 2026-04] 문항 세부 유형 개수 스테퍼 (+ / -)
@@ -10733,6 +11150,8 @@ window.aiCreateStepQCount = function(qtype, delta){
     if(chk) chk.checked = true;
   }
   if(inp) inp.value = v;
+  // [ADDED 2026-04] 심플모드 안 1 — 상단 총 개수 동기화
+  if(typeof _aiCreateUpdateSmDetailHint === 'function') _aiCreateUpdateSmDetailHint();
 };
 
 // [ADDED 2026-04] 문항 세부 유형 개수 직접 입력
@@ -10756,7 +11175,162 @@ window.aiCreateSetQCount = function(qtype, value){
     if(chk) chk.checked = true;
   }
   if(inp) inp.value = v;
+  // [ADDED 2026-04] 심플모드 펼침 트리거의 힌트 텍스트도 갱신 (유형별로 무엇이 들어있는지 미리보기)
+  if(typeof _aiCreateUpdateSmDetailHint === 'function') _aiCreateUpdateSmDetailHint();
 };
+
+// ══════════════════════════════════════════════════════════
+// [ADDED 2026-04] 심플모드 — 안 1: "총 문항 수" + 유형별 펼침
+// ══════════════════════════════════════════════════════════
+
+// 총 문항 수 변경 — 입력값이나 빠른 칩 모두 이 함수로 통일
+window.aiCreateSetSmTotal = function(value){
+  let v = parseInt(value, 10);
+  if(!Number.isFinite(v) || v < 1) v = 1;
+  if(v > 50) v = 50;
+  const inp = document.getElementById('aiCreateSmTotalInput');
+  if(inp) inp.value = v;
+  if(!window._aiCreateState) window._aiCreateState = {};
+  window._aiCreateState.smTotal = v;
+  // 빠른 칩(3/5/10) on 상태 갱신
+  document.querySelectorAll('.ai-sm-total-quick-btn').forEach(b => {
+    const q = parseInt(b.dataset.quick, 10);
+    b.classList.toggle('on', q === v);
+  });
+};
+
+// 스테퍼 +/-
+window.aiCreateStepSmTotal = function(delta){
+  const cur = parseInt(document.getElementById('aiCreateSmTotalInput')?.value, 10) || 5;
+  window.aiCreateSetSmTotal(cur + delta);
+};
+
+// 펼침 트리거 클릭 — 문항 세부 유형 섹션을 표시/숨김
+window.aiCreateToggleSmDetail = function(){
+  const toggle = document.getElementById('aiCreateSmDetailToggle');
+  const sec    = document.getElementById('aiCreateQTypeSection');
+  if(!toggle || !sec) return;
+  const willShow = !toggle.classList.contains('on');
+  toggle.classList.toggle('on', willShow);
+  sec.style.display = willShow ? 'block' : 'none';
+  // [ADDED 2026-04] 안 A — 펼침 ON 시 상단 총 개수 입력을 읽기 전용으로 잠금
+  //   사용자가 둘 중 한 곳에서만 입력하므로 충돌 가능성 0
+  _aiCreateApplySmTotalLock(willShow);
+  // 펼침 직후엔 hint도 한 번 갱신 (현재 합계 반영)
+  if(typeof _aiCreateUpdateSmDetailHint === 'function') _aiCreateUpdateSmDetailHint();
+};
+
+// [ADDED 2026-04] 문항 난이도 선택 — 사용자 요청 (심플모드 전용)
+//   - level: 'easy' | 'medium' | 'hard'
+//   - state.smDifficulty에 저장 → 생성 시점에 사용
+window.aiCreateSetSmDifficulty = function(level){
+  if(!['easy','medium','hard'].includes(level)) return;
+  if(!window._aiCreateState) window._aiCreateState = {};
+  window._aiCreateState.smDifficulty = level;
+  document.querySelectorAll('.ai-sm-difficulty-btn').forEach(b => {
+    b.classList.toggle('on', b.dataset.level === level);
+  });
+};
+
+// [ADDED 2026-04] 상단 "생성할 문항 수" 입력의 잠금/해제 (안 A)
+//   - lock=true: input readonly, +/- 비활성, 빠른 칩 비활성, "(자동)" 라벨 표시, 회색조
+//   - lock=false: 모든 컨트롤 정상 사용
+function _aiCreateApplySmTotalLock(lock){
+  const card = document.querySelector('#aiCreateSmTotalSection .ai-sm-total-card');
+  if(!card) return;
+  const inp = document.getElementById('aiCreateSmTotalInput');
+  if(inp){
+    if(lock){
+      inp.setAttribute('readonly', 'readonly');
+      inp.setAttribute('aria-readonly', 'true');
+    } else {
+      inp.removeAttribute('readonly');
+      inp.removeAttribute('aria-readonly');
+    }
+  }
+  // +/- 버튼과 빠른 칩 비활성/활성
+  card.querySelectorAll('.ai-create-stepper .ai-create-step-btn, .ai-sm-total-quick-btn').forEach(b => {
+    if(lock){ b.setAttribute('disabled', 'disabled'); }
+    else    { b.removeAttribute('disabled'); }
+  });
+  card.classList.toggle('ai-sm-total-card-locked', !!lock);
+  // "(자동)" 라벨 토글
+  let autoBadge = card.querySelector('.ai-sm-total-auto-badge');
+  if(lock && !autoBadge){
+    autoBadge = document.createElement('span');
+    autoBadge.className = 'ai-sm-total-auto-badge';
+    autoBadge.textContent = '자동';
+    const titleEl = card.querySelector('.ai-sm-total-title');
+    if(titleEl) titleEl.appendChild(autoBadge);
+  } else if(!lock && autoBadge){
+    autoBadge.remove();
+  }
+  // 설명 문구도 모드별로 다르게
+  const descEl = card.querySelector('.ai-sm-total-desc');
+  if(descEl){
+    descEl.textContent = lock
+      ? '아래 유형별 합계가 자동으로 반영됩니다.'
+      : 'AI가 단원에 적합한 유형으로 자동 구성합니다.';
+  }
+}
+window._aiCreateApplySmTotalLock = _aiCreateApplySmTotalLock;
+
+// 펼침 트리거 옆 hint 텍스트 갱신 + 안 A: 편집/읽기전용 모드 전환
+//   - 유형별 입력이 변경될 때마다 호출됨 → 합계 > 0 이면 상단을 읽기 전용 합계로 전환
+//   - 합계 = 0 이면 다시 편집 가능 상태로 복원 (사용자가 정한 smTotal 그대로 유지)
+function _aiCreateUpdateSmDetailHint(){
+  const toggle = document.getElementById('aiCreateSmDetailToggle');
+  const map = (window._aiCreateState && window._aiCreateState.questionTypes) || new Map();
+  // 합계 계산 (유형별 합)
+  let total = 0;
+  const parts = [];
+  map.forEach((v, k) => {
+    const n = parseInt(v, 10) || 0;
+    total += n;
+    if(n > 0) parts.push(`${k} ${n}`);
+  });
+
+  // [UPDATED 2026-04] 안 A · 표시만 — 유형별 합 > 0 일 때 상단을 읽기 전용 합계 모드로 전환
+  const card        = document.getElementById('aiCreateSmTotalCard');
+  const rowEdit     = document.getElementById('aiCreateSmTotalRowEdit');
+  const rowReadonly = document.getElementById('aiCreateSmTotalRowReadonly');
+  const numEl       = document.getElementById('aiCreateSmTotalReadonlyNum');
+  if(total > 0){
+    if(card) card.classList.add('is-readonly');
+    if(rowEdit) rowEdit.style.display = 'none';
+    if(rowReadonly) rowReadonly.style.display = 'flex';
+    if(numEl) numEl.textContent = String(total);
+    // smTotal 상태값도 합계로 동기화 (생성 시점에 사용)
+    if(!window._aiCreateState) window._aiCreateState = {};
+    window._aiCreateState.smTotal = total;
+  } else {
+    if(card) card.classList.remove('is-readonly');
+    if(rowEdit) rowEdit.style.display = '';
+    if(rowReadonly) rowReadonly.style.display = 'none';
+    // 합계 0으로 돌아갔을 때 편집값 복원 — 마지막에 사용자가 정한 smTotal 유지
+    //   (값이 비어있으면 기본 5)
+    const cur = (window._aiCreateState && window._aiCreateState.smTotal) || 5;
+    const totalInp = document.getElementById('aiCreateSmTotalInput');
+    if(totalInp) totalInp.value = String(cur);
+    document.querySelectorAll('.ai-sm-total-quick-btn').forEach(b => {
+      const q = parseInt(b.dataset.quick, 10);
+      b.classList.toggle('on', q === cur);
+    });
+  }
+
+  // hint 텍스트 갱신
+  if(!toggle) return;
+  const hintEl = toggle.querySelector('.ai-sm-detail-toggle-hint');
+  if(!hintEl) return;
+  if(!parts.length){
+    hintEl.textContent = '선택형 N개 · 단답형 N개...';
+    hintEl.style.color = '';
+    return;
+  }
+  hintEl.textContent = parts.slice(0, 3).join(' · ') + (parts.length > 3 ? ` 외 ${parts.length - 3}` : '');
+  hintEl.style.color = '#4B6EF5';
+}
+window._aiCreateUpdateSmDetailHint = _aiCreateUpdateSmDetailHint;
 
 // ══════════════════════════════════════════════════════════
 // [ADDED 2026-04] 활동 세부 유형 핸들러 (고급모드 전용)
@@ -10886,6 +11460,20 @@ window._aiCreateStateToMockSet = function(state){
     if(qTotal > 0) breakdown['문항'] = qTotal;
   }
 
+  // [ADDED 2026-04] 심플모드 안 1 — 유형별 입력이 비어 있으면 smTotal(총 개수)만큼 기본 유형 분배
+  //   - 사용자가 "유형별로 직접 정하기"를 펼치지 않았거나, 총 개수만 정한 경우
+  //   - AI가 자동 구성한다는 컨셉에 맞춰 선택형/단답형 등 다양한 유형으로 적절히 섞어줌
+  const isSimpleMode = (typeof lsGetSelectedMode === 'function') && lsGetSelectedMode() === 'simple';
+  if(isSimpleMode && Object.keys(breakdown).length === 0){
+    const total = Math.max(1, Math.min(50, parseInt(state.smTotal, 10) || 5));
+    // 분배 규칙: 단원 적합 유형으로 라운드로빈 (선택형 비중 가장 높음)
+    const baseTypes = ['선택형', '선택형', '단답형', '연결형', '서술형'];
+    breakdown['문항'] = total;
+    for(let i = 0; i < total; i++){
+      qTypes.push(baseTypes[i % baseTypes.length]);
+    }
+  }
+
   // 최소 1개는 보장 (아무 유형도 없을 때 기본 선택형 1개)
   if(Object.keys(breakdown).length === 0){
     breakdown['문항'] = 1;
@@ -10894,13 +11482,19 @@ window._aiCreateStateToMockSet = function(state){
 
   const unitName = (state.unit && state.unit.name) ? state.unit.name : '';
   const unitNum  = (state.unit && state.unit.num)  ? String(state.unit.num) : '1';
-  const setName = unitName ? (unitName + ' AI 생성 콘텐츠') : 'AI 생성 콘텐츠';
+  const _diffLabel = state.smDifficulty === 'easy' ? '하' : state.smDifficulty === 'hard' ? '상' : '중';
+  // [UPDATED 2026-04] 세트지명에 난이도 표기 (심플모드만 의미가 있으나 무해)
+  const _isSimple = (typeof lsGetSelectedMode === 'function') && lsGetSelectedMode() === 'simple';
+  const setName = unitName
+    ? (unitName + ' AI 생성 콘텐츠' + (_isSimple ? ` (난이도 ${_diffLabel})` : ''))
+    : ('AI 생성 콘텐츠' + (_isSimple ? ` (난이도 ${_diffLabel})` : ''));
 
   return {
     mockSet: {
       name: setName,
       breakdown: breakdown,
       questionTypes: qTypes.length > 0 ? qTypes : null,
+      difficulty: state.smDifficulty || 'medium',
       // previewType 없음 → _blocksForSetGeneric 경로로 가서 레이아웃 있는 HTML 생성
     },
     unitNum: unitNum
@@ -10911,7 +11505,10 @@ window.startAiCreate = function(){
   const state = window._aiCreateState || {};
   const prompt = (document.getElementById('aiCreatePrompt')?.value || '').trim();
   const hasTypes = state.types && state.types.size > 0;
-  if(!state.unit && !hasTypes && !prompt && !state.file){
+  // [UPDATED 2026-04] 심플모드 안 1 — 단원 + 총 문항 수만 있어도 진행 가능
+  const isSimple = (typeof lsGetSelectedMode === 'function') && lsGetSelectedMode() === 'simple';
+  const hasSmTotal = isSimple && state.smTotal && state.smTotal >= 1;
+  if(!state.unit && !hasTypes && !hasSmTotal && !prompt && !state.file){
     T && T('단원·유형을 선택하거나 요청사항을 입력하세요');
     return;
   }
@@ -15012,6 +15609,56 @@ function checkSlideEmpty(){
 }
 
 window.addEventListener('DOMContentLoaded',()=>{
+  // [ADDED 2026-04] 심플모드 — 선택지 번호 클릭 시 정답 토글 (이벤트 위임)
+  //   사용자 요청: 콘텐츠 영역에서 정답 변경
+  //   sm-choice-num 클릭 → smChoiceToggleAnswer 호출
+  //   ox-o/ox-x/tf-t/tf-f 같은 OX/TF용은 제외 (단일 선택지 자체)
+  document.addEventListener('click', function(e){
+    const numEl = e.target.closest && e.target.closest('.sm-choice-num');
+    if(!numEl) return;
+    // OX/TF용 클릭은 정답 토글이 아닌 의미 → 제외
+    if(numEl.classList.contains('ox-o') || numEl.classList.contains('ox-x')) return;
+    if(numEl.classList.contains('tf-t') || numEl.classList.contains('tf-f')) return;
+    // 일반 선택형 ① ② ... — 정답 토글
+    if(typeof window.smChoiceToggleAnswer === 'function'){
+      window.smChoiceToggleAnswer(numEl);
+    }
+  }, true);
+
+  // [ADDED 2026-04] 심플모드 — 단답형/서술형 답 입력 시 속성패널 동기화 (반대 방향)
+  //   사용자 요청: 콘텐츠 영역에서 답을 수정하면 속성패널 정답 입력란에도 즉시 반영
+  document.addEventListener('input', function(e){
+    const inp = e.target;
+    if(!inp || !inp.classList) return;
+    const isShort = inp.classList.contains('sm-short-input');
+    const isEssay = inp.classList.contains('sm-essay-area');
+    const isCombo = inp.classList.contains('sm-combo-input');
+    // [ADDED 2026-04] 순서조합형 가변 폭 — 텍스트 길이에 따라 input width 조정
+    //   field-sizing:content 미지원 브라우저용 fallback
+    if(isCombo){
+      const wrap = inp.closest('.sm-combo-wrap');
+      // 동일크기 모드면 자동 폭 조정 안 함
+      if(!wrap || !wrap.classList.contains('sm-combo-equal')){
+        // 헬퍼 호출 — value/placeholder 길이 기반
+        if(typeof window._smComboResize === 'function') window._smComboResize(inp);
+      } else {
+        inp.style.width = '';
+      }
+    }
+    if(!isShort && !isEssay) return;
+    // 소속 sm-block 또는 .cb 찾아 dataset.answerText에 저장
+    const block = inp.closest('.sm-block') || inp.closest('.cb');
+    if(block) block.dataset.answerText = inp.value || '';
+    // 위임 대상에도 저장
+    const tgt = (typeof _resolveToggleTarget === 'function' && block) ? _resolveToggleTarget(block) : block;
+    if(tgt && tgt !== block) tgt.dataset.answerText = inp.value || '';
+    // 속성패널 정답 입력란 동기화 — 단, curBlock과 일치할 때만
+    if(curBlock === block || curBlock === tgt){
+      document.querySelectorAll('.rp-answer-input').forEach(el => {
+        if(el !== inp) el.value = inp.value || '';
+      });
+    }
+  }, true);
   // 페이지 초기 진입: 랜딩이 기본 표시되므로 body에 landing-active 추가
   // (에디터 UI인 title-bar/toolbar/editor-body를 감춰 하단이 비지 않도록)
   const landing = document.getElementById('landingScreen');
@@ -15022,6 +15669,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   lgInitFilter();
   lgRenderCards('lgCardsOfficial', lgOfficialContents);
   lgRenderCards('lgCardsTeacher', lgTeacherContents);
+  // [ADDED 2026-04] 연결형 점 드래그 연결 핸들러 초기화 (전역 pointer 이벤트 등록)
+  if(typeof window._smMatchDragInit === 'function') window._smMatchDragInit();
   // 내 자료 카운트 초기화
   lgUpdateMyCount();
   rpTab=0;
@@ -15226,27 +15875,153 @@ function selBlock(el){
   curType = el.dataset.type || (isSmBlock ? 'question' : (el.dataset.type || ''));
   window.curBlock = el; window.curType = curType; // 퀵메뉴 카테고리 감지용
 
-  // [ADDED 2026-04] sm-block 선택 시 힌트/해설 영역이 없으면 자동 생성
-  //   사용자 요청: "지금 콘텐츠에 힌트, 해설이 없는데 추가해줘"
-  //   - 힌트/해설은 기본 노출 (속성 패널 토글로 ON/OFF 가능)
-  //   - 모범답안은 기본 미노출 (속성 패널에서 ON 시 생성)
-  //   - 개념/활동/title 행은 제외
-  if(isSmBlock && !el.dataset.isTitle && !el.classList.contains('sm-qgroup')){
-    const vt = el.dataset.vartype;
-    if(vt !== 'concept' && vt !== 'activity'){
-      // 힌트가 없으면 추가 (블록 내부, 본문 다음)
-      if(!el.querySelector(':scope > .sm-extra-hint, :scope > .sm-hint-area') && el.dataset.hintShow !== '0'){
-        const hint = document.createElement('div');
-        hint.className = 'sm-hint-area sm-extra-hint';
-        hint.innerHTML = '<span class="sm-extra-label sm-extra-label-hint">힌트</span><div class="sm-extra-input" contenteditable="true" data-placeholder="힌트를 입력합니다."></div>';
-        el.appendChild(hint);
+  // [ADDED 2026-04] dataset.tmpl 자동 감지 — 추천 콘텐츠 sm-block에 tmpl이 안 박혀 있어도
+  //   마크업 안의 식별 클래스로 유형 추론 (속성 패널이 전용 옵션을 보여주도록)
+  //   [UPDATED 2026-04] 마크업이 명확하면 기존 값 덮어쓰기 (잘못된 tmpl 박혀 있어도 보정)
+  if(el.dataset){
+    const tgtForDetect = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(el) : el;
+    if(tgtForDetect){
+      let detected = '';
+      if(tgtForDetect.querySelector('.sm-match2-wrap'))         detected = '연결형';
+      else if(tgtForDetect.querySelector('.sm-match-wrap'))     detected = '연결형';
+      else if(tgtForDetect.querySelector('.sm-combo-wrap'))     detected = '순서조합형';
+      else if(tgtForDetect.querySelector('.sm-oxquiz-block'))   detected = 'OX형';
+      else if(tgtForDetect.querySelector('.sm-tf-row'))         detected = 'TF형';
+      else if(tgtForDetect.querySelector('.sm-chain-children')) detected = '연쇄형';
+      else if(tgtForDetect.querySelector('.sm-choice-wrap'))    detected = '선택형';
+      else if(tgtForDetect.querySelector('.sm-short-input'))    detected = '단답형';
+      else if(tgtForDetect.querySelector('.sm-essay-area'))     detected = '서술형';
+      if(detected){
+        el.dataset.tmpl = detected;
+        // 위임 대상에도 함께 저장 (cb→sm-block 케이스 대응)
+        if(tgtForDetect !== el && tgtForDetect.dataset) tgtForDetect.dataset.tmpl = detected;
+        // [ADDED 2026-04] curType도 'question' 계열로 보정 — 텍스트 서식 패널 분기 회피
+        curType = 'question';
+        window.curType = 'question';
       }
-      // 해설이 없으면 추가 (항상 마지막)
-      if(!el.querySelector(':scope > .sm-extra-sol, :scope > .sm-sol-area') && el.dataset.solShow !== '0'){
-        const sol = document.createElement('div');
-        sol.className = 'sm-sol-area sm-extra-sol';
-        sol.innerHTML = '<span class="sm-extra-label sm-extra-label-sol">해설</span><div class="sm-extra-input" contenteditable="true" data-placeholder="해설을 입력합니다."></div>';
-        el.appendChild(sol);
+    }
+  }
+
+  // [REMOVED 2026-04] sm-block 선택 시 힌트/해설 자동 추가 로직 제거
+  //   사용자 요청: "기본이 켜져있는게 맞지만, 현재 상태에 따라 반영해줘"
+  //   → 콘텐츠에 힌트/해설이 없으면 토글도 OFF로 보이고, 사용자가 ON 누르면 그제서야 추가됨
+  //   → 새 블록은 생성 시점에 힌트/해설을 넣어두는 방식으로 처리 (smBlockAddBelow 등)
+
+  // [ADDED 2026-04] 선택지 레이아웃 — dataset.choiceFmt에 저장된 값 기반으로 layout-N 클래스 적용
+  //   다른 곳에서 클래스가 누락된 채 삽입된 sm-choice-wrap도 진입 시 일관 적용됨
+  if(el && el.dataset && el.dataset.choiceFmt){
+    const layoutMap = {
+      'numbered-vertical': 'layout-1',
+      'numbered-grid':     'layout-2',
+      'horizontal-row':    'layout-3',
+      'card-row':          'layout-4',
+      'card-stack':        'layout-5'
+    };
+    const layoutCls = layoutMap[el.dataset.choiceFmt] || 'layout-1';
+    const tgt2 = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(el) : el;
+    if(tgt2){
+      tgt2.querySelectorAll('.sm-choice-wrap').forEach(w => {
+        w.classList.remove('layout-1','layout-2','layout-3','layout-4','layout-5');
+        if(layoutCls !== 'layout-1') w.classList.add(layoutCls);
+      });
+    }
+  }
+
+  // [ADDED 2026-04] 연쇄형 모드 — dataset.chainMode 기반으로 UI 토글 (3가지 모드)
+  //   .sm-chain-head-single / .sm-chain-head-plain (발문)
+  //   .sm-chain-add-multi   / .sm-chain-add-tab    (액션)
+  {
+    const tgtChain = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(el) : el;
+    if(tgtChain){
+      const chainMode = (el.dataset && el.dataset.chainMode) || (tgtChain.dataset && tgtChain.dataset.chainMode);
+      const headSingle = tgtChain.querySelector('.sm-chain-head-single');
+      const headPlain  = tgtChain.querySelector('.sm-chain-head-plain');
+      const multiUi    = tgtChain.querySelector('.sm-chain-add-multi');
+      const tabUi      = tgtChain.querySelector('.sm-chain-add-tab');
+      if(headSingle || headPlain || multiUi || tabUi){
+        if(chainMode === 'tab'){
+          if(headSingle) headSingle.style.display = 'none';
+          if(headPlain)  headPlain.style.display  = 'block';
+          if(multiUi)    multiUi.style.display    = 'none';
+          if(tabUi)      tabUi.style.display      = 'flex';
+        } else if(chainMode === 'multi'){
+          if(headSingle) headSingle.style.display = 'none';
+          if(headPlain)  headPlain.style.display  = 'block';
+          if(multiUi)    multiUi.style.display    = 'flex';
+          if(tabUi)      tabUi.style.display      = 'none';
+        } else {
+          // 'single' 또는 미지정(기본)
+          if(headSingle) headSingle.style.display = 'flex';
+          if(headPlain)  headPlain.style.display  = 'none';
+          if(multiUi)    multiUi.style.display    = 'flex';
+          if(tabUi)      tabUi.style.display      = 'none';
+        }
+      }
+
+      // [ADDED 2026-04] OX형 버튼 스타일 — dataset.oxButtonStyle 기반 복원
+      const oxStyle = (el.dataset && el.dataset.oxButtonStyle) || (tgtChain.dataset && tgtChain.dataset.oxButtonStyle);
+      if(oxStyle === 'tf'){
+        const oBtn = tgtChain.querySelector('.sm-oxquiz-btn.answer-o');
+        const xBtn = tgtChain.querySelector('.sm-oxquiz-btn.answer-x');
+        if(oBtn && oBtn.querySelector('span') === null){
+          // 아직 변환 안 된 경우만 변환
+          const ansLabel = oBtn.querySelector('.sm-oxquiz-answer-label');
+          const ansHtml = ansLabel ? ansLabel.outerHTML : '';
+          // 텍스트 노드에 ○ 같은 게 보이면 변환
+          if((oBtn.textContent || '').indexOf('○') >= 0){
+            oBtn.innerHTML = '<span style="font-size:24px;font-weight:900;letter-spacing:1px;">True</span>' + ansHtml;
+            oBtn.style.fontSize = '24px';
+          }
+        }
+        if(xBtn){
+          const ansLabel = xBtn.querySelector('.sm-oxquiz-answer-label');
+          const ansHtml = ansLabel ? ansLabel.outerHTML : '';
+          if((xBtn.textContent || '').indexOf('✕') >= 0 || (xBtn.textContent || '').indexOf('×') >= 0){
+            xBtn.innerHTML = '<span style="font-size:24px;font-weight:900;letter-spacing:1px;">False</span>' + ansHtml;
+            xBtn.style.fontSize = '24px';
+          }
+        }
+      }
+
+      // [ADDED 2026-04] TF형 버튼 위치/스타일 복원 — dataset 기반
+      const tfAlign = (el.dataset && el.dataset.tfButtonAlign) || (tgtChain.dataset && tgtChain.dataset.tfButtonAlign);
+      const tfStyle = (el.dataset && el.dataset.tfButtonStyle) || (tgtChain.dataset && tgtChain.dataset.tfButtonStyle);
+      tgtChain.querySelectorAll('.sm-tf-row').forEach(row => {
+        const buttons = row.querySelector('.sm-tf-buttons');
+        const input   = row.querySelector('.sm-tf-input');
+        if(buttons && input){
+          if(tfAlign === 'right'){
+            if(input.nextSibling !== buttons) row.insertBefore(input, buttons);
+          } else {
+            if(buttons.nextSibling !== input) row.insertBefore(buttons, input);
+          }
+        }
+      });
+      if(tfStyle === 'ox'){
+        tgtChain.querySelectorAll('.sm-tf-btn-t').forEach(b => { b.textContent = '○'; });
+        tgtChain.querySelectorAll('.sm-tf-btn-f').forEach(b => { b.textContent = '✕'; });
+      } else if(tfStyle === 'tf'){
+        tgtChain.querySelectorAll('.sm-tf-btn-t').forEach(b => { b.textContent = 'T'; });
+        tgtChain.querySelectorAll('.sm-tf-btn-f').forEach(b => { b.textContent = 'F'; });
+      }
+
+      // [ADDED 2026-04] 순서조합형 선택지 크기 모드 — dataset.comboSizeMode 기반 복원
+      const comboMode = (el.dataset && el.dataset.comboSizeMode) || (tgtChain.dataset && tgtChain.dataset.comboSizeMode);
+      if(comboMode){
+        tgtChain.querySelectorAll('.sm-combo-wrap').forEach(w => {
+          w.classList.toggle('sm-combo-equal', comboMode === 'equal');
+        });
+      }
+      // [ADDED 2026-04] 진입 시 모든 sm-combo-input 폭 자동 조정 (placeholder/value 길이 반영)
+      if(typeof window._smComboResizeAll === 'function') window._smComboResizeAll(tgtChain);
+
+      // [ADDED 2026-04] 연결형 단 수 복원 — dataset.matchCols 기반 (빈 템플릿 .sm-match2-wrap)
+      const matchCols = (el.dataset && el.dataset.matchCols) || (tgtChain.dataset && tgtChain.dataset.matchCols);
+      if(matchCols){
+        tgtChain.querySelectorAll('.sm-match2-wrap').forEach(w => {
+          w.classList.remove('sm-match2-cols-2', 'sm-match2-cols-3');
+          w.classList.add('sm-match2-cols-' + matchCols);
+        });
       }
     }
   }
@@ -16065,7 +16840,44 @@ function renderRp(){
   if(!b) return;
 
   // 텍스트 블록이면 서식 패널 표시
-  if(curType === 'text'){
+  // [UPDATED 2026-04] 단, sm-block이고 dataset.tmpl이 특정 문항 유형이면 전용 패널이 우선
+  //   (curType이 'text'로 잘못 잡혀도 마크업 기반 dataset.tmpl 우선)
+  // [ADDED 2026-04] selBlock에서 자동감지가 미동작한 경우 대비 — renderRp 시점에도 한 번 더 감지
+  if(window.curBlock && window.curBlock.querySelector){
+    // [UPDATED 2026-04] curBlock이 contenteditable 같은 내부 요소일 수 있어 상위 sm-block/cb까지 탐색
+    let probe = window.curBlock;
+    // 상위로 최대 8단계까지 sm-block 찾기
+    let upProbe = probe;
+    let hops = 0;
+    while(upProbe && hops < 8){
+      if(upProbe.classList && (upProbe.classList.contains('sm-block') || upProbe.classList.contains('cb'))){
+        probe = upProbe;
+        break;
+      }
+      upProbe = upProbe.parentElement;
+      hops++;
+    }
+    let detected = '';
+    if(probe.querySelector && probe.querySelector('.sm-match2-wrap'))         detected = '연결형';
+    else if(probe.querySelector && probe.querySelector('.sm-match-wrap'))     detected = '연결형';
+    else if(probe.querySelector && probe.querySelector('.sm-combo-wrap'))     detected = '순서조합형';
+    else if(probe.querySelector && probe.querySelector('.sm-oxquiz-block'))   detected = 'OX형';
+    else if(probe.querySelector && probe.querySelector('.sm-tf-row'))         detected = 'TF형';
+    else if(probe.querySelector && probe.querySelector('.sm-chain-children')) detected = '연쇄형';
+    else if(probe.querySelector && probe.querySelector('.sm-choice-wrap'))    detected = '선택형';
+    else if(probe.querySelector && probe.querySelector('.sm-short-input'))    detected = '단답형';
+    else if(probe.querySelector && probe.querySelector('.sm-essay-area'))     detected = '서술형';
+    if(detected){
+      // 진짜 curBlock(컨테이너)에 박기 — probe에 이어 window.curBlock에도
+      probe.dataset.tmpl = detected;
+      if(window.curBlock !== probe && window.curBlock.dataset) window.curBlock.dataset.tmpl = detected;
+    }
+  }
+  const _curTmplPeek = (window.curBlock && window.curBlock.dataset && window.curBlock.dataset.tmpl) || '';
+  const _isSpecialTmpl = (_curTmplPeek === '연쇄형' || _curTmplPeek === '연쇄형 활동' || _curTmplPeek === 'OX형' || _curTmplPeek === 'TF형'
+                       || _curTmplPeek === '순서입력형' || _curTmplPeek === '순서조합형' || _curTmplPeek === '연결형'
+                       || _curTmplPeek === '선택형' || _curTmplPeek === '단답형' || _curTmplPeek === '서술형' || _curTmplPeek === '서술형 활동');
+  if(curType === 'text' && !_isSpecialTmpl){
     b.innerHTML = `<div class="attr-wrap">
       <div class="rp-sec"><div class="rp-sec-t">텍스트 서식</div>
         <!-- 폰트 / 크기 -->
@@ -16151,20 +16963,56 @@ function renderRp(){
       answerVal = ['①','②','③','④','⑤'][idx] || '①';
     }
     // [UPDATED 2026-04] sm-block / .cb 모두 지원하도록 영역 감지 보강
+    //   .cb 안에 sm-block이 있으면 sm-block 내부 영역도 검사 (위임 헬퍼 _resolveToggleTarget)
+    //   .sm-qgroup의 .sm-qgroup-section[data-label] 형태도 인식 (빈 템플릿)
     const isSmBlock = curBlock.classList && curBlock.classList.contains('sm-block');
-    const hintArea = isSmBlock
-      ? curBlock.querySelector(':scope > .sm-hint-area')
+    const tgt = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(curBlock) : curBlock;
+    const _findSection = (kind) => {
+      // 1순위: sm-extra-* 또는 sm-*-area
+      const altCls = kind === 'passage' ? 'sm-passage-area'
+                   : kind === 'view'    ? 'sm-view-area'
+                   : kind === 'hint'    ? 'sm-hint-area'
+                   : kind === 'model'   ? 'sm-model-area'
+                   : kind === 'sol'     ? 'sm-sol-area' : '';
+      let found = tgt.querySelector(':scope > .sm-extra-' + kind);
+      if(!found && altCls) found = tgt.querySelector(':scope > .' + altCls);
+      // 2순위: sm-qgroup-section (data-label 매칭)
+      if(!found){
+        const labelMap = { passage:'지문', view:'보기', hint:'힌트', model:'모범', sol:'해설' };
+        const target = labelMap[kind];
+        if(target){
+          const qgs = tgt.querySelectorAll(':scope > .sm-qgroup-section');
+          for(const sec of qgs){
+            const labelEl = sec.querySelector('[data-label]');
+            const label = (labelEl && labelEl.dataset.label) || sec.textContent || '';
+            if(label.indexOf(target) >= 0){ found = sec; break; }
+          }
+        }
+      }
+      return found;
+    };
+    const hintArea = isSmBlock || (tgt && tgt !== curBlock)
+      ? _findSection('hint')
       : curBlock.querySelector('.q-hint-area');
-    const solArea  = isSmBlock
-      ? curBlock.querySelector(':scope > .sm-sol-area')
+    const solArea  = isSmBlock || (tgt && tgt !== curBlock)
+      ? _findSection('sol')
       : curBlock.querySelector('.q-sol-area');
-    hintVisible    = hintArea ? hintArea.style.display!=='none' : (curBlock.dataset.hintShow !== '0');
-    solVisible     = solArea  ? solArea.style.display!=='none'  : (curBlock.dataset.solShow !== '0');
-    // [UPDATED 2026-04] dataset 기반 상태 복원 — 명시적 '1' 옵트인 패턴으로 통일
-    //   기존: passageShow !== '0' (기본 ON) → 변경: passageShow === '1' (기본 OFF)
-    passageVisible  = curBlock.dataset.passageShow === '1';
-    choicesVisible  = curBlock.dataset.choicesShow === '1';
-    modelVisible    = curBlock.dataset.modelShow === '1';
+    const modelArea = (isSmBlock || (tgt && tgt !== curBlock))
+      ? _findSection('model')
+      : curBlock.querySelector('.q-model-area');
+    const passageArea = (isSmBlock || (tgt && tgt !== curBlock))
+      ? _findSection('passage')
+      : curBlock.querySelector(':scope > .q-passage');
+    const viewArea = (isSmBlock || (tgt && tgt !== curBlock))
+      ? _findSection('view')
+      : curBlock.querySelector(':scope > .q-view');
+    // [UPDATED 2026-04] 사용자 요청 — 현재 DOM 상태에 따라 토글 상태 결정
+    //   영역이 실제로 존재하고 display!=='none' 이면 ON, 없거나 숨김이면 OFF
+    hintVisible     = hintArea     ? hintArea.style.display     !== 'none' : false;
+    solVisible      = solArea      ? solArea.style.display      !== 'none' : false;
+    modelVisible    = modelArea    ? modelArea.style.display    !== 'none' : false;
+    passageVisible  = passageArea  ? passageArea.style.display  !== 'none' : false;
+    choicesVisible  = viewArea     ? viewArea.style.display     !== 'none' : false;
     selectionMode   = curBlock.dataset.selMode || 'single';
     choiceFormat    = curBlock.dataset.choiceFmt || 'numbered-vertical';
     answerText      = curBlock.dataset.answerText || answerVal;
@@ -17286,6 +18134,81 @@ function rpToggleHint(show, btn){
 //   OFF: 해당 row 제거
 //   추가 row는 dataset.smExtra로 식별 ('passage' | 'view' | 'model' | 'hint' | 'sol')
 //   anchor 블록(curBlock)을 sm-block-row 안에 두지 않은 경우(예: smCanvas 직계자식)에는 즉시 row를 만들어 감싸 처리
+
+// [ADDED 2026-04] curBlock이 .cb지만 안에 sm-block이 있으면(추천 세트지/콘텐츠 삽입 케이스)
+//   토글 동작은 sm-block을 대상으로 위임. 그렇지 않으면 그대로 .cb 사용.
+//   이렇게 하지 않으면 .cb 분기에서 q-hint-area/q-sol-area를 못 찾아 모범답안이 마지막에 추가됨.
+function _resolveToggleTarget(block){
+  if(!block) return block;
+  // sm-block 그 자체면 그대로
+  if(block.classList && block.classList.contains('sm-block')) return block;
+  // .cb 안에 sm-block이 있으면 그 sm-block을 대상으로 (직속 자식이 아니더라도 깊이 검색)
+  if(block.classList && block.classList.contains('cb')){
+    // 우선 직속 자식
+    let inner = block.querySelector(':scope > .sm-block');
+    // 없으면 깊이 검색 — 단, 다른 .cb 안의 sm-block은 제외
+    if(!inner){
+      const all = block.querySelectorAll('.sm-block');
+      for(const s of all){
+        // 자신의 .cb 조상이 block과 같은지 확인 (중첩 .cb 보호)
+        const closestCb = s.closest('.cb');
+        if(closestCb === block){ inner = s; break; }
+      }
+    }
+    if(inner) return inner;
+  }
+  return block;
+}
+
+// [ADDED 2026-04] 순서조합형 input 자동 폭 조정 — hidden span으로 텍스트 폭 측정
+//   사용자 요청: 텍스트 길이에 따라 박스가 늘어나야 함
+window._smComboResize = function(inp){
+  if(!inp) return;
+  const wrap = inp.closest && inp.closest('.sm-combo-wrap');
+  if(wrap && wrap.classList.contains('sm-combo-equal')){
+    inp.style.width = '';
+    return;
+  }
+  // 측정 노드 — 한 번만 만들어 재사용
+  let probe = window._smComboProbe;
+  if(!probe){
+    probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;left:-9999px;top:-9999px;visibility:hidden;white-space:pre;';
+    document.body.appendChild(probe);
+    window._smComboProbe = probe;
+  }
+  // input과 같은 폰트/패딩 적용
+  const cs = window.getComputedStyle(inp);
+  probe.style.fontFamily = cs.fontFamily;
+  probe.style.fontSize   = cs.fontSize;
+  probe.style.fontWeight = cs.fontWeight;
+  probe.style.letterSpacing = cs.letterSpacing;
+  // 텍스트 결정 (값이 비어 있으면 placeholder로 측정해 빈 상태에서도 placeholder 보이게)
+  const text = inp.value || inp.placeholder || '';
+  probe.textContent = text || ' ';
+  const textWidth = probe.offsetWidth;
+  // padding-left + padding-right 더하기
+  const padL = parseFloat(cs.paddingLeft) || 0;
+  const padR = parseFloat(cs.paddingRight) || 0;
+  const borderL = parseFloat(cs.borderLeftWidth) || 0;
+  const borderR = parseFloat(cs.borderRightWidth) || 0;
+  // 최소 90px, 최대 wrap 폭의 90%
+  const minW = 90;
+  const wrapW = wrap ? wrap.clientWidth : 800;
+  const maxW = Math.max(minW, wrapW * 0.9);
+  const w = Math.min(maxW, Math.max(minW, Math.ceil(textWidth + padL + padR + borderL + borderR + 8)));
+  inp.style.width = w + 'px';
+};
+
+// [ADDED 2026-04] 모든 sm-combo-input 일괄 리사이즈 (콘텐츠 새로 삽입/모드 변경 시)
+window._smComboResizeAll = function(scope){
+  const root = scope || document;
+  const inputs = root.querySelectorAll('.sm-combo-input');
+  inputs.forEach(inp => {
+    if(typeof window._smComboResize === 'function') window._smComboResize(inp);
+  });
+};
+
 // [UPDATED 2026-04] sm-block 내부 보조 영역(지문/보기/힌트/모범답안/해설) 삽입 헬퍼
 //   기존 _smToggleExtraRow는 별도 sm-block-row를 만들었지만 사용자 요청은
 //   "발문 하위에 같은 블록 내부 영역으로 추가"이므로 블록 내부에 삽입하는 방식으로 교체.
@@ -17302,17 +18225,96 @@ function _smInsertInBlock(anchorBlock, kind, on, makeNode){
                : (kind === 'sol')     ? 'sm-sol-area' : '';
   let existing = anchorBlock.querySelector(':scope > .' + cls);
   if(!existing && altCls) existing = anchorBlock.querySelector(':scope > .' + altCls);
+  // [ADDED 2026-04] passage/view는 발문 컨테이너 안에도 들어갈 수 있음 — 깊이 검색
+  if(!existing && (kind === 'passage' || kind === 'view')){
+    existing = anchorBlock.querySelector('.sm-extra-' + kind);
+    if(!existing && altCls) existing = anchorBlock.querySelector('.' + altCls);
+  }
+  // [ADDED 2026-04] 빈 템플릿(.sm-qgroup) — .sm-qgroup-section 안의 data-label로 매칭
+  if(!existing){
+    const qgSections = anchorBlock.querySelectorAll(':scope > .sm-qgroup-section');
+    const labelMap = { passage:'지문', view:'보기', hint:'힌트', model:'모범', sol:'해설' };
+    const target = labelMap[kind];
+    if(target){
+      for(const sec of qgSections){
+        const labelEl = sec.querySelector('[data-label]');
+        const label = (labelEl && labelEl.dataset.label) || sec.textContent || '';
+        if(label.indexOf(target) >= 0){ existing = sec; break; }
+      }
+    }
+  }
   if(on){
     if(existing){ existing.style.display = ''; return; }
     const node = makeNode();
     node.classList.add(cls);
     // 삽입 위치 결정 — 발문 컨테이너 다음
-    //   passage/view: 발문 본문 직후
+    //   passage/view: 발문 본문 직후 (이미지/SVG가 같이 들어있는 컨테이너 안에 삽입 → 이미지 위에 노출)
     //   hint: 발문/지문/보기/선택지 등 모든 본문 영역 뒤, 모범답안/해설 앞
     //   model: 힌트 다음, 해설 앞
     //   sol: 항상 마지막
     const order = ['passage', 'view', 'choices-body', 'hint', 'model', 'sol'];
     const myIdx = order.indexOf(kind);
+
+    // [UPDATED 2026-04] 사용자 요청 — passage/view는 이미지 위에 노출되도록
+    //   발문 텍스트(.sm-text-block) 바로 다음에 같은 부모 안에서 삽입.
+    //   이렇게 하면 발문/이미지가 같은 컨테이너에 들어있는 경우에도 이미지 위에 위치함.
+    //   단, 텍스트가 anchorBlock 직속 자식이면 기존 로직 유지 (sm-block 직속 자식으로 삽입)
+    // [UPDATED 2026-04] OX형/TF형 콘텐츠도 지원 — .sm-oxquiz-instr를 발문으로 우선 인식
+    //   (OX 콘텐츠의 해설 영역도 .sm-text-block이라서 instr을 먼저 찾아야 함)
+    if(kind === 'passage' || kind === 'view'){
+      // 발문 후보를 우선순위로 검색 — OX 콘텐츠라면 instr이 발문이므로 먼저 검사
+      let textBlock = anchorBlock.querySelector('.sm-oxquiz-instr');
+      let isOxInstr = !!textBlock;
+      if(!textBlock){
+        textBlock = anchorBlock.querySelector('.sm-text-block');
+      }
+      if(textBlock){
+        // 텍스트가 anchorBlock 직속 자식이 아니면 같은 부모에 끼움
+        // [UPDATED 2026-04] OX 케이스 — instr의 부모(.sm-oxquiz-block)가 직속 자식인 경우에도
+        //   instr 다음에 끼워야 함. (instr.parentElement === anchorBlock이면 false였을 거지만,
+        //   OX는 instr이 .sm-oxquiz-block 안에 있으므로 parent가 anchorBlock이 아님)
+        if(textBlock.parentElement !== anchorBlock || isOxInstr){
+          let parent = textBlock.parentElement;
+          let anchor = textBlock;
+          // [ADDED 2026-04] 부모가 가로 flex/inline 컨테이너면 같은 부모 안에 끼우면
+          //   발문 옆으로 가로 정렬 — 한 단계 위로 올라가 컨테이너 자체 다음에 삽입
+          //   (예: 빈 템플릿 _qContent의 flex 발문 row)
+          //   styles 우선, inline style 검사 폴백
+          while(parent && parent !== anchorBlock){
+            const cs = (typeof window !== 'undefined' && window.getComputedStyle) ? window.getComputedStyle(parent) : null;
+            const inlineStyle = parent.getAttribute && parent.getAttribute('style') || '';
+            const isHorizontal =
+              (cs && (cs.display === 'flex' || cs.display === 'inline-flex' || cs.display === 'grid' || cs.display === 'inline-grid'))
+              || /display\s*:\s*(flex|inline-flex|grid|inline-grid)/i.test(inlineStyle);
+            if(isHorizontal){
+              anchor = parent;          // flex 컨테이너 자체를 anchor로 — 그 다음에 끼움
+              parent = parent.parentElement;
+              continue;
+            }
+            break;
+          }
+          if(!parent) parent = textBlock.parentElement;
+          // 같은 종류 영역이 그 부모 안에 이미 있으면 토글 가능하도록 검사
+          const samePrefix = '.sm-extra-' + kind + ', .' +
+                             (kind === 'passage' ? 'sm-passage-area' : 'sm-view-area');
+          const existInParent = parent.querySelector(':scope > ' + samePrefix);
+          if(existInParent){
+            existInParent.style.display = '';
+            return;
+          }
+          // 같은 카테고리(view) 영역이 이미 있으면 그 다음에, 아니면 텍스트 다음에 삽입
+          if(kind === 'view'){
+            // 보기는 지문 다음, 지문이 있으면 그 다음에 끼움
+            const passInside = parent.querySelector(':scope > .sm-extra-passage, :scope > .sm-passage-area');
+            if(passInside) anchor = passInside;
+          }
+          if(anchor.nextSibling) parent.insertBefore(node, anchor.nextSibling);
+          else parent.appendChild(node);
+          return;
+        }
+      }
+    }
+
     // sm-block 직속 자식 중 발문 본문(.sm-text-block 또는 그 컨테이너) 찾기
     let bodyAnchor = anchorBlock.querySelector(':scope > .sm-text-block');
     if(!bodyAnchor){
@@ -17324,21 +18326,36 @@ function _smInsertInBlock(anchorBlock, kind, on, makeNode){
       }
     }
     // 발문 다음 자식부터 살펴 — 같은 카테고리(extra)면 우선순위 비교, 본문이면 통과
+    // [UPDATED 2026-04] sm-extra-* 뿐만 아니라 sm-passage-area / sm-view-area / sm-hint-area
+    //   / sm-model-area / sm-sol-area 단일 클래스도 인식 (추천 세트지에서 미리 박혀있는 경우 호환)
+    // [UPDATED 2026-04] 빈 템플릿(.sm-qgroup) 안의 .sm-qgroup-section 도 인식 — 자식의 data-label로 판별
     let insertBefore = bodyAnchor ? bodyAnchor.nextSibling : anchorBlock.firstChild;
+    const _kindOf = (el) => {
+      if(!el) return '';
+      const cl = el.classList;
+      if(!cl) return '';
+      if(cl.contains('sm-extra-passage') || cl.contains('sm-passage-area')) return 'passage';
+      if(cl.contains('sm-extra-view')    || cl.contains('sm-view-area'))    return 'view';
+      if(cl.contains('sm-extra-hint')    || cl.contains('sm-hint-area'))    return 'hint';
+      if(cl.contains('sm-extra-model')   || cl.contains('sm-model-area'))   return 'model';
+      if(cl.contains('sm-extra-sol')     || cl.contains('sm-sol-area'))     return 'sol';
+      // 빈 템플릿의 .sm-qgroup-section — data-label 또는 텍스트로 판별
+      if(cl.contains('sm-qgroup-section')){
+        const labelEl = el.querySelector('[data-label]');
+        const label = (labelEl && labelEl.dataset.label) || el.textContent || '';
+        if(label.indexOf('힌트') >= 0)    return 'hint';
+        if(label.indexOf('모범') >= 0)    return 'model';
+        if(label.indexOf('해설') >= 0)    return 'sol';
+        if(label.indexOf('지문') >= 0)    return 'passage';
+        if(label.indexOf('보기') >= 0)    return 'view';
+      }
+      return '';
+    };
     while(insertBefore){
       if(insertBefore.nodeType !== 1){ insertBefore = insertBefore.nextSibling; continue; }
-      const c = insertBefore.classList;
+      const nodeKind = _kindOf(insertBefore);
       // 이미 들어간 보조 영역 — 우선순위에 따라 멈출지 진행할지 결정
-      if(c && (c.contains('sm-extra-passage') || c.contains('sm-extra-view') ||
-               c.contains('sm-extra-hint')    || c.contains('sm-extra-model') ||
-               c.contains('sm-extra-sol'))){
-        // 현재 노드가 어떤 kind인지
-        let nodeKind = '';
-        if(c.contains('sm-extra-passage')) nodeKind = 'passage';
-        else if(c.contains('sm-extra-view')) nodeKind = 'view';
-        else if(c.contains('sm-extra-hint')) nodeKind = 'hint';
-        else if(c.contains('sm-extra-model')) nodeKind = 'model';
-        else if(c.contains('sm-extra-sol')) nodeKind = 'sol';
+      if(nodeKind){
         const ki = order.indexOf(nodeKind);
         if(ki > myIdx) break; // 새 kind가 더 앞 — 여기 삽입
         insertBefore = insertBefore.nextSibling;
@@ -17419,12 +18436,12 @@ window.rpTogglePassage = function(btn){
   btn.setAttribute('aria-checked', on);
   if(curBlock){
     curBlock.dataset.passageShow = on ? '1' : '0';
+    // [ADDED 2026-04] .cb 안에 sm-block이 있으면 sm-block에 위임
+    const target = _resolveToggleTarget(curBlock);
     // [UPDATED 2026-04] 심플모드(sm-block) — 발문 본문 *바로 아래* 같은 블록 내부에 지문 영역 삽입
-    //   사용자 요청: "지문이 발문 하위에 추가되어야 하는데 그렇지 않아"
-    //   → 별도 sm-block-row가 아니라 발문이 있는 sm-block 내부에 삽입
-    const isSimpleBlock = curBlock.classList && curBlock.classList.contains('sm-block');
+    const isSimpleBlock = target.classList && target.classList.contains('sm-block');
     if(isSimpleBlock){
-      _smInsertInBlock(curBlock, 'passage', on, () => {
+      _smInsertInBlock(target, 'passage', on, () => {
         const node = document.createElement('div');
         node.className = 'sm-passage-area';
         node.innerHTML = '<div class="sm-passage-input" contenteditable="true" data-placeholder="지문을 입력합니다."></div>';
@@ -17435,21 +18452,21 @@ window.rpTogglePassage = function(btn){
       return;
     }
     // [UPDATED 2026-04] 지문 영역 동적 삽입/제거 (고급모드 .cb 전용)
-    let passageArea = curBlock.querySelector(':scope > .q-passage');
+    let passageArea = target.querySelector(':scope > .q-passage');
     if(on){
       if(!passageArea){
         passageArea = document.createElement('div');
         passageArea.className = 'q-passage';
         passageArea.innerHTML = `<div class="q-passage-input" contenteditable="true" data-ph="지문을 입력합니다." oninput="onBlockTextInput(this,'question','passage')"></div>`;
-        const head = curBlock.querySelector(':scope > .q-head');
+        const head = target.querySelector(':scope > .q-head');
         if(head && head.nextSibling){
-          curBlock.insertBefore(passageArea, head.nextSibling);
+          target.insertBefore(passageArea, head.nextSibling);
         } else if(head){
-          curBlock.appendChild(passageArea);
+          target.appendChild(passageArea);
         } else {
-          const ctrl = curBlock.querySelector(':scope > .bctrl');
-          if(ctrl && ctrl.nextSibling) curBlock.insertBefore(passageArea, ctrl.nextSibling);
-          else curBlock.appendChild(passageArea);
+          const ctrl = target.querySelector(':scope > .bctrl');
+          if(ctrl && ctrl.nextSibling) target.insertBefore(passageArea, ctrl.nextSibling);
+          else target.appendChild(passageArea);
         }
       } else {
         passageArea.style.display = '';
@@ -17468,10 +18485,12 @@ window.rpToggleChoicesShow = function(btn){
   btn.setAttribute('aria-checked', on);
   if(curBlock){
     curBlock.dataset.choicesShow = on ? '1' : '0';
+    // [ADDED 2026-04] .cb 안에 sm-block이 있으면 sm-block에 위임
+    const target = _resolveToggleTarget(curBlock);
     // [UPDATED 2026-04] 심플모드(sm-block) — 발문 블록 다음에 별도 sm-block-row로 보기 영역 삽입
-    const isSimpleBlock = curBlock.classList && curBlock.classList.contains('sm-block');
+    const isSimpleBlock = target.classList && target.classList.contains('sm-block');
     if(isSimpleBlock){
-      _smInsertInBlock(curBlock, 'view', on, () => {
+      _smInsertInBlock(target, 'view', on, () => {
         const node = document.createElement('div');
         node.className = 'sm-view-area';
         node.innerHTML = `
@@ -17485,7 +18504,7 @@ window.rpToggleChoicesShow = function(btn){
       return;
     }
     // [UPDATED 2026-04] "보기" 영역 — 지문(또는 발문) 아래에 둥근 박스 + 라벨 형태로 동적 삽입 (고급모드)
-    let viewArea = curBlock.querySelector(':scope > .q-view');
+    let viewArea = target.querySelector(':scope > .q-view');
     if(on){
       if(!viewArea){
         viewArea = document.createElement('div');
@@ -17494,17 +18513,17 @@ window.rpToggleChoicesShow = function(btn){
           <span class="q-view-label">보기</span>
           <div class="q-view-input" contenteditable="true" data-ph="보기 입력합니다." oninput="onBlockTextInput(this,'question','view')"></div>
         `;
-        const passageArea = curBlock.querySelector(':scope > .q-passage');
-        const head = curBlock.querySelector(':scope > .q-head');
+        const passageArea = target.querySelector(':scope > .q-passage');
+        const head = target.querySelector(':scope > .q-head');
         const anchor = passageArea || head;
         if(anchor && anchor.nextSibling){
-          curBlock.insertBefore(viewArea, anchor.nextSibling);
+          target.insertBefore(viewArea, anchor.nextSibling);
         } else if(anchor){
-          curBlock.appendChild(viewArea);
+          target.appendChild(viewArea);
         } else {
-          const ctrl = curBlock.querySelector(':scope > .bctrl');
-          if(ctrl && ctrl.nextSibling) curBlock.insertBefore(viewArea, ctrl.nextSibling);
-          else curBlock.appendChild(viewArea);
+          const ctrl = target.querySelector(':scope > .bctrl');
+          if(ctrl && ctrl.nextSibling) target.insertBefore(viewArea, ctrl.nextSibling);
+          else target.appendChild(viewArea);
         }
       } else {
         viewArea.style.display = '';
@@ -17522,11 +18541,13 @@ window.rpToggleHintShow = function(btn){
   btn.classList.toggle('on', on);
   btn.setAttribute('aria-checked', on);
   if(curBlock){
+    // [ADDED 2026-04] .cb 안에 sm-block이 있으면 sm-block에 위임
+    const target = _resolveToggleTarget(curBlock);
     // [UPDATED 2026-04] 심플모드(sm-block) 지원 — 블록 내부에 힌트 영역 삽입
-    const isSimpleBlock = curBlock.classList && curBlock.classList.contains('sm-block');
+    const isSimpleBlock = target.classList && target.classList.contains('sm-block');
     if(isSimpleBlock){
-      curBlock.dataset.hintShow = on ? '1' : '0';
-      _smInsertInBlock(curBlock, 'hint', on, () => {
+      target.dataset.hintShow = on ? '1' : '0';
+      _smInsertInBlock(target, 'hint', on, () => {
         const node = document.createElement('div');
         node.className = 'sm-hint-area';
         node.innerHTML = `
@@ -17539,7 +18560,7 @@ window.rpToggleHintShow = function(btn){
       addEditLog(`💡 ${n}번째 콘텐츠 힌트 ${on ? '표시' : '숨김'}`, 'prop');
       return;
     }
-    const hintArea = curBlock.querySelector('.q-hint-area');
+    const hintArea = target.querySelector('.q-hint-area');
     if(hintArea) hintArea.style.display = on ? '' : 'none';
     const n = getCurBlockIndex() + 1;
     addEditLog(`💡 ${n}번째 콘텐츠 힌트 ${on ? '표시' : '숨김'}`, 'prop');
@@ -17552,10 +18573,14 @@ window.rpToggleModel = function(btn){
   btn.setAttribute('aria-checked', on);
   if(curBlock){
     curBlock.dataset.modelShow = on ? '1' : '0';
+    // [ADDED 2026-04] .cb 안에 sm-block이 있으면 sm-block을 대상으로 위임
+    //   (추천 세트지/콘텐츠로 삽입된 .cb는 내부에 sm-block만 있고 q-hint-area 등이 없어
+    //    기존 .cb 분기에서 모범답안이 마지막에 추가되던 문제 수정)
+    const target = _resolveToggleTarget(curBlock);
     // [UPDATED 2026-04] 심플모드(sm-block) — 블록 내부에 모범답안 영역 삽입 (힌트와 해설 사이)
-    const isSimpleBlock = curBlock.classList && curBlock.classList.contains('sm-block');
+    const isSimpleBlock = target.classList && target.classList.contains('sm-block');
     if(isSimpleBlock){
-      _smInsertInBlock(curBlock, 'model', on, () => {
+      _smInsertInBlock(target, 'model', on, () => {
         const node = document.createElement('div');
         node.className = 'sm-model-area';
         node.innerHTML = `
@@ -17569,9 +18594,9 @@ window.rpToggleModel = function(btn){
       return;
     }
     // [UPDATED 2026-04] 모범답안 영역 — 어떤 템플릿이든 ON 시 동적 삽입 (고급모드 .cb)
-    let modelArea = curBlock.querySelector(':scope > .q-model-area');
+    let modelArea = target.querySelector(':scope > .q-model-area');
     if(!modelArea){
-      const legacy = curBlock.querySelectorAll(':scope > .q-hint-area');
+      const legacy = target.querySelectorAll(':scope > .q-hint-area');
       if(legacy.length >= 2) modelArea = legacy[1];
     }
     if(on){
@@ -17580,14 +18605,14 @@ window.rpToggleModel = function(btn){
         modelArea.className = 'q-hint-area q-model-area';
         modelArea.style.background = '#EEF1FF';
         modelArea.innerHTML = `<div class="qlabel" style="background:#4B6EF5;">📝 모범 답안</div><div class="qsub" contenteditable="true" data-ph="모범 답안을 입력합니다." oninput="onBlockTextInput(this,'question','hint')"></div>`;
-        const hint = curBlock.querySelector(':scope > .q-hint-area');
-        const sol  = curBlock.querySelector(':scope > .q-sol-area');
+        const hint = target.querySelector(':scope > .q-hint-area');
+        const sol  = target.querySelector(':scope > .q-sol-area');
         if(hint && hint.nextSibling){
-          curBlock.insertBefore(modelArea, hint.nextSibling);
+          target.insertBefore(modelArea, hint.nextSibling);
         } else if(sol){
-          curBlock.insertBefore(modelArea, sol);
+          target.insertBefore(modelArea, sol);
         } else {
-          curBlock.appendChild(modelArea);
+          target.appendChild(modelArea);
         }
       } else {
         modelArea.style.display = '';
@@ -17605,11 +18630,13 @@ window.rpToggleSolShow = function(btn){
   btn.classList.toggle('on', on);
   btn.setAttribute('aria-checked', on);
   if(curBlock){
+    // [ADDED 2026-04] .cb 안에 sm-block이 있으면 sm-block에 위임
+    const target = _resolveToggleTarget(curBlock);
     // [UPDATED 2026-04] 심플모드(sm-block) 지원 — 블록 내부에 해설 영역 삽입 (항상 마지막)
-    const isSimpleBlock = curBlock.classList && curBlock.classList.contains('sm-block');
+    const isSimpleBlock = target.classList && target.classList.contains('sm-block');
     if(isSimpleBlock){
-      curBlock.dataset.solShow = on ? '1' : '0';
-      _smInsertInBlock(curBlock, 'sol', on, () => {
+      target.dataset.solShow = on ? '1' : '0';
+      _smInsertInBlock(target, 'sol', on, () => {
         const node = document.createElement('div');
         node.className = 'sm-sol-area';
         node.innerHTML = `
@@ -17622,7 +18649,7 @@ window.rpToggleSolShow = function(btn){
       addEditLog(`📋 ${n}번째 콘텐츠 해설 ${on ? '표시' : '숨김'}`, 'prop');
       return;
     }
-    const solArea = curBlock.querySelector('.q-sol-area');
+    const solArea = target.querySelector('.q-sol-area');
     if(solArea) solArea.style.display = on ? '' : 'none';
     const n = getCurBlockIndex() + 1;
     addEditLog(`📋 ${n}번째 콘텐츠 해설 ${on ? '표시' : '숨김'}`, 'prop');
@@ -17646,6 +18673,35 @@ window.rpSetSelMode = function(mode){
 window.rpSetChainMode = function(mode){
   if(!curBlock) return;
   curBlock.dataset.chainMode = mode;
+  // [UPDATED 2026-04] 3가지 모드별 UI 정확 분기 — 사용자 요청
+  //   single: 번호 뱃지 발문 + "하위 콘텐츠 추가"
+  //   multi:  번호 없는 발문   + "하위 콘텐츠 추가"
+  //   tab:    번호 없는 발문   + 좌측 "+" 아이콘만
+  const tgt = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(curBlock) : curBlock;
+  if(tgt){
+    const headSingle = tgt.querySelector('.sm-chain-head-single');
+    const headPlain  = tgt.querySelector('.sm-chain-head-plain');
+    const multiUi    = tgt.querySelector('.sm-chain-add-multi');
+    const tabUi      = tgt.querySelector('.sm-chain-add-tab');
+    if(mode === 'single'){
+      if(headSingle) headSingle.style.display = 'flex';
+      if(headPlain)  headPlain.style.display  = 'none';
+      if(multiUi)    multiUi.style.display    = 'flex';
+      if(tabUi)      tabUi.style.display      = 'none';
+    } else if(mode === 'tab'){
+      if(headSingle) headSingle.style.display = 'none';
+      if(headPlain)  headPlain.style.display  = 'block';
+      if(multiUi)    multiUi.style.display    = 'none';
+      if(tabUi)      tabUi.style.display      = 'flex';
+    } else { // multi
+      if(headSingle) headSingle.style.display = 'none';
+      if(headPlain)  headPlain.style.display  = 'block';
+      if(multiUi)    multiUi.style.display    = 'flex';
+      if(tabUi)      tabUi.style.display      = 'none';
+    }
+    // dataset도 위임 대상에 저장 (selBlock 시 복원용)
+    tgt.dataset.chainMode = mode;
+  }
   renderRp();
   const n = getCurBlockIndex() + 1;
   const lbl = mode==='single' ? '단일 연쇄형' : (mode==='multi' ? '다중 연쇄형' : '탭 연동형');
@@ -17656,6 +18712,37 @@ window.rpSetChainMode = function(mode){
 window.rpSetOxButtonStyle = function(style){
   if(!curBlock) return;
   curBlock.dataset.oxButtonStyle = style;
+  // [UPDATED 2026-04] 콘텐츠 영역의 ○/✕ 버튼을 OX ↔ TF로 시각 전환 — 사용자 요청
+  //   추천 OX 콘텐츠는 .sm-oxquiz-btn.answer-o / .answer-x 형태
+  //   - OX: 큰 ○/✕ 기호
+  //   - TF: T / F 한 글자만 (사용자 요청)
+  const tgt = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(curBlock) : curBlock;
+  if(tgt){
+    tgt.dataset.oxButtonStyle = style;
+    const oBtn = tgt.querySelector('.sm-oxquiz-btn.answer-o');
+    const xBtn = tgt.querySelector('.sm-oxquiz-btn.answer-x');
+    if(oBtn || xBtn){
+      const isTf = (style === 'tf');
+      // 'O' 버튼 → T
+      if(oBtn){
+        const ansLabel = oBtn.querySelector('.sm-oxquiz-answer-label');
+        const ansHtml = ansLabel ? ansLabel.outerHTML : '';
+        const symbol = isTf ? 'T' : '○';
+        oBtn.innerHTML = symbol + ansHtml;
+        // OX는 가는 폰트(weight:100), TF는 큰 굵은 글자
+        if(isTf){ oBtn.style.fontSize = '56px'; oBtn.style.fontWeight = '900'; }
+        else    { oBtn.style.fontSize = '56px'; oBtn.style.fontWeight = '100'; }
+      }
+      if(xBtn){
+        const ansLabel = xBtn.querySelector('.sm-oxquiz-answer-label');
+        const ansHtml = ansLabel ? ansLabel.outerHTML : '';
+        const symbol = isTf ? 'F' : '✕';
+        xBtn.innerHTML = symbol + ansHtml;
+        if(isTf){ xBtn.style.fontSize = '56px'; xBtn.style.fontWeight = '900'; }
+        else    { xBtn.style.fontSize = '50px'; xBtn.style.fontWeight = '900'; }
+      }
+    }
+  }
   renderRp();
   const n = getCurBlockIndex() + 1;
   addEditLog(`⭕ ${n}번째 콘텐츠 OX형 버튼 스타일 → ${style==='ox' ? 'OX 버튼' : 'TF 버튼'}`, 'prop');
@@ -17665,6 +18752,28 @@ window.rpSetOxButtonStyle = function(style){
 window.rpSetTfAlign = function(align){
   if(!curBlock) return;
   curBlock.dataset.tfButtonAlign = align;
+  // [UPDATED 2026-04] 콘텐츠 영역의 TF 버튼 묶음을 좌/우로 이동 — 사용자 요청
+  //   .sm-tf-row 안에서 .sm-tf-buttons의 위치(input 앞/뒤) 전환
+  const tgt = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(curBlock) : curBlock;
+  if(tgt){
+    tgt.dataset.tfButtonAlign = align;
+    tgt.querySelectorAll('.sm-tf-row').forEach(row => {
+      const buttons = row.querySelector('.sm-tf-buttons');
+      const input   = row.querySelector('.sm-tf-input');
+      if(!buttons || !input) return;
+      if(align === 'right'){
+        // 우측: input → buttons 순서
+        if(input.nextSibling !== buttons){
+          row.insertBefore(input, buttons);
+        }
+      } else {
+        // 좌측(기본): buttons → input 순서
+        if(buttons.nextSibling !== input){
+          row.insertBefore(buttons, input);
+        }
+      }
+    });
+  }
   renderRp();
   const n = getCurBlockIndex() + 1;
   addEditLog(`↔️ ${n}번째 콘텐츠 TF형 버튼 위치 → ${align==='left' ? '좌측' : '우측'}`, 'prop');
@@ -17674,24 +18783,91 @@ window.rpSetTfAlign = function(align){
 window.rpSetTfButtonStyle = function(style){
   if(!curBlock) return;
   curBlock.dataset.tfButtonStyle = style;
+  // [UPDATED 2026-04] 콘텐츠 영역의 T/F → O/X 또는 O/X → T/F로 시각 전환 — 사용자 요청
+  const tgt = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(curBlock) : curBlock;
+  if(tgt){
+    tgt.dataset.tfButtonStyle = style;
+    const isOx = (style === 'ox');
+    tgt.querySelectorAll('.sm-tf-btn-t').forEach(b => { b.textContent = isOx ? '○' : 'T'; });
+    tgt.querySelectorAll('.sm-tf-btn-f').forEach(b => { b.textContent = isOx ? '✕' : 'F'; });
+  }
   renderRp();
   const n = getCurBlockIndex() + 1;
   addEditLog(`✅ ${n}번째 콘텐츠 TF형 버튼 스타일 → ${style==='tf' ? 'TF 버튼' : 'OX 버튼'}`, 'prop');
 };
 
-// [ADDED 2026-04] 심플모드 — 순서조합형 선택지 크기 모드 (동일크기 / 전체 폭)
+// [ADDED 2026-04] 심플모드 — 순서조합형 선택지 크기 모드 (동일크기 / 가변)
 window.rpSetComboSizeMode = function(mode){
   if(!curBlock) return;
   curBlock.dataset.comboSizeMode = mode;
+  // [UPDATED 2026-04] 콘텐츠 영역의 sm-combo-wrap에 클래스 토글 — 사용자 요청
+  //   기본(equal 아님): 텍스트 길이에 맞게 가변폭
+  //   equal: 4열 그리드 동일크기
+  const tgt = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(curBlock) : curBlock;
+  if(tgt){
+    tgt.dataset.comboSizeMode = mode;
+    tgt.querySelectorAll('.sm-combo-wrap').forEach(w => {
+      w.classList.toggle('sm-combo-equal', mode === 'equal');
+    });
+    // [ADDED 2026-04] 모드 전환 후 모든 input 폭 재계산
+    if(typeof window._smComboResizeAll === 'function') window._smComboResizeAll(tgt);
+  }
   renderRp();
   const n = getCurBlockIndex() + 1;
-  addEditLog(`📐 ${n}번째 콘텐츠 순서조합형 선택지 크기 → ${mode==='equal' ? '동일크기' : '전체 폭'}`, 'prop');
+  addEditLog(`📐 ${n}번째 콘텐츠 순서조합형 선택지 크기 → ${mode==='equal' ? '동일크기' : '가변폭'}`, 'prop');
 };
 
 // [ADDED 2026-04] 심플모드 — 연결형 단 수 (2단 / 3단)
 window.rpSetMatchCols = function(cols){
   if(!curBlock) return;
   curBlock.dataset.matchCols = cols;
+  // [UPDATED 2026-04] 사용자 요청 — 점 패턴 보존
+  //   2단: input ● gap ● input
+  //   3단: input ● gap ● input ● gap ● input
+  //   row 마크업 구조가 모드에 따라 다르므로 클래스 토글 + 누락된 노드 채우기
+  const tgt = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(curBlock) : curBlock;
+  if(tgt){
+    tgt.dataset.matchCols = cols;
+    tgt.querySelectorAll('.sm-match2-wrap').forEach(w => {
+      w.classList.remove('sm-match2-cols-2', 'sm-match2-cols-3');
+      w.classList.add('sm-match2-cols-' + cols);
+      // 각 row의 자식 수가 모드에 맞는지 확인하고 필요 시 재구성
+      w.querySelectorAll('.sm-match2-row').forEach(row => {
+        // 현재 input들의 value 보존
+        const inputs = [...row.querySelectorAll('.sm-match2-input')];
+        const values = inputs.map(i => i.value || '');
+        // row 비우기
+        row.innerHTML = '';
+        const inputCount = (cols === '3') ? 3 : 2;
+        for(let i = 0; i < inputCount; i++){
+          const inp = document.createElement('input');
+          inp.className = 'sm-match2-input';
+          inp.placeholder = '선택지를 입력합니다.';
+          if(values[i]) inp.value = values[i];
+          row.appendChild(inp);
+          // 모든 input 뒤에는 점 + gap이 따라옴 (마지막 input 제외)
+          if(i < inputCount - 1){
+            // 첫 input 뒤에 ● gap ● 패턴
+            const dotL = document.createElement('div');
+            dotL.className = 'sm-match2-dot';
+            dotL.dataset.side = 'right'; // 이 input의 우측 연결점
+            dotL.setAttribute('onclick','smMatchDotClick(this)');
+            dotL.innerHTML = '<span></span>';
+            row.appendChild(dotL);
+            const gap = document.createElement('div');
+            gap.className = 'sm-match2-gap';
+            row.appendChild(gap);
+            const dotR = document.createElement('div');
+            dotR.className = 'sm-match2-dot';
+            dotR.dataset.side = 'left'; // 다음 input의 좌측 연결점
+            dotR.setAttribute('onclick','smMatchDotClick(this)');
+            dotR.innerHTML = '<span></span>';
+            row.appendChild(dotR);
+          }
+        }
+      });
+    });
+  }
   renderRp();
   const n = getCurBlockIndex() + 1;
   addEditLog(`🔗 ${n}번째 콘텐츠 연결형 단 수 → ${cols}단`, 'prop');
@@ -17725,6 +18901,7 @@ window.rpSetMatchGap = function(val){
 window.rpSetChoiceFmt = function(fmt){
   if(!curBlock) return;
   curBlock.dataset.choiceFmt = fmt;
+  // 고급모드 .q-choices
   const wrap = curBlock.querySelector('.q-choices');
   if(wrap){
     // 클래스 교체로 CSS 레이아웃 변경
@@ -17738,6 +18915,26 @@ window.rpSetChoiceFmt = function(fmt){
     };
     wrap.classList.add(map[fmt] || 'q-choices-v');
   }
+  // [ADDED 2026-04] 심플모드 sm-choice-wrap — 사용자 요청 (5종 레이아웃)
+  //   - numbered-vertical → layout-1 (1열, 기본)
+  //   - numbered-grid     → layout-2 (2열)
+  //   - horizontal-row    → layout-3 (3열)
+  //   - card-row          → layout-4 (4열)
+  //   - card-stack        → layout-5 (5열)
+  const tgt = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(curBlock) : curBlock;
+  const smWraps = tgt ? tgt.querySelectorAll('.sm-choice-wrap') : [];
+  const layoutMap = {
+    'numbered-vertical': 'layout-1',
+    'numbered-grid':     'layout-2',
+    'horizontal-row':    'layout-3',
+    'card-row':          'layout-4',
+    'card-stack':        'layout-5'
+  };
+  const layoutCls = layoutMap[fmt] || 'layout-1';
+  smWraps.forEach(w => {
+    w.classList.remove('layout-1','layout-2','layout-3','layout-4','layout-5');
+    if(layoutCls !== 'layout-1') w.classList.add(layoutCls);
+  });
   renderRp();
   const n = getCurBlockIndex() + 1;
   addEditLog(`🎨 ${n}번째 콘텐츠 보기 형식 변경`, 'prop');
@@ -17749,11 +18946,368 @@ window.rpUpdateAnswerText = function(val){
   curBlock.dataset.answerText = val;
   // 숫자가 들어오면 해당 선택지를 correct로 마킹 (선택형 호환성)
   const parts = val.split(/[,\s]+/).map(s=>parseInt(s)).filter(n=>!isNaN(n));
+  // 고급모드 .q-choice
   if(parts.length > 0){
     const choices = [...curBlock.querySelectorAll('.q-choice')];
     choices.forEach((el,i) => {
       el.classList.toggle('correct', parts.includes(i+1));
     });
+  }
+  // [ADDED 2026-04] 심플모드 sm-choice-item — 사용자 요청 4번
+  //   속성패널 정답 입력에서 숫자 입력 시 콘텐츠 영역에 반영
+  //   .cb 안에 sm-block이 있는 케이스도 위임으로 처리
+  const tgt = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(curBlock) : curBlock;
+  if(tgt){
+    const smChoices = [...tgt.querySelectorAll('.sm-choice-item')];
+    smChoices.forEach((el, i) => {
+      el.classList.toggle('correct', parts.includes(i+1));
+    });
+    // [ADDED 2026-04] 단답형 — 사용자 요청
+    //   속성패널 정답 입력 → 콘텐츠 영역 .sm-short-input 의 value에 반영
+    //   (단답형/서술형은 단일 입력란이라 첫 번째 input에만 적용)
+    const shortInput = tgt.querySelector('.sm-short-input');
+    if(shortInput && shortInput.value !== val){
+      shortInput.value = val;
+    }
+    // [ADDED 2026-04] 서술형 textarea도 동기화 (있는 경우)
+    const essayArea = tgt.querySelector('.sm-essay-area');
+    if(essayArea && essayArea.value !== val){
+      essayArea.value = val;
+    }
+  }
+};
+
+// [ADDED 2026-04] 심플모드 — 선택지 번호 클릭 시 정답 토글
+//   사용자 요청 1번: 콘텐츠 영역에서 정답 변경
+//   사용자 요청 2번: 다중선택형이면 복수 정답 가능
+// [ADDED 2026-04] 심플모드 — 연결형 점 클릭으로 연결선 토글
+//   첫 클릭: 점 활성화(파랑), 두 번째 클릭: 다른 점과 연결선 그림
+//   같은 점 재클릭: 활성 해제
+//   이미 연결된 점 재클릭: 연결 해제
+window.smMatchDotClick = function(dotEl){
+  if(!dotEl) return;
+  // [ADDED 2026-04] 드래그로 시작된 클릭 이벤트는 무시 (드래그 핸들러가 처리)
+  if(window._smMatchDragJustEnded){ window._smMatchDragJustEnded = false; return; }
+  const wrap = dotEl.closest('.sm-match2-wrap');
+  if(!wrap) return;
+  const container = wrap.parentElement; // SVG가 같은 부모에 있음
+  const svg = container ? container.querySelector('.sm-match2-lines') : null;
+
+  // 연결 상태 저장 — wrap.dataset에 JSON으로 보관
+  let conns = [];
+  try { conns = JSON.parse(wrap.dataset.matchConns || '[]'); } catch(_){ conns = []; }
+
+  // 점 ID — wrap 내 dot 인덱스
+  const dots = [...wrap.querySelectorAll('.sm-match2-dot')];
+  const idx = dots.indexOf(dotEl);
+  if(idx < 0) return;
+
+  // 이미 활성 상태면 해제
+  if(dotEl.classList.contains('sm-match2-dot-active')){
+    dotEl.classList.remove('sm-match2-dot-active');
+    return;
+  }
+
+  // 이미 연결된 점 재클릭 — 그 연결 제거
+  const existingConn = conns.findIndex(c => c[0] === idx || c[1] === idx);
+  if(existingConn >= 0){
+    const [a, b] = conns[existingConn];
+    if(dots[a]) dots[a].classList.remove('sm-match2-dot-connected');
+    if(dots[b]) dots[b].classList.remove('sm-match2-dot-connected');
+    conns.splice(existingConn, 1);
+    wrap.dataset.matchConns = JSON.stringify(conns);
+    _smMatchDrawLines(wrap, svg);
+    return;
+  }
+
+  // 활성 점이 있는지 검사
+  const activeDot = wrap.querySelector('.sm-match2-dot-active');
+  if(!activeDot){
+    // 첫 점 활성화
+    dotEl.classList.add('sm-match2-dot-active');
+    return;
+  }
+
+  // 두 번째 점 — 연결 만들기
+  const aIdx = dots.indexOf(activeDot);
+  if(aIdx === idx) return; // 같은 점이면 무시 (위에서 처리됐어야 하지만 방어)
+  // 같은 점이 이미 연결돼 있는지 한 번 더 검사
+  if(conns.some(c => c[0] === aIdx || c[1] === aIdx)){
+    activeDot.classList.remove('sm-match2-dot-active');
+    return;
+  }
+  activeDot.classList.remove('sm-match2-dot-active');
+  activeDot.classList.add('sm-match2-dot-connected');
+  dotEl.classList.add('sm-match2-dot-connected');
+  conns.push([aIdx, idx]);
+  wrap.dataset.matchConns = JSON.stringify(conns);
+  _smMatchDrawLines(wrap, svg);
+};
+
+// [ADDED 2026-04] 연결형 SVG 선 그리기 — 저장된 연결 정보로 선 재생성
+function _smMatchDrawLines(wrap, svg){
+  if(!svg) return;
+  let conns = [];
+  try { conns = JSON.parse(wrap.dataset.matchConns || '[]'); } catch(_){ conns = []; }
+  const dots = [...wrap.querySelectorAll('.sm-match2-dot')];
+  // SVG 비우기
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+  // [UPDATED 2026-04] SVG 자체의 위치를 기준으로 좌표 계산 — inset 어긋남 보정
+  //   부모 기준이 아닌 SVG 자체의 getBoundingClientRect를 기준으로 함
+  const svgRect = svg.getBoundingClientRect();
+  if(svgRect.width === 0 || svgRect.height === 0) return;
+  // SVG 크기에 맞춰 viewBox/width/height 설정
+  svg.setAttribute('viewBox', `0 0 ${svgRect.width} ${svgRect.height}`);
+  svg.setAttribute('width', svgRect.width);
+  svg.setAttribute('height', svgRect.height);
+  conns.forEach(([a, b]) => {
+    const dotA = dots[a], dotB = dots[b];
+    if(!dotA || !dotB) return;
+    const ra = dotA.getBoundingClientRect();
+    const rb = dotB.getBoundingClientRect();
+    const x1 = ra.left + ra.width/2 - svgRect.left;
+    const y1 = ra.top  + ra.height/2 - svgRect.top;
+    const x2 = rb.left + rb.width/2 - svgRect.left;
+    const y2 = rb.top  + rb.height/2 - svgRect.top;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('stroke', '#4B6EF5');
+    line.setAttribute('stroke-width', '2');
+    line.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(line);
+  });
+}
+
+// [ADDED 2026-04] 연결형 점 드래그로 연결 — 사용자 요청
+//   pointerdown(점) → pointermove(임시 선 표시) → pointerup(다른 점 위면 연결)
+//   드래그 거리가 짧으면 클릭으로 처리 (smMatchDotClick)
+window._smMatchDragInit = function(){
+  if(window._smMatchDragInitDone) return;
+  window._smMatchDragInitDone = true;
+  let dragState = null; // { wrap, svg, fromDot, fromIdx, tempLine, startX, startY, moved }
+
+  document.addEventListener('pointerdown', function(e){
+    const dotEl = e.target.closest && e.target.closest('.sm-match2-dot');
+    if(!dotEl) return;
+    const wrap = dotEl.closest('.sm-match2-wrap');
+    if(!wrap) return;
+    const container = wrap.parentElement;
+    const svg = container ? container.querySelector('.sm-match2-lines') : null;
+    if(!svg) return;
+    const dots = [...wrap.querySelectorAll('.sm-match2-dot')];
+    const fromIdx = dots.indexOf(dotEl);
+    if(fromIdx < 0) return;
+    // 드래그 시작
+    dragState = {
+      wrap, svg, fromDot: dotEl, fromIdx,
+      tempLine: null,
+      startX: e.clientX, startY: e.clientY, moved: false
+    };
+    // 캡처 — 다른 곳에서 받지 않게
+    try { dotEl.setPointerCapture && dotEl.setPointerCapture(e.pointerId); } catch(_){}
+    e.preventDefault();
+  }, true);
+
+  document.addEventListener('pointermove', function(e){
+    if(!dragState) return;
+    const dx = e.clientX - dragState.startX;
+    const dy = e.clientY - dragState.startY;
+    const dist = Math.hypot(dx, dy);
+    if(!dragState.moved && dist < 4) return; // 4px 이하는 클릭으로 간주
+    dragState.moved = true;
+    // 임시 선 그리기/업데이트 — [UPDATED 2026-04] SVG 자체 좌표계 기준
+    const svg = dragState.svg;
+    const svgRect = svg.getBoundingClientRect();
+    if(svgRect.width === 0 || svgRect.height === 0) return;
+    if(!dragState.tempLine){
+      svg.setAttribute('viewBox', `0 0 ${svgRect.width} ${svgRect.height}`);
+      svg.setAttribute('width', svgRect.width);
+      svg.setAttribute('height', svgRect.height);
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('stroke', '#4B6EF5');
+      line.setAttribute('stroke-width', '2');
+      line.setAttribute('stroke-linecap', 'round');
+      line.setAttribute('stroke-dasharray', '5,3');
+      svg.appendChild(line);
+      dragState.tempLine = line;
+    }
+    const ra = dragState.fromDot.getBoundingClientRect();
+    const x1 = ra.left + ra.width/2 - svgRect.left;
+    const y1 = ra.top  + ra.height/2 - svgRect.top;
+    let x2 = e.clientX - svgRect.left;
+    let y2 = e.clientY - svgRect.top;
+
+    // [ADDED 2026-04] 호버되는 점에 hover 효과 + 가까이 가면 자동 스냅
+    const allDots = [...dragState.wrap.querySelectorAll('.sm-match2-dot')];
+    // 이전 hover 클래스 제거
+    allDots.forEach(d => d.classList.remove('sm-match2-dot-hover'));
+    let hoverDot = null;
+    let minDist = 999999;
+    allDots.forEach(d => {
+      if(d === dragState.fromDot) return;
+      const r = d.getBoundingClientRect();
+      const cx = r.left + r.width/2;
+      const cy = r.top  + r.height/2;
+      const dst = Math.hypot(e.clientX - cx, e.clientY - cy);
+      if(dst < minDist){ minDist = dst; hoverDot = d; }
+    });
+    // 25px 이내면 호버 표시 + 임시 선 스냅
+    if(hoverDot && minDist < 25){
+      hoverDot.classList.add('sm-match2-dot-hover');
+      const r = hoverDot.getBoundingClientRect();
+      x2 = r.left + r.width/2 - svgRect.left;
+      y2 = r.top  + r.height/2 - svgRect.top;
+      dragState.snapDot = hoverDot;
+    } else {
+      dragState.snapDot = null;
+    }
+
+    dragState.tempLine.setAttribute('x1', x1);
+    dragState.tempLine.setAttribute('y1', y1);
+    dragState.tempLine.setAttribute('x2', x2);
+    dragState.tempLine.setAttribute('y2', y2);
+  }, true);
+
+  document.addEventListener('pointerup', function(e){
+    if(!dragState) return;
+    const ds = dragState;
+    dragState = null;
+    // 모든 hover 클래스 제거
+    if(ds.wrap) ds.wrap.querySelectorAll('.sm-match2-dot-hover').forEach(d => d.classList.remove('sm-match2-dot-hover'));
+    // 임시 선 제거
+    if(ds.tempLine && ds.tempLine.parentElement) ds.tempLine.parentElement.removeChild(ds.tempLine);
+    if(!ds.moved){
+      // 짧은 클릭 — 기본 click 핸들러로 위임
+      return;
+    }
+    // 드래그 끝 — 스냅된 점이 있으면 그것 우선, 아니면 elementFromPoint
+    let targetDot = ds.snapDot;
+    if(!targetDot){
+      const elAtPoint = document.elementFromPoint(e.clientX, e.clientY);
+      if(elAtPoint) targetDot = elAtPoint.closest && elAtPoint.closest('.sm-match2-dot');
+    }
+    // 같은 wrap 안의 다른 점이어야 함
+    if(targetDot && targetDot !== ds.fromDot && ds.wrap.contains(targetDot)){
+      const dots = [...ds.wrap.querySelectorAll('.sm-match2-dot')];
+      const toIdx = dots.indexOf(targetDot);
+      if(toIdx >= 0 && toIdx !== ds.fromIdx){
+        // 기존 연결 정리 — 두 점 중 하나라도 이미 연결돼 있으면 해제
+        let conns = [];
+        try { conns = JSON.parse(ds.wrap.dataset.matchConns || '[]'); } catch(_){ conns = []; }
+        // 같은 두 점 연결이 이미 있으면 무시
+        const dup = conns.some(c => (c[0]===ds.fromIdx && c[1]===toIdx) || (c[0]===toIdx && c[1]===ds.fromIdx));
+        if(!dup){
+          // 두 점 각자의 기존 연결 해제
+          [ds.fromIdx, toIdx].forEach(i => {
+            const eIdx = conns.findIndex(c => c[0]===i || c[1]===i);
+            if(eIdx >= 0){
+              const [a,b] = conns[eIdx];
+              if(dots[a]) dots[a].classList.remove('sm-match2-dot-connected');
+              if(dots[b]) dots[b].classList.remove('sm-match2-dot-connected');
+              conns.splice(eIdx, 1);
+            }
+          });
+          conns.push([ds.fromIdx, toIdx]);
+          ds.wrap.dataset.matchConns = JSON.stringify(conns);
+          ds.fromDot.classList.add('sm-match2-dot-connected');
+          targetDot.classList.add('sm-match2-dot-connected');
+          ds.fromDot.classList.remove('sm-match2-dot-active');
+          targetDot.classList.remove('sm-match2-dot-active');
+        }
+      }
+    }
+    // 모든 활성 상태 해제
+    ds.wrap.querySelectorAll('.sm-match2-dot-active').forEach(d => d.classList.remove('sm-match2-dot-active'));
+    // 모든 선 다시 그리기
+    _smMatchDrawLines(ds.wrap, ds.svg);
+    // 다음 클릭 이벤트는 무시 (드래그 끝나고 click이 바로 발생할 수 있음)
+    window._smMatchDragJustEnded = true;
+    setTimeout(()=>{ window._smMatchDragJustEnded = false; }, 50);
+  }, true);
+};
+
+window.smChoiceToggleAnswer = function(numEl){
+  const item = numEl.closest('.sm-choice-item');
+  const wrap = numEl.closest('.sm-choice-wrap');
+  if(!item || !wrap) return;
+  const block = item.closest('.sm-block') || item.closest('.cb');
+  if(!block) return;
+  const items = [...wrap.querySelectorAll('.sm-choice-item')];
+  const idx = items.indexOf(item);
+  if(idx < 0) return;
+
+  // 다중선택 여부 — block의 dataset.selMode 또는 wrap의 dataset.selMode
+  const target = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(block) : block;
+  const selMode = (target && target.dataset && target.dataset.selMode)
+                || (block.dataset && block.dataset.selMode)
+                || 'single';
+  const isMulti = selMode === 'multi';
+
+  if(isMulti){
+    // 복수 선택 — 토글
+    item.classList.toggle('correct');
+  } else {
+    // 단일 선택 — 다른 모두 해제, 자신만 켜기/토글
+    const wasCorrect = item.classList.contains('correct');
+    items.forEach(it => it.classList.remove('correct'));
+    if(!wasCorrect) item.classList.add('correct');
+  }
+
+  // 현재 정답 인덱스를 dataset.answerText에 동기화
+  const correctIdx = items.map((it,i) => it.classList.contains('correct') ? (i+1) : null).filter(v => v !== null);
+  const newText = correctIdx.join(',');
+  if(target) target.dataset.answerText = newText;
+  if(block !== target) block.dataset.answerText = newText;
+
+  // 속성 패널의 정답 입력란도 동기화
+  document.querySelectorAll('.rp-answer-input').forEach(inp => {
+    inp.value = newText;
+  });
+  // 단일 선택의 select 드롭다운도 갱신 (.q-choice 호환)
+  document.querySelectorAll('select.rp-answer').forEach(sel => {
+    const ci = ['①','②','③','④','⑤'];
+    if(correctIdx.length === 1){
+      const v = ci[correctIdx[0]-1];
+      if(v) sel.value = v;
+    }
+  });
+  // .q-choice 동기화 (있다면)
+  const qChoices = [...block.querySelectorAll('.q-choice')];
+  qChoices.forEach((el, i) => {
+    el.classList.toggle('correct', correctIdx.includes(i+1));
+  });
+
+  if(typeof addEditLog === 'function'){
+    const n = (typeof getCurBlockIndex === 'function') ? getCurBlockIndex() + 1 : '';
+    addEditLog(`✅ ${n}번째 콘텐츠 정답 → ${newText || '없음'}`, 'prop');
+  }
+};
+
+// [ADDED 2026-04] 심플모드 — 다중선택형 모드 전환 시 콘텐츠도 함께 업데이트
+//   기존 rpSetSelectionMode가 dataset만 변경하던 것을 보강 — 단일 → 다중 전환 시 정답 그대로 두고,
+//   다중 → 단일 전환 시 첫 번째 정답만 남기기
+const _origRpSetSelectionMode = window.rpSetSelectionMode;
+window.rpSetSelectionMode = function(mode){
+  if(typeof _origRpSetSelectionMode === 'function'){
+    _origRpSetSelectionMode(mode);
+  } else if(curBlock){
+    curBlock.dataset.selMode = mode;
+  }
+  // 위임 대상에도 selMode 저장
+  if(curBlock){
+    const tgt = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(curBlock) : curBlock;
+    if(tgt) tgt.dataset.selMode = mode;
+  }
+  // 다중 → 단일로 전환할 때 첫 번째 정답만 남기기
+  if(mode === 'single' && curBlock){
+    const tgt = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(curBlock) : curBlock;
+    if(tgt){
+      const items = [...tgt.querySelectorAll('.sm-choice-item.correct')];
+      if(items.length > 1){
+        items.slice(1).forEach(it => it.classList.remove('correct'));
+      }
+    }
   }
 };
 function rpToggleSol(show, btn){
@@ -20411,18 +21965,24 @@ function buildChoicesHtml(qtype, q, ci){
 
   // ── 9. 연결형 ──
   if(qtype==='연결형'){
+    // [UPDATED 2026-04] 빈 템플릿과 동일한 구조 사용 (.sm-match2-*)
+    //   input ● gap ● input 패턴, 점 클릭/드래그로 연결 가능
     const leftItems  = q.leftItems  || ['선택지를 입력합니다.','선택지를 입력합니다.'];
     const rightItems = q.rightItems || ['선택지를 입력합니다.','선택지를 입력합니다.'];
-    const pairs = leftItems.map((_,i)=>[leftItems[i]||'',rightItems[i]||'']);
-    return `<div style="padding:8px 20px 12px;display:grid;grid-template-columns:1fr 20px 1fr;gap:6px;align-items:center;">
-      ${pairs.map(([l,r])=>`
-        <div class="q-ctxt" contenteditable="true" style="padding:7px 10px;border-radius:7px;border:1px solid var(--g2);background:var(--g1);font-size:12px;outline:none;">${l}</div>
-        <div style="display:flex;flex-direction:column;align-items:center;gap:3px;">
-          <div style="width:7px;height:7px;border-radius:50%;background:var(--g3);"></div>
-          <div style="width:1px;height:8px;background:var(--g3);"></div>
-          <div style="width:7px;height:7px;border-radius:50%;background:var(--g3);"></div>
-        </div>
-        <div class="q-ctxt" contenteditable="true" style="padding:7px 10px;border-radius:7px;border:1px solid var(--blue);background:var(--blue-lt);font-size:12px;outline:none;">${r}</div>`).join('')}
+    const rows = leftItems.map((_, i) => {
+      const l = leftItems[i] || '';
+      const r = rightItems[i] || '';
+      return `<div class="sm-match2-row">
+        <input class="sm-match2-input" value="${l}" placeholder="선택지를 입력합니다.">
+        <div class="sm-match2-dot" data-side="left" onclick="smMatchDotClick(this)"><span></span></div>
+        <div class="sm-match2-gap"></div>
+        <div class="sm-match2-dot" data-side="right" onclick="smMatchDotClick(this)"><span></span></div>
+        <input class="sm-match2-input" value="${r}" placeholder="선택지를 입력합니다.">
+      </div>`;
+    }).join('');
+    return `<div style="padding:8px 20px 12px;position:relative;">
+      <div class="sm-match2-wrap sm-match2-cols-2">${rows}</div>
+      <svg class="sm-match2-lines" style="position:absolute;inset:8px 20px 12px;pointer-events:none;"></svg>
     </div>`;
   }
 
@@ -20974,6 +22534,11 @@ function tmplRecRenderContents(grid, unitFilter){
   };
 
   // [ADDED 2026-04] 서브 필터 바 카운트 업데이트 + 필터 적용
+  // [ADDED 2026-04] 심플모드 — 추천 콘텐츠에서 개념·활동 카드 제외 (빈 템플릿은 건드리지 않음)
+  const _isSimpleMode = (typeof lsGetSelectedMode === 'function') && lsGetSelectedMode() === 'simple';
+  if(_isSimpleMode){
+    items = items.filter(it => _tmplRecCategoriesOf(it).has('question'));
+  }
   const counts = { all: items.length, concept: 0, activity: 0, question: 0 };
   items.forEach(it => {
     const cats = _tmplRecCategoriesOf(it);
@@ -20981,14 +22546,15 @@ function tmplRecRenderContents(grid, unitFilter){
   });
   const subFilterEl = document.getElementById('tmplRecSubfilter');
   if(subFilterEl){
-    subFilterEl.style.display = 'flex';
+    // 심플모드는 서브필터 바 자체 숨김 (어차피 문항만 있어 선택 의미 없음)
+    subFilterEl.style.display = _isSimpleMode ? 'none' : 'flex';
     subFilterEl.querySelectorAll('.count').forEach(el => {
       const key = el.dataset.countFor;
       el.textContent = counts[key] != null ? counts[key] : 0;
     });
   }
-  const cFilter = window._tmplRecContentFilter || 'all';
-  if(cFilter !== 'all'){
+  const cFilter = _isSimpleMode ? 'question' : (window._tmplRecContentFilter || 'all');
+  if(!_isSimpleMode && cFilter !== 'all'){
     items = items.filter(it => _tmplRecCategoriesOf(it).has(cFilter));
   }
 
@@ -21017,8 +22583,21 @@ function tmplRecRenderContents(grid, unitFilter){
   const selSet = isInsertMode ? window._smRecSelected : null;
 
   grid.innerHTML = items.map(item => {
-    const bg = item.color || typeColor[item.type] || '#F3F4F6';
-    const ac = item.accent || typeAccent[item.type] || '#4B6EF5';
+    // [ADDED 2026-04] 라벨 표기 정리 — 사용자 요청
+    //   - "평가" 라벨 → "문항"으로 통일 (탭 자체로 콘텐츠임을 알 수 있고, 평가도 결국 문항 모음)
+    //   - 그 외 "문항"/"활동"/"개념"은 그대로 표시
+    const _displayType = (item.type === '평가') ? '문항' : (item.type || '문항');
+    // [UPDATED 2026-04] "문항" 라벨은 색상 하나로 통일 (사용자 요청)
+    //   기존: 평가는 파란색, 문항은 핑크/주황 등 데이터별로 다른 색이 섞임
+    //   변경: _displayType이 '문항'이면 표준 문항 색상(분홍/빨강) 강제, 그 외엔 데이터 색상 유지
+    const _stdTypeColor  = {문항:'#FFF0F3', 활동:'#F3EEFF', 개념:'#E8FFF5'};
+    const _stdTypeAccent = {문항:'#FF4F6A', 활동:'#7C4DFF', 개념:'#22C98B'};
+    const bg = (_displayType === '문항')
+      ? _stdTypeColor['문항']
+      : (item.color || typeColor[item.type] || _stdTypeColor[_displayType] || '#F3F4F6');
+    const ac = (_displayType === '문항')
+      ? _stdTypeAccent['문항']
+      : (item.accent || typeAccent[item.type] || _stdTypeAccent[_displayType] || '#4B6EF5');
     if(isInsertMode){
       // [UPDATED 2026-04] 카드 클릭 시 즉시 삽입 (복수선택 UX 제거)
       //   심플모드 → smInsertRecContent (_blocksForContent로 실제 콘텐츠 블록)
@@ -21029,7 +22608,7 @@ function tmplRecRenderContents(grid, unitFilter){
       return `<div class="sm-rec-card" data-id="${item.id}" onclick="event.stopPropagation();${insertCall}" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5';" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0';">
         <div style="height:130px;background:${bg};display:flex;align-items:center;justify-content:center;position:relative;">
           <span style="font-size:52px;">${item.icon||'📄'}</span>
-          <span style="position:absolute;top:12px;left:12px;padding:3px 10px;border-radius:20px;background:${ac};color:white;font-size:10px;font-weight:700;">${item.type}</span>
+          <span style="position:absolute;top:12px;left:12px;padding:3px 10px;border-radius:20px;background:${ac};color:white;font-size:10px;font-weight:700;">${_displayType}</span>
         </div>
         <div style="padding:14px 16px;">
           <div style="font-size:14px;font-weight:800;color:#1C1F2E;margin-bottom:4px;">${item.title}</div>
@@ -21044,7 +22623,7 @@ function tmplRecRenderContents(grid, unitFilter){
     return `<div style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)'">
       <div onclick="lgPreview('${item.id}')" style="height:130px;background:${bg};display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;">
         <span style="font-size:52px;">${item.icon||'📄'}</span>
-        <span style="position:absolute;top:12px;left:12px;padding:3px 10px;border-radius:20px;background:${ac};color:white;font-size:10px;font-weight:700;">${item.type}</span>
+        <span style="position:absolute;top:12px;left:12px;padding:3px 10px;border-radius:20px;background:${ac};color:white;font-size:10px;font-weight:700;">${_displayType}</span>
       </div>
       <div style="padding:14px 16px;">
         <div style="font-size:14px;font-weight:800;color:#1C1F2E;margin-bottom:4px;">${item.title}</div>
@@ -21066,14 +22645,22 @@ function tmplRecRenderContents(grid, unitFilter){
 // 추천 세트지 그리드 — 랜딩의 LS_UNITS에서 sets 추출
 function tmplRecRenderSets(grid, unitFilter){
   const units = (typeof LS_UNITS !== 'undefined') ? LS_UNITS : (window._lsDataSource || []);
-  const items = [];
+  const collected = [];
   units.forEach((u, uidx) => {
     const name = u.name || '';
     if(unitFilter && !name.includes(unitFilter.split(' · ')[1]||unitFilter)) return;
     (u.sets || []).forEach((s, sidx) => {
-      items.push({ uidx, sidx, name: s.name, unit: u.name, breakdown: s.breakdown, badge: s.badge });
+      collected.push({ uidx, sidx, name: s.name, unit: u.name, breakdown: s.breakdown, badge: s.badge });
     });
   });
+
+  // [ADDED 2026-04] 심플모드 — 추천 세트지에서 "문항이 없는" 세트(개념·활동만 있는 세트)는 카드 자체 제외
+  //   빈 템플릿(LS_TEMPLATES)은 건드리지 않음 — 여기는 추천 세트지 그리드 한정
+  // [FIXED 2026-04] const 재할당 에러 수정 — 새 변수로 필터 결과 받기
+  const _isSimpleMode = (typeof lsGetSelectedMode === 'function') && lsGetSelectedMode() === 'simple';
+  const items = _isSimpleMode
+    ? collected.filter(it => it.breakdown && (it.breakdown['문항']||0) > 0)
+    : collected;
 
   if(!items.length){
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#9CA3AF;font-size:13px;">해당 단원의 세트지가 없어요</div>`;
@@ -21100,13 +22687,20 @@ function tmplRecRenderSets(grid, unitFilter){
   grid.innerHTML = items.map((it, idx) => {
     const b = badgeMap[it.badge] || ['추천','#EEF1FF','#4B6EF5'];
     const th = thumbSet[idx % thumbSet.length];
+    // [UPDATED 2026-04] 심플모드 — breakdown 요약에서도 문항만 표시
     const summary = it.breakdown
-      ? Object.entries(it.breakdown).map(([k,v]) => `${k} ${v}개`).join(' · ')
+      ? Object.entries(it.breakdown)
+          .filter(([k]) => !_isSimpleMode || k === '문항')
+          .map(([k,v]) => `${k} ${v}개`).join(' · ')
       : '';
+    // [UPDATED 2026-04] 사용자 요청 — 심플/고급모드 모두 동일하게 굵은 강조 스타일 적용
+    //   기존: 심플모드만 굵게, 고급모드는 회색 일반
+    //   변경: 두 모드 모두 굵은 글씨 + 어두운 색상으로 통일
+    const summaryStyle = 'font-size:12px;color:#1E2340;font-weight:700;';
     return `<div style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0'" onclick="tmplRecInsertSet(${it.uidx},${it.sidx})">
       <div style="height:130px;background:${th.bg};display:flex;align-items:center;justify-content:center;position:relative;">
         <span style="font-size:52px;">${th.emoji}</span>
-        <span style="position:absolute;top:12px;left:12px;padding:3px 10px;border-radius:20px;background:#FF8C42;color:white;font-size:10px;font-weight:700;">세트지</span>
+        <!-- [REMOVED 2026-04] 좌상단 "세트지" 라벨 제거 — 사용자 요청 (탭 자체로 세트지임이 명확) -->
         <span style="position:absolute;top:12px;right:12px;padding:3px 9px;border-radius:20px;background:${b[1]};color:${b[2]};font-size:10px;font-weight:800;">${b[0]}</span>
       </div>
       <div style="padding:14px 16px;">
@@ -21114,7 +22708,7 @@ function tmplRecRenderSets(grid, unitFilter){
         <div style="font-size:11px;color:#6B7280;margin-bottom:4px;">📚 ${it.unit}</div>
         <!-- [UPDATED 2026-04] 콘텐츠 카드와 동일한 미리보기 링크 스타일 — breakdown 요약 + 우측 미리보기 버튼 -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px;">
-          <span style="font-size:11px;color:#9CA3AF;">${summary}</span>
+          <span style="${summaryStyle}">${summary}</span>
           <button onclick="event.stopPropagation();tmplRecPreviewSet(${it.uidx},${it.sidx})"
             style="border:none;background:none;font-size:12px;font-weight:700;color:#FF8C42;cursor:pointer;padding:0;">미리보기 ›</button>
         </div>
@@ -21262,8 +22856,11 @@ function tmplRecRenderLiked(grid){
       const fallback = thumbSet[idx % thumbSet.length];
       const bg    = c.thumbBg || fallback.bg;
       const emoji = c.thumb   || fallback.emoji;
-      const ctype = c.contType || '콘텐츠';
-      const ac    = contTypeAccent[ctype] || '#4B6EF5';
+      const ctypeRaw = c.contType || '콘텐츠';
+      // [ADDED 2026-04] "평가" 라벨은 사용자 요청에 따라 "문항"으로 표시 통일
+      const ctype = (ctypeRaw === '평가') ? '문항' : ctypeRaw;
+      // [UPDATED 2026-04] "문항" 라벨은 색상 하나로 통일 (사용자 요청)
+      const ac    = (ctype === '문항') ? '#FF4F6A' : (contTypeAccent[ctype] || '#4B6EF5');
       return `<div onclick="tmplRecInsertLikedContent('${wishId}')" style="border-radius:16px;overflow:hidden;border:1.5px solid #F0F0F0;background:white;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);position:relative;" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';this.style.borderColor='#4B6EF5'" onmouseout="this.style.transform='none';this.style.boxShadow='0 2px 8px rgba(0,0,0,.06)';this.style.borderColor='#F0F0F0'">
         <!-- 썸네일 영역 (추천 콘텐츠 카드와 동일 스타일) -->
         <div style="height:130px;background:${bg};display:flex;align-items:center;justify-content:center;position:relative;">
@@ -21289,7 +22886,7 @@ function tmplRecRenderLiked(grid){
         <!-- 썸네일 영역 (추천 세트지 카드와 동일 스타일) -->
         <div style="height:130px;background:${bg};display:flex;align-items:center;justify-content:center;position:relative;">
           <span style="font-size:52px;">${emoji}</span>
-          <span style="position:absolute;top:12px;left:12px;padding:3px 10px;border-radius:20px;background:#FF8C42;color:white;font-size:10px;font-weight:700;">세트지</span>
+          <!-- [REMOVED 2026-04] 좌상단 "세트지" 라벨 제거 — 사용자 요청 -->
           <button onclick="event.stopPropagation();tmplRecUnfav('${wishId}')" title="찜 해제" style="position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.92);cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);box-shadow:0 1px 4px rgba(0,0,0,.08);">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="#FBBF24" stroke="#F59E0B" stroke-width="1.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
           </button>
@@ -25071,8 +26668,12 @@ function _badgeHtml(type, label){
 // ── breakdown 칩 HTML ──
 function _breakdownHtml(bd){
   let h = '';
-  if(bd.개념 > 0) h += `<span class="ls-bk-chip 개념">개념 ${bd.개념}개</span>`;
-  if(bd.활동 > 0) h += `<span class="ls-bk-chip 활동">활동 ${bd.활동}개</span>`;
+  // [ADDED 2026-04] 심플모드 — 세트지 breakdown에서 개념·활동 칩 숨김 (문항만 표시)
+  const _isSimpleMode = (typeof lsGetSelectedMode === 'function') && lsGetSelectedMode() === 'simple';
+  if(!_isSimpleMode){
+    if(bd.개념 > 0) h += `<span class="ls-bk-chip 개념">개념 ${bd.개념}개</span>`;
+    if(bd.활동 > 0) h += `<span class="ls-bk-chip 활동">활동 ${bd.활동}개</span>`;
+  }
   if(bd.문항 > 0) h += `<span class="ls-bk-chip 문항">문항 ${bd.문항}개</span>`;
   return h;
 }
@@ -27041,14 +28642,18 @@ function _orderBlock(n){
     <div class="sm-order-wrap">${items}</div></div>`;
 }
 function _matchBlock(n){
-  const lefts  = Array.from({length:n},(_,i)=>`<input class="sm-match-item" placeholder="왼쪽 ${i+1}">`).join('');
-  const arrows = Array.from({length:n},()=>`<div class="sm-match-arrow-line"></div>`).join('');
-  const rights = Array.from({length:n},(_,i)=>`<input class="sm-match-item" placeholder="오른쪽 ${i+1}">`).join('');
+  // [UPDATED 2026-04] 빈 템플릿과 동일 구조 (.sm-match2-*) — input 양옆에 점, 점 클릭으로 연결
+  const rows = Array.from({length: n}, (_, i) => `<div class="sm-match2-row">
+    <input class="sm-match2-input" placeholder="왼쪽 ${i+1}">
+    <div class="sm-match2-dot" data-side="left" onclick="smMatchDotClick(this)"><span></span></div>
+    <div class="sm-match2-gap"></div>
+    <div class="sm-match2-dot" data-side="right" onclick="smMatchDotClick(this)"><span></span></div>
+    <input class="sm-match2-input" placeholder="오른쪽 ${i+1}">
+  </div>`).join('');
   return `<div class="sm-block"><div class="sm-block-label">연결 항목</div>
-    <div class="sm-match-wrap">
-      <div class="sm-match-col">${lefts}</div>
-      <div class="sm-match-arrow">${arrows}</div>
-      <div class="sm-match-col">${rights}</div>
+    <div style="padding:8px 14px 14px;position:relative;">
+      <div class="sm-match2-wrap sm-match2-cols-2">${rows}</div>
+      <svg class="sm-match2-lines" style="position:absolute;inset:8px 14px 14px;pointer-events:none;"></svg>
     </div></div>`;
 }
 function _bigImageBlock(){
@@ -27088,7 +28693,7 @@ function _oxQuizEditorBlock(item){
   const instr  = item.quizInstruction || '바르게 계산했으면 ○표, 틀리면 ×표 해 보세요.';
   const expr   = item.quizExpr   || '';
   const answer = item.quizAnswer || 'X';
-  const oid = bid(), xid = bid(), solId = bid();
+  const oid = bid(), xid = bid();
   const oSel = answer==='O', xSel = answer==='X';
   return `<div class="sm-block" style="padding-bottom:0;">
     <div class="sm-oxquiz-block" style="padding:14px 16px 0;">
@@ -27122,14 +28727,8 @@ function _oxQuizEditorBlock(item){
           <div class="sm-oxquiz-hint-input" contenteditable="true" data-placeholder="힌트를 입력합니다."></div>
         </div>
       </div>
-      <!-- 해설 -->
-      <div style="margin-top:14px;padding-top:12px;border-top:1px solid #F0F0F0;">
-        <span style="display:inline-flex;align-items:center;padding:3px 12px;border-radius:20px;
-                     background:#1E2340;color:white;font-size:11px;font-weight:800;margin-bottom:8px;">해설</span>
-        <div id="${solId}" class="sm-text-block" contenteditable="true"
-             data-placeholder="정답 근거와 풀이 설명을 입력하세요."
-             style="padding:4px 0 14px;border:none;"></div>
-      </div>
+      <!-- [REMOVED 2026-04] 원본 해설 영역 제거 — 사용자 요청
+           속성 패널의 해설 토글 ON 시에만 추가되도록 변경 (중복 추가 방지) -->
     </div>
   </div>`;
 }
@@ -27384,17 +28983,30 @@ function _blocksForSetGeneric(name, breakdown, questionTypes, unitNum){
           const ch = qSample.ch || ['선택지 1','선택지 2','선택지 3','선택지 4'];
           const ans = qSample.ans || 0;
           qBody = `<div class="sm-choice-wrap">${['①','②','③','④'].map((c,ci)=>`
-            <div class="sm-choice-item"${ci===ans?' style="background:#F0F4FF;border-color:#C5D0FF;"':''}>
-              <div class="sm-choice-num"${ci===ans?' style="background:#4B6EF5;color:white;"':''}>${c}</div>
+            <div class="sm-choice-item${ci===ans?' correct':''}">
+              <div class="sm-choice-num">${c}</div>
               <input class="sm-choice-input" value="${ch[ci]||''}" placeholder="선택지를 입력하세요">
             </div>`).join('')}</div>`;
         } else if(qType==='연결형'){
+          // [UPDATED 2026-04] 사용자 요청 — 빈 템플릿과 동일한 구조 + 점 클릭으로 연결
+          //   2단: input ● gap ● input
+          //   3단: input ● gap ● input ● gap ● input (3단 모드 시)
+          //   기본은 2단 — 속성패널에서 3단 전환 가능
           const left = qSample.left || ['항목 1','항목 2','항목 3'];
           const right = qSample.right || ['정답 1','정답 2','정답 3'];
-          qBody = `<div class="sm-match-wrap" style="padding:0 16px 14px;">
-            <div class="sm-match-col">${left.map(t=>`<input class="sm-match-item" value="${t}">`).join('')}</div>
-            <div class="sm-match-arrow">${left.map(()=>`<div class="sm-match-arrow-line"></div>`).join('')}</div>
-            <div class="sm-match-col">${right.map(t=>`<input class="sm-match-item" value="${t}">`).join('')}</div>
+          const rows = left.map((l, i) => {
+            const r = right[i] || '';
+            return `<div class="sm-match2-row">
+              <input class="sm-match2-input" value="${l}" placeholder="선택지를 입력합니다.">
+              <div class="sm-match2-dot" data-side="left" onclick="smMatchDotClick(this)"><span></span></div>
+              <div class="sm-match2-gap"></div>
+              <div class="sm-match2-dot" data-side="right" onclick="smMatchDotClick(this)"><span></span></div>
+              <input class="sm-match2-input" value="${r}" placeholder="선택지를 입력합니다.">
+            </div>`;
+          }).join('');
+          qBody = `<div style="padding:14px 16px 10px;position:relative;">
+            <div class="sm-match2-wrap sm-match2-cols-2">${rows}</div>
+            <svg class="sm-match2-lines" style="position:absolute;inset:14px 16px 10px;pointer-events:none;"></svg>
           </div>`;
         } else if(qType==='서술형'){
           qBody = `<div class="sm-essay-wrap" style="padding:0 14px 12px;"><textarea class="sm-essay-area" placeholder="풀이 과정과 답을 입력하세요."></textarea></div>`;
@@ -27467,14 +29079,14 @@ function _blocksForSetDeduckFull(name, breakdown){
     <div class="sm-choice-wrap">
       <div class="sm-choice-item"><div class="sm-choice-num">①</div><input class="sm-choice-input" value="12시가 되려면 10분이 지나야 합니다."></div>
       <div class="sm-choice-item"><div class="sm-choice-num">②</div><input class="sm-choice-input" value="12시 10분 전입니다."></div>
-      <div class="sm-choice-item" style="background:#FFF0F0;border-color:#FFCDD2;"><div class="sm-choice-num" style="background:#E53935;color:white;">③</div><input class="sm-choice-input" value="12시 50분입니다." style="color:#C62828;font-weight:700;"></div>
+      <div class="sm-choice-item correct"><div class="sm-choice-num">③</div><input class="sm-choice-input" value="12시 50분입니다."></div>
       <div class="sm-choice-item"><div class="sm-choice-num">④</div><input class="sm-choice-input" value="11시 50분입니다."></div>
     </div>
   </div>`;
   h += _smBlockVarBar('문항1','choice');
 
   // 문항 2: 단답형 — 미리보기와 동일한 대화 레이아웃
-  h += `<div class="sm-block" style="border-color:#E65100;">
+  h += `<div class="sm-block" data-answer-text="588" style="border-color:#E65100;">
     <div style="background:#FFF3E0;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #FFE0B2;">
       <div style="width:22px;height:22px;border-radius:6px;background:#E65100;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
       <span style="font-size:12px;font-weight:800;color:#E65100;">단답형 문항</span>
@@ -27497,12 +29109,13 @@ function _blocksForSetDeduckFull(name, breakdown){
     </div>
     <div class="sm-block-label" style="padding:4px 16px 4px;">답</div>
     <div class="sm-short-wrap" style="padding:4px 16px 14px;">
-      <input class="sm-short-input" placeholder="정답을 입력하세요">
+      <input class="sm-short-input" value="588" placeholder="정답을 입력하세요">
     </div>
   </div>`;
   h += _smBlockVarBar('문항2','question');
 
-  // 문항 3: 연결형 — 미리보기와 동일한 색상 스타일
+  // 문항 3: 연결형 — [UPDATED 2026-04] 빈 템플릿과 동일한 row 기반 구조 사용
+  //   사용자 요청: 점에서 점으로 드래그/클릭으로 연결 가능한 형태로 변경
   h += `<div class="sm-block" style="border-color:#2E7D32;">
     <div style="background:#E8F5E9;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #C8E6C9;">
       <div style="width:22px;height:22px;border-radius:6px;background:#2E7D32;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
@@ -27512,22 +29125,31 @@ function _blocksForSetDeduckFull(name, breakdown){
       <div contenteditable="true" class="sm-text-block" style="font-size:14px;font-weight:700;border:none;padding:0 0 12px;min-height:auto;"
         data-placeholder="문제를 입력하세요">같은 길이끼리 이어 보세요.</div>
     </div>
-    <div class="sm-match-wrap" style="padding:0 16px 14px;">
-      <div class="sm-match-col">
-        <input class="sm-match-item" value="205 cm" style="background:#B2EBF2;border-color:#80DEEA;font-weight:800;color:#006064;text-align:center;" placeholder="왼쪽 1">
-        <input class="sm-match-item" value="320 cm" style="background:#B2EBF2;border-color:#80DEEA;font-weight:800;color:#006064;text-align:center;" placeholder="왼쪽 2">
-        <input class="sm-match-item" value="1 km 300 m" style="background:#B2EBF2;border-color:#80DEEA;font-weight:800;color:#006064;text-align:center;" placeholder="왼쪽 3">
+    <div style="padding:0 16px 14px;position:relative;">
+      <div class="sm-match2-wrap sm-match2-cols-2">
+        <div class="sm-match2-row">
+          <input class="sm-match2-input" value="205 cm" placeholder="선택지를 입력합니다.">
+          <div class="sm-match2-dot" data-side="left" onclick="smMatchDotClick(this)"><span></span></div>
+          <div class="sm-match2-gap"></div>
+          <div class="sm-match2-dot" data-side="right" onclick="smMatchDotClick(this)"><span></span></div>
+          <input class="sm-match2-input" value="2 m 5 cm" placeholder="선택지를 입력합니다.">
+        </div>
+        <div class="sm-match2-row">
+          <input class="sm-match2-input" value="320 cm" placeholder="선택지를 입력합니다.">
+          <div class="sm-match2-dot" data-side="left" onclick="smMatchDotClick(this)"><span></span></div>
+          <div class="sm-match2-gap"></div>
+          <div class="sm-match2-dot" data-side="right" onclick="smMatchDotClick(this)"><span></span></div>
+          <input class="sm-match2-input" value="3 m 20 cm" placeholder="선택지를 입력합니다.">
+        </div>
+        <div class="sm-match2-row">
+          <input class="sm-match2-input" value="1 km 300 m" placeholder="선택지를 입력합니다.">
+          <div class="sm-match2-dot" data-side="left" onclick="smMatchDotClick(this)"><span></span></div>
+          <div class="sm-match2-gap"></div>
+          <div class="sm-match2-dot" data-side="right" onclick="smMatchDotClick(this)"><span></span></div>
+          <input class="sm-match2-input" value="1300 m" placeholder="선택지를 입력합니다.">
+        </div>
       </div>
-      <div class="sm-match-arrow">
-        <div class="sm-match-arrow-line"></div>
-        <div class="sm-match-arrow-line"></div>
-        <div class="sm-match-arrow-line"></div>
-      </div>
-      <div class="sm-match-col">
-        <input class="sm-match-item" value="2 m 5 cm" style="background:#E8EAF6;border-color:#C5CAE9;font-weight:800;color:#3949AB;text-align:center;" placeholder="오른쪽 1">
-        <input class="sm-match-item" value="3 m 20 cm" style="background:#E8EAF6;border-color:#C5CAE9;font-weight:800;color:#3949AB;text-align:center;" placeholder="오른쪽 2">
-        <input class="sm-match-item" value="1300 m" style="background:#E8EAF6;border-color:#C5CAE9;font-weight:800;color:#3949AB;text-align:center;" placeholder="오른쪽 3">
-      </div>
+      <svg class="sm-match2-lines" style="position:absolute;inset:0 16px 14px;pointer-events:none;"></svg>
     </div>
   </div>`;
   h += _smBlockVarBar('문항3','choice');
@@ -27595,7 +29217,7 @@ function _blocksForSetPlanarFull(name){
     <div class="sm-choice-wrap">
       <div class="sm-choice-item"><div class="sm-choice-num">①</div><input class="sm-choice-input" value="12시가 되려면 10분이 지나야 합니다."></div>
       <div class="sm-choice-item"><div class="sm-choice-num">②</div><input class="sm-choice-input" value="12시 10분 전입니다."></div>
-      <div class="sm-choice-item" style="background:#FFF0F0;border-color:#FFCDD2;"><div class="sm-choice-num" style="background:#E53935;color:white;">③</div><input class="sm-choice-input" value="12시 50분입니다." style="color:#C62828;font-weight:700;"></div>
+      <div class="sm-choice-item correct"><div class="sm-choice-num">③</div><input class="sm-choice-input" value="12시 50분입니다."></div>
       <div class="sm-choice-item"><div class="sm-choice-num">④</div><input class="sm-choice-input" value="11시 50분입니다."></div>
     </div>
   </div>`;
@@ -27620,7 +29242,7 @@ function _blocksForSetLengthTimeFull(name){
     <div class="sm-choice-wrap">
       <div class="sm-choice-item"><div class="sm-choice-num">①</div><input class="sm-choice-input" value="12시가 되려면 10분이 지나야 합니다."></div>
       <div class="sm-choice-item"><div class="sm-choice-num">②</div><input class="sm-choice-input" value="12시 10분 전입니다."></div>
-      <div class="sm-choice-item" style="background:#FFF0F0;border-color:#FFCDD2;"><div class="sm-choice-num" style="background:#E53935;color:white;">③</div><input class="sm-choice-input" value="12시 50분입니다." style="color:#C62828;font-weight:700;"></div>
+      <div class="sm-choice-item correct"><div class="sm-choice-num">③</div><input class="sm-choice-input" value="12시 50분입니다."></div>
       <div class="sm-choice-item"><div class="sm-choice-num">④</div><input class="sm-choice-input" value="11시 50분입니다."></div>
     </div>
   </div>`;
@@ -27635,22 +29257,31 @@ function _blocksForSetLengthTimeFull(name){
     <div style="padding:12px 16px 6px;">
       <div contenteditable="true" class="sm-text-block" style="font-size:14px;font-weight:700;border:none;padding:0 0 12px;min-height:auto;" data-placeholder="문제를 입력하세요">같은 길이끼리 이어 보세요.</div>
     </div>
-    <div class="sm-match-wrap" style="padding:0 16px 14px;">
-      <div class="sm-match-col">
-        <input class="sm-match-item" value="205 cm" style="background:#B2EBF2;border-color:#80DEEA;font-weight:800;color:#006064;text-align:center;">
-        <input class="sm-match-item" value="320 cm" style="background:#B2EBF2;border-color:#80DEEA;font-weight:800;color:#006064;text-align:center;">
-        <input class="sm-match-item" value="1 km 300 m" style="background:#B2EBF2;border-color:#80DEEA;font-weight:800;color:#006064;text-align:center;">
+    <div style="padding:0 16px 14px;position:relative;">
+      <div class="sm-match2-wrap sm-match2-cols-2">
+        <div class="sm-match2-row">
+          <input class="sm-match2-input" value="205 cm" placeholder="선택지를 입력합니다.">
+          <div class="sm-match2-dot" data-side="left" onclick="smMatchDotClick(this)"><span></span></div>
+          <div class="sm-match2-gap"></div>
+          <div class="sm-match2-dot" data-side="right" onclick="smMatchDotClick(this)"><span></span></div>
+          <input class="sm-match2-input" value="2 m 5 cm" placeholder="선택지를 입력합니다.">
+        </div>
+        <div class="sm-match2-row">
+          <input class="sm-match2-input" value="320 cm" placeholder="선택지를 입력합니다.">
+          <div class="sm-match2-dot" data-side="left" onclick="smMatchDotClick(this)"><span></span></div>
+          <div class="sm-match2-gap"></div>
+          <div class="sm-match2-dot" data-side="right" onclick="smMatchDotClick(this)"><span></span></div>
+          <input class="sm-match2-input" value="3 m 20 cm" placeholder="선택지를 입력합니다.">
+        </div>
+        <div class="sm-match2-row">
+          <input class="sm-match2-input" value="1 km 300 m" placeholder="선택지를 입력합니다.">
+          <div class="sm-match2-dot" data-side="left" onclick="smMatchDotClick(this)"><span></span></div>
+          <div class="sm-match2-gap"></div>
+          <div class="sm-match2-dot" data-side="right" onclick="smMatchDotClick(this)"><span></span></div>
+          <input class="sm-match2-input" value="1300 m" placeholder="선택지를 입력합니다.">
+        </div>
       </div>
-      <div class="sm-match-arrow">
-        <div class="sm-match-arrow-line"></div>
-        <div class="sm-match-arrow-line"></div>
-        <div class="sm-match-arrow-line"></div>
-      </div>
-      <div class="sm-match-col">
-        <input class="sm-match-item" value="2 m 5 cm" style="background:#E8EAF6;border-color:#C5CAE9;font-weight:800;color:#3949AB;text-align:center;">
-        <input class="sm-match-item" value="3 m 20 cm" style="background:#E8EAF6;border-color:#C5CAE9;font-weight:800;color:#3949AB;text-align:center;">
-        <input class="sm-match-item" value="1300 m" style="background:#E8EAF6;border-color:#C5CAE9;font-weight:800;color:#3949AB;text-align:center;">
-      </div>
+      <svg class="sm-match2-lines" style="position:absolute;inset:0 16px 14px;pointer-events:none;"></svg>
     </div>
   </div>`;
   h += _smBlockVarBar('문항2','choice');
@@ -27742,7 +29373,7 @@ function _blocksForSetMultiplyFull(name){
     <div class="sm-choice-wrap">
       <div class="sm-choice-item"><div class="sm-choice-num">①</div><input class="sm-choice-input" value="248"></div>
       <div class="sm-choice-item"><div class="sm-choice-num">②</div><input class="sm-choice-input" value="254"></div>
-      <div class="sm-choice-item" style="background:#F9F0FF;border-color:#D1B3E8;"><div class="sm-choice-num" style="background:#6A1B9A;color:white;">③</div><input class="sm-choice-input" value="258" style="color:#4A148C;font-weight:700;"></div>
+      <div class="sm-choice-item correct"><div class="sm-choice-num">③</div><input class="sm-choice-input" value="258"></div>
       <div class="sm-choice-item"><div class="sm-choice-num">④</div><input class="sm-choice-input" value="264"></div>
     </div>
   </div>`;
@@ -27850,10 +29481,13 @@ function _blocksForTemplate(tmpl){
 
   // TF형 행 (이미지 6)
   function _tfRowBlock(){
-    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-      <div style="width:30px;height:30px;border-radius:50%;border:1.5px solid #AAA;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#888;flex-shrink:0;">T</div>
-      <div style="width:30px;height:30px;border-radius:50%;border:1.5px solid #AAA;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#888;flex-shrink:0;">F</div>
-      <input style="flex:1;border:1px dashed #C8C8D0;border-radius:4px;padding:6px 10px;font-size:12px;color:#555;font-family:'Noto Sans KR',sans-serif;" placeholder="선택지를 입력합니다.">
+    // [UPDATED 2026-04] 행/버튼/입력란에 식별 클래스 부여 — 정렬/스타일 전환 핸들러용
+    return `<div class="sm-tf-row" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <div class="sm-tf-buttons" style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <div class="sm-tf-btn sm-tf-btn-t" style="width:30px;height:30px;border-radius:50%;border:1.5px solid #AAA;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#888;flex-shrink:0;">T</div>
+        <div class="sm-tf-btn sm-tf-btn-f" style="width:30px;height:30px;border-radius:50%;border:1.5px solid #AAA;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#888;flex-shrink:0;">F</div>
+      </div>
+      <input class="sm-tf-input" style="flex:1;border:1px dashed #C8C8D0;border-radius:4px;padding:6px 10px;font-size:12px;color:#555;font-family:'Noto Sans KR',sans-serif;" placeholder="선택지를 입력합니다.">
     </div>`;
   }
 
@@ -27867,9 +29501,11 @@ function _blocksForTemplate(tmpl){
   }
 
   // 순서조합형 카드 그리드 (이미지 8)
+  // [UPDATED 2026-04] 사용자 요청 — 기본은 텍스트 길이에 맞게 늘어나는 가변폭,
+  //   동일크기 모드(.sm-combo-equal)일 때만 4열 그리드
   function _comboCardBlock(){
-    const card = ()=>`<div style="display:flex;flex-direction:column;gap:5px;">
-      <input style="border:1px dashed #C8C8D0;border-radius:6px;padding:14px 8px;font-size:11px;color:#C0C8D8;text-align:center;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;" placeholder="선택지를 입력합니다.">
+    const card = ()=>`<div class="sm-combo-card" style="display:flex;flex-direction:column;gap:5px;">
+      <input class="sm-combo-input" placeholder="선택지를 입력합니다." style="border:1px dashed #C8C8D0;border-radius:6px;padding:14px 12px;font-size:11px;color:#C0C8D8;text-align:center;font-family:'Noto Sans KR',sans-serif;box-sizing:border-box;">
       <div style="display:flex;align-items:center;justify-content:center;gap:6px;">
         <span style="color:#4B5691;font-weight:900;font-size:13px;">◄</span>
         <span style="font-size:11px;font-weight:700;color:#555;">선택</span>
@@ -27877,11 +29513,8 @@ function _blocksForTemplate(tmpl){
       </div>
     </div>`;
     return `<div class="sm-block">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 16px 8px;">
-        ${card()}${card()}${card()}${card()}
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 16px 14px;">
-        ${card()}${card()}<div></div><div></div>
+      <div class="sm-combo-wrap" style="padding:0 16px 14px;">
+        ${card()}${card()}${card()}${card()}${card()}${card()}
       </div>
     </div>`;
   }
@@ -27952,15 +29585,17 @@ function _blocksForTemplate(tmpl){
       + _smBlockVarBar('활동1','activity');
 
   } else if(n==='선택형'){
-    const items = ['①','②','③','④','⑤'].map(num=>`
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-        <span style="font-size:14px;color:#888;width:18px;text-align:center;flex-shrink:0;">${num}</span>
-        <input style="flex:1;border:1px dashed #C8C8D0;border-radius:4px;padding:6px 10px;font-size:12.5px;color:#555;font-family:'Noto Sans KR',sans-serif;" placeholder="선택지를 입력합니다.">
+    // [UPDATED 2026-04] 사용자 요청 — 선택지 구조를 sm-choice-wrap/sm-choice-item로 통일
+    //   추천 콘텐츠와 같은 구조 → 정답 클릭/레이아웃 변경/스타일이 일관되게 적용됨
+    const items = ['①','②','③','④','⑤'].map(num =>
+      `<div class="sm-choice-item">
+        <div class="sm-choice-num">${num}</div>
+        <input class="sm-choice-input" placeholder="선택지를 입력합니다.">
       </div>`).join('');
     return _titleBlock('제목을 입력하세요')
       + _questionGroup(
           _qContent(1)
-          + `<div style="padding:10px 16px 14px;">${items}</div>`
+          + `<div class="sm-choice-wrap" style="padding:10px 16px 14px;">${items}</div>`
           + _sectionContent('힌트','힌트를 입력합니다.')
           + _sectionContent('해설','해설을 입력합니다.')
         )
@@ -27984,16 +29619,17 @@ function _blocksForTemplate(tmpl){
       + _smBlockVarBar('문항1','question');
 
   } else if(n==='OX형'){
+    // [UPDATED 2026-04] ○/✕ 박스에 식별 클래스 부여 — 속성 패널 OX↔TF 전환 핸들러용
     return _titleBlock('제목을 입력하세요')
       + _questionGroup(
           _qContent(1)
           + `<div style="display:flex;gap:24px;justify-content:center;padding:20px 0 10px;">
               <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-                <div style="font-size:54px;font-weight:100;color:#888;line-height:1;">○</div>
+                <div class="sm-oxquiz-btn answer-o" style="font-size:54px;font-weight:100;color:#888;line-height:1;">○</div>
                 <input style="border:1px dashed #C8C8D0;border-radius:4px;padding:6px 10px;font-size:12px;color:#555;width:120px;font-family:'Noto Sans KR',sans-serif;" placeholder="힌트를 입력합니다.">
               </div>
               <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-                <div style="font-size:54px;font-weight:900;color:#888;line-height:1;">✕</div>
+                <div class="sm-oxquiz-btn answer-x" style="font-size:54px;font-weight:900;color:#888;line-height:1;">✕</div>
                 <input style="border:1px dashed #C8C8D0;border-radius:4px;padding:6px 10px;font-size:12px;color:#555;width:120px;font-family:'Noto Sans KR',sans-serif;" placeholder="힌트를 입력합니다.">
               </div>
             </div>`
@@ -28050,14 +29686,41 @@ function _blocksForTemplate(tmpl){
       + _smBlockVarBar('문항1','choice');
 
   } else if(n==='연쇄형'){
-    // [ADDED 2026-04] 연쇄형 — 발문 + "하위 콘텐츠 추가" 버튼 + 힌트 + 해설
+    // [UPDATED 2026-04] 연쇄형 — 단일/다중/탭 3가지 모드별 UI 분기
+    //   콘텐츠에 모든 모드용 발문/액션 영역을 두고 dataset.chainMode에 따라 표시 전환
+    //   - single: 번호 뱃지(1) + "하위 콘텐츠 추가" 텍스트
+    //   - multi:  번호 없는 발문 + "하위 콘텐츠 추가" 텍스트
+    //   - tab:    번호 없는 발문 + 좌측 "+" 큰 파란 아이콘만
+    const idQs = bid();      // 단일 모드 발문 (번호 뱃지 있음)
+    const idQm = bid();      // 다중/탭 모드 발문 (번호 뱃지 없음)
+    const headSingle = `<div class="sm-chain-head sm-chain-head-single" style="display:flex;align-items:flex-start;gap:10px;padding:14px 16px 12px;">
+      <div style="min-width:32px;height:32px;border-radius:7px;background:#4B5691;color:white;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+      <div id="${idQs}" class="sm-text-block" contenteditable="true"
+           data-placeholder="발문을 입력합니다."
+           onfocus="smSaveCursor()" onkeyup="smSaveCursor()" onmouseup="smSaveCursor()"
+           style="flex:1;border:none;border-bottom:1px dashed #D0D0D8;border-radius:0;padding:4px 0 10px;font-size:14px;min-height:28px;"></div>
+    </div>`;
+    const headPlain = `<div class="sm-chain-head sm-chain-head-plain" style="display:none;padding:14px 16px 12px;">
+      <div id="${idQm}" class="sm-text-block" contenteditable="true"
+           data-placeholder="발문을 입력합니다."
+           onfocus="smSaveCursor()" onkeyup="smSaveCursor()" onmouseup="smSaveCursor()"
+           style="border:none;border-bottom:1px dashed #D0D0D8;border-radius:0;padding:4px 0 10px;font-size:14px;min-height:28px;"></div>
+    </div>`;
     return _titleBlock('제목을 입력하세요')
       + _questionGroup(
-          _qContent(1)
-          + `<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:18px 16px 22px;cursor:pointer;" onclick="smAddChainChild(this)" onmouseover="this.style.background='#F5F7FF';" onmouseout="this.style.background='';">
+          headSingle
+          + headPlain
+          + `<!-- 단일/다중 모드용 액션 (하위 콘텐츠 추가) -->
+            <div class="sm-chain-add sm-chain-add-multi" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:18px 16px 22px;cursor:pointer;" onclick="smAddChainChild(this)" onmouseover="this.style.background='#F5F7FF';" onmouseout="this.style.background='';">
               <span style="font-size:13px;font-weight:700;color:#1E2340;">하위 콘텐츠 추가</span>
               <div style="width:28px;height:28px;border-radius:7px;border:1.5px solid #4B6EF5;background:#EEF1FF;display:flex;align-items:center;justify-content:center;color:#4B6EF5;">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="2"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+            <!-- 탭연동형 모드용 액션 (좌측 + 아이콘) -->
+            <div class="sm-chain-add sm-chain-add-tab" style="display:none;align-items:center;padding:14px 16px 18px;cursor:pointer;" onclick="smAddChainChild(this)" onmouseover="this.style.background='#F5F7FF';" onmouseout="this.style.background='';">
+              <div style="width:28px;height:28px;border-radius:7px;color:#4B6EF5;display:flex;align-items:center;justify-content:center;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
               </div>
             </div>
             <!-- 하위 콘텐츠가 추가될 컨테이너 -->
@@ -28068,24 +29731,26 @@ function _blocksForTemplate(tmpl){
       + _smBlockVarBar('문항1','choice');
 
   } else if(n==='연결형'){
+    // [UPDATED 2026-04] 사용자 요청 — 각 input 양옆에 점, 점끼리 연결 가능
+    //   2단: input ● (빈공간) ● input
+    //   3단: input ● (빈) ● input ● (빈) ● input
+    //   .sm-match2-wrap 에 .sm-match2-cols-2 / .sm-match2-cols-3 클래스로 모드 토글
+    //   (추천 콘텐츠와 동일 구조 사용)
+    const buildRow2 = () => `<div class="sm-match2-row">
+      <input class="sm-match2-input" placeholder="선택지를 입력합니다.">
+      <div class="sm-match2-dot" data-side="left" onclick="smMatchDotClick(this)"><span></span></div>
+      <div class="sm-match2-gap"></div>
+      <div class="sm-match2-dot" data-side="right" onclick="smMatchDotClick(this)"><span></span></div>
+      <input class="sm-match2-input" placeholder="선택지를 입력합니다.">
+    </div>`;
     return _titleBlock('제목을 입력하세요')
       + _questionGroup(
           _qContent(1)
-          + `<div style="padding:14px 16px 10px;">
-              <div style="display:grid;grid-template-columns:1fr 14px 48px 14px 1fr;align-items:center;gap:4px;margin-bottom:8px;">
-                <input style="border:1px dashed #C8C8D0;border-radius:4px;padding:6px 8px;font-size:11.5px;color:#555;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;" placeholder="선택지를 입력합니다.">
-                <div style="display:flex;justify-content:center;"><div style="width:7px;height:7px;border-radius:50%;background:#888;"></div></div>
-                <div></div>
-                <div style="display:flex;justify-content:center;"><div style="width:7px;height:7px;border-radius:50%;background:#888;"></div></div>
-                <input style="border:1px dashed #C8C8D0;border-radius:4px;padding:6px 8px;font-size:11.5px;color:#555;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;" placeholder="선택지를 입력합니다.">
+          + `<div style="padding:14px 16px 10px;position:relative;">
+              <div class="sm-match2-wrap sm-match2-cols-2">
+                ${buildRow2()}${buildRow2()}
               </div>
-              <div style="display:grid;grid-template-columns:1fr 14px 48px 14px 1fr;align-items:center;gap:4px;margin-bottom:8px;">
-                <input style="border:1px dashed #C8C8D0;border-radius:4px;padding:6px 8px;font-size:11.5px;color:#555;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;" placeholder="선택지를 입력합니다.">
-                <div style="display:flex;justify-content:center;"><div style="width:7px;height:7px;border-radius:50%;background:#888;"></div></div>
-                <div></div>
-                <div style="display:flex;justify-content:center;"><div style="width:7px;height:7px;border-radius:50%;background:#888;"></div></div>
-                <input style="border:1px dashed #C8C8D0;border-radius:4px;padding:6px 8px;font-size:11.5px;color:#555;font-family:'Noto Sans KR',sans-serif;width:100%;box-sizing:border-box;" placeholder="선택지를 입력합니다.">
-              </div>
+              <svg class="sm-match2-lines" style="position:absolute;inset:14px 16px 10px;pointer-events:none;width:auto;height:auto;"></svg>
             </div>`
           + _sectionContent('힌트','힌트를 입력합니다.')
           + _sectionContent('해설','해설을 입력합니다.')
@@ -30468,14 +32133,24 @@ function _renderAll(){
   const _isConcept  = (t) => t === '개념' || t === '개념설명';
   const _isActivity = (t) => t === '활동';
   const _isQuestion = (t) => t === '문항';
+  // [ADDED 2026-04] 심플모드 — 추천 세트지/콘텐츠에서 개념·활동 카드 제거, 필터 칩도 숨김
+  const _isSimpleMode = (typeof lsGetSelectedMode === 'function') && lsGetSelectedMode() === 'simple';
+  if(_isSimpleMode){
+    // 심플모드는 무조건 문항만 → 필터 상태도 question으로 강제
+    if(window._lsContentFilter && window._lsContentFilter !== 'question'){
+      window._lsContentFilter = 'question';
+    }
+  }
   const counts = {
-    all: allConts.length,
+    all: _isSimpleMode ? allConts.filter(x => _isQuestion(x.c.contType)).length : allConts.length,
     concept: allConts.filter(x => _isConcept(x.c.contType)).length,
     activity: allConts.filter(x => _isActivity(x.c.contType)).length,
     question: allConts.filter(x => _isQuestion(x.c.contType)).length,
   };
-  const filter = window._lsContentFilter || 'all';
+  const filter = _isSimpleMode ? 'question' : (window._lsContentFilter || 'all');
   const filtered = allConts.filter(x => {
+    // [UPDATED 2026-04] 심플모드 — 항상 문항만
+    if(_isSimpleMode) return _isQuestion(x.c.contType);
     if(filter === 'all') return true;
     if(filter === 'concept') return _isConcept(x.c.contType);
     if(filter === 'activity') return _isActivity(x.c.contType);
@@ -30499,8 +32174,8 @@ function _renderAll(){
   const setVisible = allSets.slice(0, setLimit);
   const setHasMore = allSets.length > setLimit;
 
-  // 필터 칩 HTML
-  const chipHtml =
+  // 필터 칩 HTML — [UPDATED 2026-04] 심플모드는 칩 영역 자체를 숨김(문항만 노출이라 선택 의미 없음)
+  const chipHtml = _isSimpleMode ? '' :
       '<div class="ls-content-filter">'
     +   '<button class="ls-content-filter-chip '+(filter==='all'?'on':'')+'" onclick="lsSetContentFilter(\'all\')">전체<span class="count">'+counts.all+'</span></button>'
     +   '<button class="ls-content-filter-chip '+(filter==='concept'?'on':'')+'" onclick="lsSetContentFilter(\'concept\')">📖 개념<span class="count">'+counts.concept+'</span></button>'
@@ -30561,14 +32236,20 @@ function _renderUnit(u){
   const _isActivity = (t) => t === '활동';
   const _isQuestion = (t) => t === '문항';
   const conts = u.contents.map((c,ci)=>({c,ci}));
+  // [ADDED 2026-04] 심플모드 — 추천 콘텐츠에서 개념·활동 카드 제외
+  const _isSimpleMode = (typeof lsGetSelectedMode === 'function') && lsGetSelectedMode() === 'simple';
+  if(_isSimpleMode && window._lsContentFilter && window._lsContentFilter !== 'question'){
+    window._lsContentFilter = 'question';
+  }
   const counts = {
-    all: conts.length,
+    all: _isSimpleMode ? conts.filter(x=>_isQuestion(x.c.contType)).length : conts.length,
     concept: conts.filter(x=>_isConcept(x.c.contType)).length,
     activity: conts.filter(x=>_isActivity(x.c.contType)).length,
     question: conts.filter(x=>_isQuestion(x.c.contType)).length,
   };
-  const filter = window._lsContentFilter || 'all';
+  const filter = _isSimpleMode ? 'question' : (window._lsContentFilter || 'all');
   const filtered = conts.filter(x => {
+    if(_isSimpleMode) return _isQuestion(x.c.contType);
     if(filter === 'all') return true;
     if(filter === 'concept') return _isConcept(x.c.contType);
     if(filter === 'activity') return _isActivity(x.c.contType);
@@ -30576,7 +32257,7 @@ function _renderUnit(u){
     return true;
   });
   const contCards = filtered.map(({c,ci})=>_contCardHtml(c, ci, u.id)).join('');
-  const chipHtml =
+  const chipHtml = _isSimpleMode ? '' :
       '<div class="ls-content-filter">'
     +   '<button class="ls-content-filter-chip '+(filter==='all'?'on':'')+'" onclick="lsSetContentFilter(\'all\')">전체<span class="count">'+counts.all+'</span></button>'
     +   (counts.concept  ? '<button class="ls-content-filter-chip '+(filter==='concept'?'on':'') +'" onclick="lsSetContentFilter(\'concept\')">📖 개념<span class="count">'+counts.concept+'</span></button>' : '')
@@ -31084,21 +32765,27 @@ window.lsRenderStub = function(unitIdx){
 
   let html = '';
   // [CHANGED 2026-04 안 C] 3섹션 → 1섹션 + 필터 칩
+  // [ADDED 2026-04] 심플모드 — 추천 콘텐츠에서 개념·활동 카드 제외
+  const _isSimpleMode2 = (typeof lsGetSelectedMode === 'function') && lsGetSelectedMode() === 'simple';
+  if(_isSimpleMode2 && window._lsContentFilter && window._lsContentFilter !== 'question'){
+    window._lsContentFilter = 'question';
+  }
   const counts = {
-    all: contsFlat.length,
+    all: _isSimpleMode2 ? contsFlat.filter(x => x.content.contType === '문항').length : contsFlat.length,
     concept:  contsFlat.filter(x => x.content.contType === '개념설명' || x.content.contType === '개념').length,
     activity: contsFlat.filter(x => x.content.contType === '활동').length,
     question: contsFlat.filter(x => x.content.contType === '문항').length,
   };
-  const filter = window._lsContentFilter || 'all';
+  const filter = _isSimpleMode2 ? 'question' : (window._lsContentFilter || 'all');
   const filteredStub = contsFlat.filter(x => {
+    if(_isSimpleMode2) return x.content.contType === '문항';
     if(filter === 'all') return true;
     if(filter === 'concept') return x.content.contType === '개념설명' || x.content.contType === '개념';
     if(filter === 'activity') return x.content.contType === '활동';
     if(filter === 'question') return x.content.contType === '문항';
     return true;
   });
-  const chipHtml =
+  const chipHtml = _isSimpleMode2 ? '' :
       '<div class="ls-content-filter">'
     +   '<button class="ls-content-filter-chip '+(filter==='all'?'on':'')+'" onclick="lsSetContentFilter(\'all\')">전체<span class="count">'+counts.all+'</span></button>'
     +   (counts.concept  ? '<button class="ls-content-filter-chip '+(filter==='concept'?'on':'') +'" onclick="lsSetContentFilter(\'concept\')">📖 개념<span class="count">'+counts.concept+'</span></button>' : '')
