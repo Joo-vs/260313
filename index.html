@@ -15616,14 +15616,12 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.addEventListener('click', function(e){
     const numEl = e.target.closest && e.target.closest('.sm-choice-num');
     if(!numEl) return;
-    // OX/TF용 클릭은 정답 토글이 아닌 의미 → 제외
     if(numEl.classList.contains('ox-o') || numEl.classList.contains('ox-x')) return;
     if(numEl.classList.contains('tf-t') || numEl.classList.contains('tf-f')) return;
-    // 일반 선택형 ① ② ... — 정답 토글
     if(typeof window.smChoiceToggleAnswer === 'function'){
       window.smChoiceToggleAnswer(numEl);
     }
-  }, true);
+  }, false);
 
   // [ADDED 2026-04] 심플모드 — 단답형/서술형 답 입력 시 속성패널 동기화 (반대 방향)
   //   사용자 요청: 콘텐츠 영역에서 답을 수정하면 속성패널 정답 입력란에도 즉시 반영
@@ -15633,32 +15631,25 @@ window.addEventListener('DOMContentLoaded',()=>{
     const isShort = inp.classList.contains('sm-short-input');
     const isEssay = inp.classList.contains('sm-essay-area');
     const isCombo = inp.classList.contains('sm-combo-input');
-    // [ADDED 2026-04] 순서조합형 가변 폭 — 텍스트 길이에 따라 input width 조정
-    //   field-sizing:content 미지원 브라우저용 fallback
     if(isCombo){
       const wrap = inp.closest('.sm-combo-wrap');
-      // 동일크기 모드면 자동 폭 조정 안 함
       if(!wrap || !wrap.classList.contains('sm-combo-equal')){
-        // 헬퍼 호출 — value/placeholder 길이 기반
         if(typeof window._smComboResize === 'function') window._smComboResize(inp);
       } else {
         inp.style.width = '';
       }
     }
     if(!isShort && !isEssay) return;
-    // 소속 sm-block 또는 .cb 찾아 dataset.answerText에 저장
     const block = inp.closest('.sm-block') || inp.closest('.cb');
     if(block) block.dataset.answerText = inp.value || '';
-    // 위임 대상에도 저장
     const tgt = (typeof _resolveToggleTarget === 'function' && block) ? _resolveToggleTarget(block) : block;
     if(tgt && tgt !== block) tgt.dataset.answerText = inp.value || '';
-    // 속성패널 정답 입력란 동기화 — 단, curBlock과 일치할 때만
     if(curBlock === block || curBlock === tgt){
       document.querySelectorAll('.rp-answer-input').forEach(el => {
-        if(el !== inp) el.value = inp.value || '';
+        if(el !== inp && el.value !== (inp.value || '')) el.value = inp.value || '';
       });
     }
-  }, true);
+  }, false);
   // 페이지 초기 진입: 랜딩이 기본 표시되므로 body에 landing-active 추가
   // (에디터 UI인 title-bar/toolbar/editor-body를 감춰 하단이 비지 않도록)
   const landing = document.getElementById('landingScreen');
@@ -15875,32 +15866,9 @@ function selBlock(el){
   curType = el.dataset.type || (isSmBlock ? 'question' : (el.dataset.type || ''));
   window.curBlock = el; window.curType = curType; // 퀵메뉴 카테고리 감지용
 
-  // [ADDED 2026-04] dataset.tmpl 자동 감지 — 추천 콘텐츠 sm-block에 tmpl이 안 박혀 있어도
-  //   마크업 안의 식별 클래스로 유형 추론 (속성 패널이 전용 옵션을 보여주도록)
-  //   [UPDATED 2026-04] 마크업이 명확하면 기존 값 덮어쓰기 (잘못된 tmpl 박혀 있어도 보정)
-  if(el.dataset){
-    const tgtForDetect = (typeof _resolveToggleTarget === 'function') ? _resolveToggleTarget(el) : el;
-    if(tgtForDetect){
-      let detected = '';
-      if(tgtForDetect.querySelector('.sm-match2-wrap'))         detected = '연결형';
-      else if(tgtForDetect.querySelector('.sm-match-wrap'))     detected = '연결형';
-      else if(tgtForDetect.querySelector('.sm-combo-wrap'))     detected = '순서조합형';
-      else if(tgtForDetect.querySelector('.sm-oxquiz-block'))   detected = 'OX형';
-      else if(tgtForDetect.querySelector('.sm-tf-row'))         detected = 'TF형';
-      else if(tgtForDetect.querySelector('.sm-chain-children')) detected = '연쇄형';
-      else if(tgtForDetect.querySelector('.sm-choice-wrap'))    detected = '선택형';
-      else if(tgtForDetect.querySelector('.sm-short-input'))    detected = '단답형';
-      else if(tgtForDetect.querySelector('.sm-essay-area'))     detected = '서술형';
-      if(detected){
-        el.dataset.tmpl = detected;
-        // 위임 대상에도 함께 저장 (cb→sm-block 케이스 대응)
-        if(tgtForDetect !== el && tgtForDetect.dataset) tgtForDetect.dataset.tmpl = detected;
-        // [ADDED 2026-04] curType도 'question' 계열로 보정 — 텍스트 서식 패널 분기 회피
-        curType = 'question';
-        window.curType = 'question';
-      }
-    }
-  }
+  // [DISABLED 2026-04] dataset.tmpl 자동 감지 — 무한 루프/멈춤 현상 발생으로 비활성
+  //   대신 콘텐츠 생성 시점에 직접 data-tmpl 속성을 박아넣어 처리
+  //   (추천 콘텐츠 생성 함수들에 직접 data-tmpl="연결형" 등을 추가하는 방식)
 
   // [REMOVED 2026-04] sm-block 선택 시 힌트/해설 자동 추가 로직 제거
   //   사용자 요청: "기본이 켜져있는게 맞지만, 현재 상태에 따라 반영해줘"
@@ -16842,37 +16810,7 @@ function renderRp(){
   // 텍스트 블록이면 서식 패널 표시
   // [UPDATED 2026-04] 단, sm-block이고 dataset.tmpl이 특정 문항 유형이면 전용 패널이 우선
   //   (curType이 'text'로 잘못 잡혀도 마크업 기반 dataset.tmpl 우선)
-  // [ADDED 2026-04] selBlock에서 자동감지가 미동작한 경우 대비 — renderRp 시점에도 한 번 더 감지
-  if(window.curBlock && window.curBlock.querySelector){
-    // [UPDATED 2026-04] curBlock이 contenteditable 같은 내부 요소일 수 있어 상위 sm-block/cb까지 탐색
-    let probe = window.curBlock;
-    // 상위로 최대 8단계까지 sm-block 찾기
-    let upProbe = probe;
-    let hops = 0;
-    while(upProbe && hops < 8){
-      if(upProbe.classList && (upProbe.classList.contains('sm-block') || upProbe.classList.contains('cb'))){
-        probe = upProbe;
-        break;
-      }
-      upProbe = upProbe.parentElement;
-      hops++;
-    }
-    let detected = '';
-    if(probe.querySelector && probe.querySelector('.sm-match2-wrap'))         detected = '연결형';
-    else if(probe.querySelector && probe.querySelector('.sm-match-wrap'))     detected = '연결형';
-    else if(probe.querySelector && probe.querySelector('.sm-combo-wrap'))     detected = '순서조합형';
-    else if(probe.querySelector && probe.querySelector('.sm-oxquiz-block'))   detected = 'OX형';
-    else if(probe.querySelector && probe.querySelector('.sm-tf-row'))         detected = 'TF형';
-    else if(probe.querySelector && probe.querySelector('.sm-chain-children')) detected = '연쇄형';
-    else if(probe.querySelector && probe.querySelector('.sm-choice-wrap'))    detected = '선택형';
-    else if(probe.querySelector && probe.querySelector('.sm-short-input'))    detected = '단답형';
-    else if(probe.querySelector && probe.querySelector('.sm-essay-area'))     detected = '서술형';
-    if(detected){
-      // 진짜 curBlock(컨테이너)에 박기 — probe에 이어 window.curBlock에도
-      probe.dataset.tmpl = detected;
-      if(window.curBlock !== probe && window.curBlock.dataset) window.curBlock.dataset.tmpl = detected;
-    }
-  }
+  //   selBlock에서 자동감지가 미리 실행되니 renderRp에서는 결과만 읽음
   const _curTmplPeek = (window.curBlock && window.curBlock.dataset && window.curBlock.dataset.tmpl) || '';
   const _isSpecialTmpl = (_curTmplPeek === '연쇄형' || _curTmplPeek === '연쇄형 활동' || _curTmplPeek === 'OX형' || _curTmplPeek === 'TF형'
                        || _curTmplPeek === '순서입력형' || _curTmplPeek === '순서조합형' || _curTmplPeek === '연결형'
@@ -19085,7 +19023,9 @@ function _smMatchDrawLines(wrap, svg){
 window._smMatchDragInit = function(){
   if(window._smMatchDragInitDone) return;
   window._smMatchDragInitDone = true;
-  let dragState = null; // { wrap, svg, fromDot, fromIdx, tempLine, startX, startY, moved }
+  let dragState = null;
+  let onMove = null;
+  let onUp   = null;
 
   document.addEventListener('pointerdown', function(e){
     const dotEl = e.target.closest && e.target.closest('.sm-match2-dot');
@@ -19098,134 +19038,131 @@ window._smMatchDragInit = function(){
     const dots = [...wrap.querySelectorAll('.sm-match2-dot')];
     const fromIdx = dots.indexOf(dotEl);
     if(fromIdx < 0) return;
-    // 드래그 시작
+
     dragState = {
       wrap, svg, fromDot: dotEl, fromIdx,
       tempLine: null,
       startX: e.clientX, startY: e.clientY, moved: false
     };
-    // 캡처 — 다른 곳에서 받지 않게
-    try { dotEl.setPointerCapture && dotEl.setPointerCapture(e.pointerId); } catch(_){}
-    e.preventDefault();
-  }, true);
 
-  document.addEventListener('pointermove', function(e){
-    if(!dragState) return;
-    const dx = e.clientX - dragState.startX;
-    const dy = e.clientY - dragState.startY;
-    const dist = Math.hypot(dx, dy);
-    if(!dragState.moved && dist < 4) return; // 4px 이하는 클릭으로 간주
-    dragState.moved = true;
-    // 임시 선 그리기/업데이트 — [UPDATED 2026-04] SVG 자체 좌표계 기준
-    const svg = dragState.svg;
-    const svgRect = svg.getBoundingClientRect();
-    if(svgRect.width === 0 || svgRect.height === 0) return;
-    if(!dragState.tempLine){
-      svg.setAttribute('viewBox', `0 0 ${svgRect.width} ${svgRect.height}`);
-      svg.setAttribute('width', svgRect.width);
-      svg.setAttribute('height', svgRect.height);
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('stroke', '#4B6EF5');
-      line.setAttribute('stroke-width', '2');
-      line.setAttribute('stroke-linecap', 'round');
-      line.setAttribute('stroke-dasharray', '5,3');
-      svg.appendChild(line);
-      dragState.tempLine = line;
-    }
-    const ra = dragState.fromDot.getBoundingClientRect();
-    const x1 = ra.left + ra.width/2 - svgRect.left;
-    const y1 = ra.top  + ra.height/2 - svgRect.top;
-    let x2 = e.clientX - svgRect.left;
-    let y2 = e.clientY - svgRect.top;
-
-    // [ADDED 2026-04] 호버되는 점에 hover 효과 + 가까이 가면 자동 스냅
-    const allDots = [...dragState.wrap.querySelectorAll('.sm-match2-dot')];
-    // 이전 hover 클래스 제거
-    allDots.forEach(d => d.classList.remove('sm-match2-dot-hover'));
-    let hoverDot = null;
-    let minDist = 999999;
-    allDots.forEach(d => {
-      if(d === dragState.fromDot) return;
-      const r = d.getBoundingClientRect();
-      const cx = r.left + r.width/2;
-      const cy = r.top  + r.height/2;
-      const dst = Math.hypot(e.clientX - cx, e.clientY - cy);
-      if(dst < minDist){ minDist = dst; hoverDot = d; }
-    });
-    // 25px 이내면 호버 표시 + 임시 선 스냅
-    if(hoverDot && minDist < 25){
-      hoverDot.classList.add('sm-match2-dot-hover');
-      const r = hoverDot.getBoundingClientRect();
-      x2 = r.left + r.width/2 - svgRect.left;
-      y2 = r.top  + r.height/2 - svgRect.top;
-      dragState.snapDot = hoverDot;
-    } else {
-      dragState.snapDot = null;
-    }
-
-    dragState.tempLine.setAttribute('x1', x1);
-    dragState.tempLine.setAttribute('y1', y1);
-    dragState.tempLine.setAttribute('x2', x2);
-    dragState.tempLine.setAttribute('y2', y2);
-  }, true);
-
-  document.addEventListener('pointerup', function(e){
-    if(!dragState) return;
-    const ds = dragState;
-    dragState = null;
-    // 모든 hover 클래스 제거
-    if(ds.wrap) ds.wrap.querySelectorAll('.sm-match2-dot-hover').forEach(d => d.classList.remove('sm-match2-dot-hover'));
-    // 임시 선 제거
-    if(ds.tempLine && ds.tempLine.parentElement) ds.tempLine.parentElement.removeChild(ds.tempLine);
-    if(!ds.moved){
-      // 짧은 클릭 — 기본 click 핸들러로 위임
-      return;
-    }
-    // 드래그 끝 — 스냅된 점이 있으면 그것 우선, 아니면 elementFromPoint
-    let targetDot = ds.snapDot;
-    if(!targetDot){
-      const elAtPoint = document.elementFromPoint(e.clientX, e.clientY);
-      if(elAtPoint) targetDot = elAtPoint.closest && elAtPoint.closest('.sm-match2-dot');
-    }
-    // 같은 wrap 안의 다른 점이어야 함
-    if(targetDot && targetDot !== ds.fromDot && ds.wrap.contains(targetDot)){
-      const dots = [...ds.wrap.querySelectorAll('.sm-match2-dot')];
-      const toIdx = dots.indexOf(targetDot);
-      if(toIdx >= 0 && toIdx !== ds.fromIdx){
-        // 기존 연결 정리 — 두 점 중 하나라도 이미 연결돼 있으면 해제
-        let conns = [];
-        try { conns = JSON.parse(ds.wrap.dataset.matchConns || '[]'); } catch(_){ conns = []; }
-        // 같은 두 점 연결이 이미 있으면 무시
-        const dup = conns.some(c => (c[0]===ds.fromIdx && c[1]===toIdx) || (c[0]===toIdx && c[1]===ds.fromIdx));
-        if(!dup){
-          // 두 점 각자의 기존 연결 해제
-          [ds.fromIdx, toIdx].forEach(i => {
-            const eIdx = conns.findIndex(c => c[0]===i || c[1]===i);
-            if(eIdx >= 0){
-              const [a,b] = conns[eIdx];
-              if(dots[a]) dots[a].classList.remove('sm-match2-dot-connected');
-              if(dots[b]) dots[b].classList.remove('sm-match2-dot-connected');
-              conns.splice(eIdx, 1);
-            }
-          });
-          conns.push([ds.fromIdx, toIdx]);
-          ds.wrap.dataset.matchConns = JSON.stringify(conns);
-          ds.fromDot.classList.add('sm-match2-dot-connected');
-          targetDot.classList.add('sm-match2-dot-connected');
-          ds.fromDot.classList.remove('sm-match2-dot-active');
-          targetDot.classList.remove('sm-match2-dot-active');
-        }
+    // [UPDATED 2026-04] pointermove/up을 드래그 동안만 한시적으로 등록 — 평상시 부하 0
+    onMove = function(ev){
+      if(!dragState) return;
+      const dx = ev.clientX - dragState.startX;
+      const dy = ev.clientY - dragState.startY;
+      const dist = Math.hypot(dx, dy);
+      if(!dragState.moved && dist < 4) return;
+      dragState.moved = true;
+      const sv = dragState.svg;
+      const svgRect = sv.getBoundingClientRect();
+      if(svgRect.width === 0 || svgRect.height === 0) return;
+      if(!dragState.tempLine){
+        sv.setAttribute('viewBox', `0 0 ${svgRect.width} ${svgRect.height}`);
+        sv.setAttribute('width', svgRect.width);
+        sv.setAttribute('height', svgRect.height);
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('stroke', '#4B6EF5');
+        line.setAttribute('stroke-width', '2');
+        line.setAttribute('stroke-linecap', 'round');
+        line.setAttribute('stroke-dasharray', '5,3');
+        sv.appendChild(line);
+        dragState.tempLine = line;
       }
+      const ra = dragState.fromDot.getBoundingClientRect();
+      const x1 = ra.left + ra.width/2 - svgRect.left;
+      const y1 = ra.top  + ra.height/2 - svgRect.top;
+      let x2 = ev.clientX - svgRect.left;
+      let y2 = ev.clientY - svgRect.top;
+
+      const allDots = [...dragState.wrap.querySelectorAll('.sm-match2-dot')];
+      allDots.forEach(d => d.classList.remove('sm-match2-dot-hover'));
+      let hoverDot = null;
+      let minDist = 999999;
+      allDots.forEach(d => {
+        if(d === dragState.fromDot) return;
+        const r = d.getBoundingClientRect();
+        const cx = r.left + r.width/2;
+        const cy = r.top  + r.height/2;
+        const dst = Math.hypot(ev.clientX - cx, ev.clientY - cy);
+        if(dst < minDist){ minDist = dst; hoverDot = d; }
+      });
+      if(hoverDot && minDist < 25){
+        hoverDot.classList.add('sm-match2-dot-hover');
+        const r = hoverDot.getBoundingClientRect();
+        x2 = r.left + r.width/2 - svgRect.left;
+        y2 = r.top  + r.height/2 - svgRect.top;
+        dragState.snapDot = hoverDot;
+      } else {
+        dragState.snapDot = null;
+      }
+
+      dragState.tempLine.setAttribute('x1', x1);
+      dragState.tempLine.setAttribute('y1', y1);
+      dragState.tempLine.setAttribute('x2', x2);
+      dragState.tempLine.setAttribute('y2', y2);
+    };
+
+    onUp = function(ev){
+      if(!dragState) {
+        cleanup();
+        return;
+      }
+      const ds = dragState;
+      dragState = null;
+      if(ds.wrap) ds.wrap.querySelectorAll('.sm-match2-dot-hover').forEach(d => d.classList.remove('sm-match2-dot-hover'));
+      if(ds.tempLine && ds.tempLine.parentElement) ds.tempLine.parentElement.removeChild(ds.tempLine);
+      if(ds.moved){
+        let targetDot = ds.snapDot;
+        if(!targetDot){
+          const elAtPoint = document.elementFromPoint(ev.clientX, ev.clientY);
+          if(elAtPoint) targetDot = elAtPoint.closest && elAtPoint.closest('.sm-match2-dot');
+        }
+        if(targetDot && targetDot !== ds.fromDot && ds.wrap.contains(targetDot)){
+          const dots = [...ds.wrap.querySelectorAll('.sm-match2-dot')];
+          const toIdx = dots.indexOf(targetDot);
+          if(toIdx >= 0 && toIdx !== ds.fromIdx){
+            let conns = [];
+            try { conns = JSON.parse(ds.wrap.dataset.matchConns || '[]'); } catch(_){ conns = []; }
+            const dup = conns.some(c => (c[0]===ds.fromIdx && c[1]===toIdx) || (c[0]===toIdx && c[1]===ds.fromIdx));
+            if(!dup){
+              [ds.fromIdx, toIdx].forEach(i => {
+                const eIdx = conns.findIndex(c => c[0]===i || c[1]===i);
+                if(eIdx >= 0){
+                  const [a,b] = conns[eIdx];
+                  if(dots[a]) dots[a].classList.remove('sm-match2-dot-connected');
+                  if(dots[b]) dots[b].classList.remove('sm-match2-dot-connected');
+                  conns.splice(eIdx, 1);
+                }
+              });
+              conns.push([ds.fromIdx, toIdx]);
+              ds.wrap.dataset.matchConns = JSON.stringify(conns);
+              ds.fromDot.classList.add('sm-match2-dot-connected');
+              targetDot.classList.add('sm-match2-dot-connected');
+              ds.fromDot.classList.remove('sm-match2-dot-active');
+              targetDot.classList.remove('sm-match2-dot-active');
+            }
+          }
+        }
+        ds.wrap.querySelectorAll('.sm-match2-dot-active').forEach(d => d.classList.remove('sm-match2-dot-active'));
+        _smMatchDrawLines(ds.wrap, ds.svg);
+        window._smMatchDragJustEnded = true;
+        setTimeout(()=>{ window._smMatchDragJustEnded = false; }, 50);
+      }
+      cleanup();
+    };
+
+    function cleanup(){
+      if(onMove) document.removeEventListener('pointermove', onMove, false);
+      if(onUp)   document.removeEventListener('pointerup',   onUp, false);
+      onMove = null;
+      onUp = null;
     }
-    // 모든 활성 상태 해제
-    ds.wrap.querySelectorAll('.sm-match2-dot-active').forEach(d => d.classList.remove('sm-match2-dot-active'));
-    // 모든 선 다시 그리기
-    _smMatchDrawLines(ds.wrap, ds.svg);
-    // 다음 클릭 이벤트는 무시 (드래그 끝나고 click이 바로 발생할 수 있음)
-    window._smMatchDragJustEnded = true;
-    setTimeout(()=>{ window._smMatchDragJustEnded = false; }, 50);
-  }, true);
+
+    document.addEventListener('pointermove', onMove, false);
+    document.addEventListener('pointerup',   onUp, false);
+  }, false);
 };
+
 
 window.smChoiceToggleAnswer = function(numEl){
   const item = numEl.closest('.sm-choice-item');
@@ -25476,10 +25413,19 @@ function _initSpecHover(){
   // .tctx-btn 동적 대응
   var tbProps = document.getElementById('tbProps');
   if(tbProps){
+    // [UPDATED 2026-04] throttle로 멈춤 방지 — innerHTML 파싱 cascade 회피
+    let pending = false;
     new MutationObserver(function(){
-      tbProps.querySelectorAll('.tctx-btn:not([data-spec-bound])').forEach(function(el){
-        el.setAttribute('data-spec-bound','1');
-        _bindSpecHover(el, 'props', '이미지-블록-속성--ctx-image');
+      if(pending) return;
+      pending = true;
+      requestAnimationFrame(function(){
+        pending = false;
+        try {
+          tbProps.querySelectorAll('.tctx-btn:not([data-spec-bound])').forEach(function(el){
+            el.setAttribute('data-spec-bound','1');
+            _bindSpecHover(el, 'props', '이미지-블록-속성--ctx-image');
+          });
+        } catch(_){}
       });
     }).observe(tbProps, {childList:true, subtree:true});
   }
@@ -28650,7 +28596,7 @@ function _matchBlock(n){
     <div class="sm-match2-dot" data-side="right" onclick="smMatchDotClick(this)"><span></span></div>
     <input class="sm-match2-input" placeholder="오른쪽 ${i+1}">
   </div>`).join('');
-  return `<div class="sm-block"><div class="sm-block-label">연결 항목</div>
+  return `<div class="sm-block" data-tmpl="연결형" data-type="question"><div class="sm-block-label">연결 항목</div>
     <div style="padding:8px 14px 14px;position:relative;">
       <div class="sm-match2-wrap sm-match2-cols-2">${rows}</div>
       <svg class="sm-match2-lines" style="position:absolute;inset:8px 14px 14px;pointer-events:none;"></svg>
@@ -28695,7 +28641,7 @@ function _oxQuizEditorBlock(item){
   const answer = item.quizAnswer || 'X';
   const oid = bid(), xid = bid();
   const oSel = answer==='O', xSel = answer==='X';
-  return `<div class="sm-block" style="padding-bottom:0;">
+  return `<div class="sm-block" data-tmpl="OX형" data-type="question" style="padding-bottom:0;">
     <div class="sm-oxquiz-block" style="padding:14px 16px 0;">
       <!-- 지시문 -->
       <div class="sm-oxquiz-instr" style="margin-bottom:14px;">
@@ -29014,7 +28960,8 @@ function _blocksForSetGeneric(name, breakdown, questionTypes, unitNum){
           qBody = `<div class="sm-short-wrap" style="padding:0 16px 14px;"><input class="sm-short-input" placeholder="정답을 입력하세요"></div>`;
         }
         const qLabel = qType==='선택형'?'선택형 문항':qType==='연결형'?'연결형 문항':qType==='서술형'?'서술형 문항':'단답형 문항';
-        h += `<div class="sm-block" style="border-color:${qc};">
+        const _qTmpl = qType==='선택형'?'선택형':qType==='연결형'?'연결형':qType==='서술형'?'서술형':'단답형';
+        h += `<div class="sm-block" data-tmpl="${_qTmpl}" data-type="question" style="border-color:${qc};">
           <div style="background:${qbg};padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid ${qbd};">
             <div style="width:22px;height:22px;border-radius:6px;background:${qc};color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${n}</div>
             <span style="font-size:12px;font-weight:800;color:${qc};">${qLabel}</span>
@@ -29065,7 +29012,7 @@ function _blocksForSetDeduckFull(name, breakdown){
   let h = _titleBlock('세트지 제목을 입력하세요', name);
 
   // 문항 1: 선택형 — 미리보기와 동일한 헤더 + 시계 SVG + 선택지
-  h += `<div class="sm-block" style="border-color:#4B6EF5;">
+  h += `<div class="sm-block" data-tmpl="선택형" data-type="question" style="border-color:#4B6EF5;">
     <div style="background:#EEF1FF;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #D6DFFF;">
       <div style="width:22px;height:22px;border-radius:6px;background:#4B6EF5;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
       <span style="font-size:12px;font-weight:800;color:#4B6EF5;">선택형 문항</span>
@@ -29086,7 +29033,7 @@ function _blocksForSetDeduckFull(name, breakdown){
   h += _smBlockVarBar('문항1','choice');
 
   // 문항 2: 단답형 — 미리보기와 동일한 대화 레이아웃
-  h += `<div class="sm-block" data-answer-text="588" style="border-color:#E65100;">
+  h += `<div class="sm-block" data-tmpl="단답형" data-type="question" data-answer-text="588" style="border-color:#E65100;">
     <div style="background:#FFF3E0;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #FFE0B2;">
       <div style="width:22px;height:22px;border-radius:6px;background:#E65100;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
       <span style="font-size:12px;font-weight:800;color:#E65100;">단답형 문항</span>
@@ -29116,7 +29063,7 @@ function _blocksForSetDeduckFull(name, breakdown){
 
   // 문항 3: 연결형 — [UPDATED 2026-04] 빈 템플릿과 동일한 row 기반 구조 사용
   //   사용자 요청: 점에서 점으로 드래그/클릭으로 연결 가능한 형태로 변경
-  h += `<div class="sm-block" style="border-color:#2E7D32;">
+  h += `<div class="sm-block" data-tmpl="연결형" data-type="question" style="border-color:#2E7D32;">
     <div style="background:#E8F5E9;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #C8E6C9;">
       <div style="width:22px;height:22px;border-radius:6px;background:#2E7D32;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
       <span style="font-size:12px;font-weight:800;color:#2E7D32;">연결형 문항</span>
@@ -29170,7 +29117,7 @@ function _blocksForSetPlanarFull(name){
   let h = _titleBlock('세트지 제목을 입력하세요', name);
 
   // 개념 1: 동영상 콘텐츠
-  h += `<div class="sm-block" style="border-color:#4B6EF5;">
+  h += `<div class="sm-block" data-tmpl="선택형" data-type="question" style="border-color:#4B6EF5;">
     <div style="background:#EEF1FF;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #D6DFFF;">
       <div style="width:22px;height:22px;border-radius:6px;background:#4B6EF5;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
       <span style="font-size:12px;font-weight:800;color:#4B6EF5;">💡 개념 1 — 동영상</span>
@@ -29205,7 +29152,7 @@ function _blocksForSetPlanarFull(name){
   h += _smBlockVarBar('개념2','concept');
 
   // 문항 1: 선택형 (시계 문제)
-  h += `<div class="sm-block" style="border-color:#4B6EF5;">
+  h += `<div class="sm-block" data-tmpl="선택형" data-type="question" style="border-color:#4B6EF5;">
     <div style="background:#EEF1FF;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #D6DFFF;">
       <div style="width:22px;height:22px;border-radius:6px;background:#4B6EF5;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
       <span style="font-size:12px;font-weight:800;color:#4B6EF5;">선택형 문항</span>
@@ -29249,7 +29196,7 @@ function _blocksForSetLengthTimeFull(name){
   h += _smBlockVarBar('문항1','choice');
 
   // 문항 2: 연결형 (길이)
-  h += `<div class="sm-block" style="border-color:#2E7D32;">
+  h += `<div class="sm-block" data-tmpl="연결형" data-type="question" style="border-color:#2E7D32;">
     <div style="background:#E8F5E9;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #C8E6C9;">
       <div style="width:22px;height:22px;border-radius:6px;background:#2E7D32;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
       <span style="font-size:12px;font-weight:800;color:#2E7D32;">연결형 문항</span>
@@ -29287,7 +29234,7 @@ function _blocksForSetLengthTimeFull(name){
   h += _smBlockVarBar('문항2','choice');
 
   // 문항 3: 단답형 (혜나)
-  h += `<div class="sm-block" style="border-color:#E65100;">
+  h += `<div class="sm-block" data-tmpl="단답형" data-type="question" style="border-color:#E65100;">
     <div style="background:#FFF3E0;padding:8px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #FFE0B2;">
       <div style="width:22px;height:22px;border-radius:6px;background:#E65100;color:white;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
       <span style="font-size:12px;font-weight:800;color:#E65100;">단답형 문항</span>
@@ -31299,13 +31246,28 @@ window.smToggleToolbar = function(){
   // 원본 tbProps 변경 시 클론도 동기화
   const origProps = document.getElementById('tbProps');
   if(origProps && cloneProps){
+    // [UPDATED 2026-04] MutationObserver throttle — 너무 자주 호출되면 cloneProps.innerHTML 파싱 부하로 멈춤 발생
+    //   requestAnimationFrame으로 다음 frame에서만 1회 동기화
+    let pending = false;
     const obs = new MutationObserver(function(){
-      if(origProps.innerHTML.trim()){
-        cloneProps.innerHTML = origProps.innerHTML;
-      } else {
-        // 원본이 빈 상태면 기본 안내 문구 유지
-        cloneProps.innerHTML = '<div class="tb-props-row" style="padding:0 16px;"><span style="font-size:11px;color:var(--g3);">블록을 선택하면 속성을 편집할 수 있어요</span></div>';
-      }
+      if(pending) return;
+      pending = true;
+      requestAnimationFrame(function(){
+        pending = false;
+        try {
+          if(origProps.innerHTML.trim()){
+            // 같은 내용이면 skip (innerHTML 파싱 비용 회피)
+            if(cloneProps.innerHTML !== origProps.innerHTML){
+              cloneProps.innerHTML = origProps.innerHTML;
+            }
+          } else {
+            const placeholder = '<div class="tb-props-row" style="padding:0 16px;"><span style="font-size:11px;color:var(--g3);">블록을 선택하면 속성을 편집할 수 있어요</span></div>';
+            if(cloneProps.innerHTML !== placeholder){
+              cloneProps.innerHTML = placeholder;
+            }
+          }
+        } catch(_){}
+      });
     });
     obs.observe(origProps, {childList:true, subtree:true, characterData:true});
     clone._obs = obs;
