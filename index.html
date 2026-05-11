@@ -6882,50 +6882,6 @@ body.save-step2 .save-modal{ width:840px; }
           </div>
         </div>
 
-        <!-- [수정 2026-05] 문항 난이도 → 난이도 비율 설정 (옵션 B: 프리셋 + 사용자 정의) -->
-        <div class="ai-sm-difficulty-card">
-          <div class="ai-sm-total-head">
-            <div>
-              <div class="ai-sm-total-title">난이도 비율</div>
-              <div class="ai-sm-total-desc">생성될 문항의 난이도 비율을 설정해 주세요.</div>
-            </div>
-          </div>
-          
-          <!-- 프리셋 칩 -->
-          <div id="aiCreateRatioPresets" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
-            <button type="button" class="ai-create-chip on" data-preset="standard" onclick="aiCreateSetRatio(this,30,40,30,'standard')">표준 3:4:3</button>
-            <button type="button" class="ai-create-chip" data-preset="basic" onclick="aiCreateSetRatio(this,20,30,50,'basic')">기초 2:3:5</button>
-            <button type="button" class="ai-create-chip" data-preset="deep" onclick="aiCreateSetRatio(this,50,30,20,'deep')">심화 5:3:2</button>
-            <button type="button" class="ai-create-chip" data-preset="even" onclick="aiCreateSetRatio(this,34,33,33,'even')">균등 1:1:1</button>
-            <button type="button" class="ai-create-chip" data-preset="custom" onclick="aiCreateSetCustomRatio(this)" style="border-style:dashed;">+ 사용자 정의</button>
-          </div>
-          
-          <!-- 사용자 정의 슬라이더 (기본 숨김) -->
-          <div id="aiCreateRatioSliders" style="display:none;margin-top:12px;padding:12px;background:#F9FAFB;border-radius:10px;border:1px solid #E5E7EB;">
-            <div style="display:flex;align-items:center;gap:10px;margin:6px 0;">
-              <span style="width:22px;font-weight:700;font-size:12px;color:#FF4F6A;text-align:center;">상</span>
-              <input type="range" id="aiCreateRangeH" min="0" max="100" value="30" oninput="aiCreateOnRatioSlider('h')" style="flex:1;height:6px;border-radius:3px;background:#E5E7EB;outline:none;cursor:pointer;">
-              <span style="width:42px;text-align:right;font-size:12px;font-weight:700;color:#374151;"><span id="aiCreateValH">30</span>%</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;margin:6px 0;">
-              <span style="width:22px;font-weight:700;font-size:12px;color:#2383e2;text-align:center;">중</span>
-              <input type="range" id="aiCreateRangeM" min="0" max="100" value="40" oninput="aiCreateOnRatioSlider('m')" style="flex:1;height:6px;border-radius:3px;background:#E5E7EB;outline:none;cursor:pointer;">
-              <span style="width:42px;text-align:right;font-size:12px;font-weight:700;color:#374151;"><span id="aiCreateValM">40</span>%</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:10px;margin:6px 0;">
-              <span style="width:22px;font-weight:700;font-size:12px;color:#22C98B;text-align:center;">하</span>
-              <input type="range" id="aiCreateRangeL" min="0" max="100" value="30" oninput="aiCreateOnRatioSlider('l')" style="flex:1;height:6px;border-radius:3px;background:#E5E7EB;outline:none;cursor:pointer;">
-              <span style="width:42px;text-align:right;font-size:12px;font-weight:700;color:#374151;"><span id="aiCreateValL">30</span>%</span>
-            </div>
-            <div style="font-size:10px;color:#6B7280;text-align:right;margin-top:4px;">합계 100% (자동 조정됨)</div>
-          </div>
-          
-          <!-- 현재 비율 미리보기 -->
-          <div style="margin-top:8px;font-size:11px;color:#6B7280;">
-            <span id="aiCreateRatioSummary">현재 비율: 상 30% / 중 40% / 하 30%</span>
-          </div>
-        </div>
-
         <!-- 펼침 트리거 — 클릭하면 아래 문항 세부 유형 섹션이 슬라이드 펼쳐짐 -->
         <div class="ai-sm-detail-toggle" id="aiCreateSmDetailToggle" onclick="aiCreateToggleSmDetail()">
           <svg class="ai-sm-detail-chev" width="12" height="12" viewBox="0 0 24 24" fill="none">
@@ -6934,7 +6890,7 @@ body.save-step2 .save-modal{ width:840px; }
           <span class="ai-sm-detail-toggle-label">유형별로 직접 정하기</span>
           <!-- [REMOVED 2026-04] 사용자 요청 — "선택형 N개 · 단답형 N개..." 미리보기 텍스트 제거 -->
         </div>
-      </div>
+              </div>
 
       <div class="ai-create-section" id="aiCreateTypeSection">
         <div class="ai-create-section-title">콘텐츠 유형 <span class="ai-create-opt-multi">복수 선택</span></div>
@@ -7035,6 +6991,55 @@ body.save-step2 .save-modal{ width:840px; }
           </div>
         </div>
       </div>
+
+      <!-- [이동 2026-05] 난이도 비율 섹션 (심플모드 전용, 유형별 정하기 다음 위치) -->
+      <div class="ai-create-section" id="aiCreateRatioSection" style="display:none;">
+        <!-- [수정 2026-05] 문항 난이도 → 난이도 비율 설정 (옵션 B: 프리셋 + 사용자 정의) -->
+        <div class="ai-sm-difficulty-card">
+          <div class="ai-sm-total-head">
+            <div>
+              <div class="ai-sm-total-title">난이도 비율</div>
+              <div class="ai-sm-total-desc">생성될 문항의 난이도 비율을 설정해 주세요.</div>
+            </div>
+          </div>
+          
+          <!-- 프리셋 칩 -->
+          <div id="aiCreateRatioPresets" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+            <button type="button" class="ai-create-chip on" data-preset="standard" onclick="aiCreateSetRatio(this,30,40,30,'standard')">표준 3:4:3</button>
+            <button type="button" class="ai-create-chip" data-preset="basic" onclick="aiCreateSetRatio(this,20,30,50,'basic')">기초 2:3:5</button>
+            <button type="button" class="ai-create-chip" data-preset="deep" onclick="aiCreateSetRatio(this,50,30,20,'deep')">심화 5:3:2</button>
+            <button type="button" class="ai-create-chip" data-preset="even" onclick="aiCreateSetRatio(this,34,33,33,'even')">균등 1:1:1</button>
+            <button type="button" class="ai-create-chip" data-preset="custom" onclick="aiCreateSetCustomRatio(this)" style="border-style:dashed;">+ 사용자 정의</button>
+          </div>
+          
+          <!-- 사용자 정의 슬라이더 (기본 숨김) -->
+          <div id="aiCreateRatioSliders" style="display:none;margin-top:12px;padding:12px;background:#F9FAFB;border-radius:10px;border:1px solid #E5E7EB;">
+            <div style="display:flex;align-items:center;gap:10px;margin:6px 0;">
+              <span style="width:22px;font-weight:700;font-size:12px;color:#FF4F6A;text-align:center;">상</span>
+              <input type="range" id="aiCreateRangeH" min="0" max="100" value="30" oninput="aiCreateOnRatioSlider('h')" style="flex:1;height:6px;border-radius:3px;background:#E5E7EB;outline:none;cursor:pointer;">
+              <span style="width:42px;text-align:right;font-size:12px;font-weight:700;color:#374151;"><span id="aiCreateValH">30</span>%</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin:6px 0;">
+              <span style="width:22px;font-weight:700;font-size:12px;color:#2383e2;text-align:center;">중</span>
+              <input type="range" id="aiCreateRangeM" min="0" max="100" value="40" oninput="aiCreateOnRatioSlider('m')" style="flex:1;height:6px;border-radius:3px;background:#E5E7EB;outline:none;cursor:pointer;">
+              <span style="width:42px;text-align:right;font-size:12px;font-weight:700;color:#374151;"><span id="aiCreateValM">40</span>%</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin:6px 0;">
+              <span style="width:22px;font-weight:700;font-size:12px;color:#22C98B;text-align:center;">하</span>
+              <input type="range" id="aiCreateRangeL" min="0" max="100" value="30" oninput="aiCreateOnRatioSlider('l')" style="flex:1;height:6px;border-radius:3px;background:#E5E7EB;outline:none;cursor:pointer;">
+              <span style="width:42px;text-align:right;font-size:12px;font-weight:700;color:#374151;"><span id="aiCreateValL">30</span>%</span>
+            </div>
+            <div style="font-size:10px;color:#6B7280;text-align:right;margin-top:4px;">합계 100% (자동 조정됨)</div>
+          </div>
+          
+          <!-- 현재 비율 + 예상 문항 수 미리보기 -->
+          <div style="margin-top:8px;font-size:11px;color:#6B7280;">
+            <div><span id="aiCreateRatioSummary">현재 비율: 상 30% / 중 40% / 하 30%</span></div>
+            <div style="margin-top:3px;color:#2383e2;font-weight:600;"><span id="aiCreateRatioPreview"></span></div>
+          </div>
+        </div>
+      </div>
+
 
       <!-- [ADDED 2026-04] 활동 세부 유형 섹션 — '활동' 칩 활성 시에만 표시 (고급모드 전용) -->
       <div class="ai-create-section ai-create-qtype-section" id="aiCreateActivitySection" style="display:none;">
@@ -11281,6 +11286,8 @@ window.openAiCreatePopup = function(){
 
   // 단원 칩 동적 렌더 — 팝업 내부 state 기준
   aiCreateRenderUnits();
+  // [추가 2026-05] 차시 섹션도 즉시 렌더 (이전 상태 잔여 차단)
+  if(typeof aiCreateRenderLessons === 'function') aiCreateRenderLessons();
 
   // 텍스트/파일 초기화
   const ta = document.getElementById('aiCreatePrompt');
@@ -11396,6 +11403,15 @@ window.aiCreateApplyModeLayout = function(){
     document.querySelectorAll('.ai-sm-difficulty-btn').forEach(b => {
       b.classList.toggle('on', b.dataset.level === 'medium');
     });
+    
+    // [추가 2026-05] 심플모드 — 난이도 비율 섹션 노출 (유형별 직접 정하기 다음 위치)
+    const ratioSection = document.getElementById('aiCreateRatioSection');
+    if(ratioSection) ratioSection.style.display = 'block';
+    
+    // [추가 2026-05] 심플모드 진입 시 비율 미리보기도 정확한 초기값으로 갱신
+    if(typeof aiCreateUpdateRatioSummary === 'function'){
+      setTimeout(() => aiCreateUpdateRatioSummary(), 0);
+    }
 
     // 칩 자체는 개별 제어 유지 (혹시 외부에서 참조될 수 있으므로)
     if(conceptChip){
@@ -11460,6 +11476,11 @@ window.aiCreateApplyModeLayout = function(){
     }
   } else {
     // ── 고급모드 레이아웃 (기본/원복) ──
+    
+    // [추가 2026-05] 고급모드 — 난이도 비율 섹션 숨김
+    const ratioSection_adv = document.getElementById('aiCreateRatioSection');
+    if(ratioSection_adv) ratioSection_adv.style.display = 'none';
+
     // [ADDED 2026-04] 심플모드에서 숨겨졌을 수 있는 콘텐츠 유형 섹션 복원
     const typeSectionShowEl = document.getElementById('aiCreateTypeSection');
     if(typeSectionShowEl) typeSectionShowEl.style.display = '';
@@ -11880,6 +11901,8 @@ window.aiCreateSetSmTotal = function(value){
     const q = parseInt(b.dataset.quick, 10);
     b.classList.toggle('on', q === v);
   });
+  // [추가 2026-05] 문항 수 변경 시 비율 미리보기 갱신
+  if(typeof aiCreateUpdateRatioSummary === 'function') aiCreateUpdateRatioSummary();
 };
 
 // 스테퍼 +/-
@@ -12012,6 +12035,9 @@ function _aiCreateUpdateSmDetailHint(){
   }
   hintEl.textContent = parts.slice(0, 3).join(' · ') + (parts.length > 3 ? ` 외 ${parts.length - 3}` : '');
   hintEl.style.color = '#2383e2';
+  
+  // [추가 2026-05] 유형별 개수 변경 시 비율 미리보기도 자동 갱신
+  if(typeof aiCreateUpdateRatioSummary === 'function') aiCreateUpdateRatioSummary();
 }
 window._aiCreateUpdateSmDetailHint = _aiCreateUpdateSmDetailHint;
 
@@ -52148,8 +52174,61 @@ window.aiCreateOnRatioSlider = function(which){
 // [신규 2026-05] 비율 미리보기 갱신
 window.aiCreateUpdateRatioSummary = function(){
   const r = (window._aiCreateState && window._aiCreateState.ratio) || { h: 30, m: 40, l: 30 };
+  
+  // 현재 비율 표시
   const sm = document.getElementById('aiCreateRatioSummary');
   if(sm) sm.textContent = '현재 비율: 상 ' + r.h + '% / 중 ' + r.m + '% / 하 ' + r.l + '%';
+  
+  // [수정 2026-05] 예상 문항 수 계산 — state.smTotal 우선 (유형별 합계 모드 시 합계로 갱신됨)
+  // state.smTotal이 없으면 입력창 값, 그것도 없으면 5
+  let total = 0;
+  if(window._aiCreateState && typeof window._aiCreateState.smTotal === 'number'){
+    total = window._aiCreateState.smTotal;
+  } else {
+    const totalInp = document.getElementById('aiCreateSmTotalInput');
+    total = parseInt(totalInp ? totalInp.value : 5, 10) || 0;
+  }
+  
+  if(total > 0){
+    // 1) 각 카테고리 floor + 소수 부분 보관
+    const rawH = total * r.h / 100;
+    const rawM = total * r.m / 100;
+    const rawL = total * r.l / 100;
+    let h = Math.floor(rawH);
+    let m = Math.floor(rawM);
+    let l = Math.floor(rawL);
+    let remainder = total - (h + m + l);  // 0~2 사이
+    
+    // 2) 남은 개수를 비율 큰 순서로 +1씩 분배
+    while(remainder > 0){
+      // 가장 큰 비율 카테고리에 +1
+      const fracH = rawH - Math.floor(rawH);
+      const fracM = rawM - Math.floor(rawM);
+      const fracL = rawL - Math.floor(rawL);
+      
+      // 현재 시점에서 가장 비율 큰 카테고리 (h > m > l 우선순위로 tie-break)
+      const arr = [
+        { k: 'h', val: r.h, frac: fracH, cur: h },
+        { k: 'm', val: r.m, frac: fracM, cur: m },
+        { k: 'l', val: r.l, frac: fracL, cur: l }
+      ];
+      // 가장 큰 비율(r.x) 가진 카테고리 선택, 동률이면 첫번째
+      arr.sort((a, b) => b.val - a.val);
+      const winner = arr[0].k;
+      if(winner === 'h') h++;
+      else if(winner === 'm') m++;
+      else l++;
+      remainder--;
+    }
+    
+    const pv = document.getElementById('aiCreateRatioPreview');
+    if(pv){
+      pv.textContent = '예상 문항: 상 ' + h + '개 · 중 ' + m + '개 · 하 ' + l + '개 (총 ' + total + '개)';
+    }
+  } else {
+    const pv = document.getElementById('aiCreateRatioPreview');
+    if(pv) pv.textContent = '';
+  }
 };
 </script>
 </body>
