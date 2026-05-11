@@ -12009,6 +12009,8 @@ function _aiCreateUpdateSmDetailHint(){
     // smTotal 상태값도 합계로 동기화 (생성 시점에 사용)
     if(!window._aiCreateState) window._aiCreateState = {};
     window._aiCreateState.smTotal = total;
+    // [추가 2026-05] state.smTotal이 갱신되었으므로 비율 미리보기도 즉시 갱신
+    if(typeof aiCreateUpdateRatioSummary === 'function') aiCreateUpdateRatioSummary();
   } else {
     if(card) card.classList.remove('is-readonly');
     if(rowEdit) rowEdit.style.display = '';
@@ -12022,6 +12024,8 @@ function _aiCreateUpdateSmDetailHint(){
       const q = parseInt(b.dataset.quick, 10);
       b.classList.toggle('on', q === cur);
     });
+    // [추가 2026-05] 유형별 합 0으로 복귀 — 비율 미리보기도 편집 모드 값으로 갱신
+    if(typeof aiCreateUpdateRatioSummary === 'function') aiCreateUpdateRatioSummary();
   }
 
   // hint 텍스트 갱신
@@ -12035,9 +12039,6 @@ function _aiCreateUpdateSmDetailHint(){
   }
   hintEl.textContent = parts.slice(0, 3).join(' · ') + (parts.length > 3 ? ` 외 ${parts.length - 3}` : '');
   hintEl.style.color = '#2383e2';
-  
-  // [추가 2026-05] 유형별 개수 변경 시 비율 미리보기도 자동 갱신
-  if(typeof aiCreateUpdateRatioSummary === 'function') aiCreateUpdateRatioSummary();
 }
 window._aiCreateUpdateSmDetailHint = _aiCreateUpdateSmDetailHint;
 
@@ -52190,35 +52191,39 @@ window.aiCreateUpdateRatioSummary = function(){
   }
   
   if(total > 0){
-    // 1) 각 카테고리 floor + 소수 부분 보관
-    const rawH = total * r.h / 100;
-    const rawM = total * r.m / 100;
-    const rawL = total * r.l / 100;
-    let h = Math.floor(rawH);
-    let m = Math.floor(rawM);
-    let l = Math.floor(rawL);
-    let remainder = total - (h + m + l);  // 0~2 사이
+    let h, m, l;
+    const preset = (window._aiCreateState && window._aiCreateState.ratioPreset) || '';
     
-    // 2) 남은 개수를 비율 큰 순서로 +1씩 분배
-    while(remainder > 0){
-      // 가장 큰 비율 카테고리에 +1
-      const fracH = rawH - Math.floor(rawH);
-      const fracM = rawM - Math.floor(rawM);
-      const fracL = rawL - Math.floor(rawL);
+    // [수정 2026-05] 균등 프리셋은 N등분 (잔여는 상→중→하 순서로 +1)
+    if(preset === 'even'){
+      const base = Math.floor(total / 3);
+      const rem = total % 3;
+      h = base + (rem >= 1 ? 1 : 0);
+      m = base + (rem >= 2 ? 1 : 0);
+      l = base;
+    } else {
+      // 일반 프리셋 + 사용자 정의 — floor + 잔여를 가장 큰 비율 카테고리에 흡수
+      const rawH = total * r.h / 100;
+      const rawM = total * r.m / 100;
+      const rawL = total * r.l / 100;
+      h = Math.floor(rawH);
+      m = Math.floor(rawM);
+      l = Math.floor(rawL);
+      let remainder = total - (h + m + l);
       
-      // 현재 시점에서 가장 비율 큰 카테고리 (h > m > l 우선순위로 tie-break)
-      const arr = [
-        { k: 'h', val: r.h, frac: fracH, cur: h },
-        { k: 'm', val: r.m, frac: fracM, cur: m },
-        { k: 'l', val: r.l, frac: fracL, cur: l }
-      ];
-      // 가장 큰 비율(r.x) 가진 카테고리 선택, 동률이면 첫번째
-      arr.sort((a, b) => b.val - a.val);
-      const winner = arr[0].k;
-      if(winner === 'h') h++;
-      else if(winner === 'm') m++;
-      else l++;
-      remainder--;
+      while(remainder > 0){
+        const arr = [
+          { k: 'h', val: r.h },
+          { k: 'm', val: r.m },
+          { k: 'l', val: r.l }
+        ];
+        arr.sort((a, b) => b.val - a.val);
+        const winner = arr[0].k;
+        if(winner === 'h') h++;
+        else if(winner === 'm') m++;
+        else l++;
+        remainder--;
+      }
     }
     
     const pv = document.getElementById('aiCreateRatioPreview');
