@@ -30307,6 +30307,10 @@ function _detectSpecPage(){
   var nm = document.getElementById('lsNewMenu');
   if(nm && (nm.classList.contains('open') || nm.classList.contains('show') || nm.style.display === 'flex' || nm.style.display === 'block')) return 'newmenu';
   
+  // [수정 2026-05] 실제 사용되는 AI 팝업은 aiCreateOverlay (aiStartPopup은 옛 팝업)
+  var aiNew = document.getElementById('aiCreateOverlay');
+  if(aiNew && aiNew.classList.contains('open')) return 'aipopup';
+  
   var ai = document.getElementById('aiStartPopup');
   if(ai && ai.style.display === 'flex') return 'aipopup';
   
